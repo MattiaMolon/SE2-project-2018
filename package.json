@@ -1,0 +1,24 @@
+{
+  "name": "se2-project-2018",
+  "version": "1.0.0",
+  "description": "Software Engineering II Project 2018/2019",
+  "main": "index.js",
+  "scripts": {
+    "start": "node api.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebastianochiari/SE2-project-2018.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sebastianochiari/SE2-project-2018/issues"
+  },
+  "homepage": "https://github.com/sebastianochiari/SE2-project-2018#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  }
+}
