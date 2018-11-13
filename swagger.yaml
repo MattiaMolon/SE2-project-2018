@@ -15,3 +15,182 @@ consumes:
 - application/json
 produces:
 - application/json
+
+#authentication token
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-API-Key
+    description: >
+      You must have an API-key in order to use all the APIs. The `API-key` (or `token`) is
+      unique to each user. To get this token, you need to call `/user/registration` API and
+      it has to sent as a `X-API-Key` header with any other API request.
+
+#global security (applies to all operations):
+security:
+  - ApiKeyAuth: []
+
+#inserire paths
+
+#global definition of common data structures we use in our API
+definitions:
+  User:
+    title: user
+    type: object
+    properties:
+      id:
+        type: integer
+        description: the user ID
+        example: 22
+      name:
+        type: string
+        description: the user's name
+        example: Britney Spears
+      uniNumber:
+        type: string
+        description: the identifier for the user provided by the university
+        example: 123456
+      isTeacher:
+        type: boolean
+        description: >
+          This value is true if the user is a teacher, false otherwise
+        example: false
+      email:
+        type: string
+        description: the user's email
+        example: britney@spears.com
+
+    required:
+    - id
+    - name
+    - uniNumber
+    - isTeacher
+    - email
+
+
+  Class:
+    title: class
+    type: object
+    properties:
+      id:
+        type: integer
+        description: the class ID
+        example: 4
+      name:
+        type: string
+        description: the class' name
+        example: Siamo Veramente Euforici
+      participants:
+        type: array
+        items:
+          $ref: "#/definitions/user"
+        description: the collection of users taking part in a class
+        example: [user1, user2, user3]
+    
+    required:
+    - id
+    - name
+    - participants
+
+
+  Task:
+    title: task
+    type: object
+    properties:
+      id:
+        type: integer
+        description: the task ID
+        example: 5
+      question:
+        type: string
+        description: the question
+        example: "Il nome di Rovazzi, il cantante"
+      questionType:
+        type: string
+        enum: [multipleChoice, openAnswer]
+        example: multipleChoice
+      choices:
+        type: array #we give all possible answers
+        items:
+          type: string    
+        description: >
+          in case of multipleChoice task, all the possible answers
+        example: [Fabio, Luigi, Mario, Giovanni]
+      multipleAnswers:
+        type: boolean
+        description: >
+          in case of multipleChoice, it's false when the correct answers is only one,
+          true otherwise
+        example: false
+      teacher: 
+        $ref: "#definitions/user"
+        description: the teacher who have created the task
+ #     class:
+ #      type: object
+ #      description: classe alla quale è capitata questa domanda 
+
+    required:
+    - id
+    - question
+    - questionType
+ #     - class 
+
+
+  #Choice:
+   #vanno considerati risorse se comprese in altre risorse (?) 
+
+
+  TaskGroup:
+    title: taskgroup
+    type: object
+    properties: 
+      id:
+        type: integer
+        description: the taskgroup ID
+        example: 6
+      numberTasks:
+        type: integer
+        description: the number of question selected for the exam
+      tasks:
+        type: array #array di task
+        items:  #tipo di dato degli elementi contenuti nell'array
+          $ref: "#/definitions/task"
+        description: the array of all the tasks of the exam
+        
+    required:
+    - id
+    - tasks
+
+
+  Exam:
+    title: exam
+    type: object
+    properties:
+      id: 
+        type: integer
+        description: the exam ID
+        example: 7
+      taskgroup: 
+        $ref: "#/definitions/taskgroup"
+        description: the set of all the tasks
+      startline:
+        type: string
+        description: when the exam starts
+      deadline:
+        type: string
+        description: the deadline for the delivery of the exam
+      classes:
+        type: array
+        items:
+          $ref: "#/definitions/user"
+        description: the specific class/classes to which the exam is assigned
+      teacher:
+        $ref: "#/definitions/user"
+        description: the teacher who has assigned the exam to the class
+       
+    required:
+    - id
+    - taskgroup
+    - deadline
+    - classes
