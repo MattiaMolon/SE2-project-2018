@@ -28,8 +28,236 @@ securityDefinitions:
 #global security (applies to all operations):
 security:
   - ApiKeyAuth: []
-  
-#inserire paths
+
+paths:
+  /registration:
+    post:
+      summary: Registration.
+      tags: [No Token]
+      security: [] #no token required
+      parameters:
+      - in: body
+        name: body
+        description: Registration of a new user.
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+            idNumber:
+              type: string
+            password:
+              type: string
+      responses:
+        201:
+          description: Successful registration.
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/definitions/User'
+              token:
+                type: string
+                description: Authentication token.
+                example: ABCDEF123
+        400:
+          description: Ops! Something went wrong.
+
+  /login:
+    post:
+      summary: Login.
+      tags: [No Token]
+      security: [] #no token required
+      parameters:
+      - in: body
+        name: body
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+            password:
+              type: string
+      responses:
+        204:
+          description: Successfully login.
+        400:
+          description: Ops! Something went wrong.
+
+  /users:
+    get:
+      summary: List all the users.
+      tags: [User]
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+            # da aggiungere esempio (?)
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No user found.
+
+  /users/{userId}:
+    get:
+      summary: Returns a user by ID.
+      tags: [User]
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        200:
+          description: OK
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No user found with the given ID.
+
+  /classes:
+    get:
+      summary: List all the classes.
+      tags: [Class]
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Class'
+            # da aggiungere esempio (?)
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No class found.
+
+  /classes/{classId}:
+    get:
+      summary: Returns a class by ID.
+      tags: [Class]
+      parameters:
+      - in: path
+        name: classId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        200:
+          description: OK
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No class found with the given ID.
+
+  /tasks:
+    get:
+      summary: List all the tasks.
+      tags: [Task]
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Task'
+            # da aggiungere esempio (?)
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No task found.
+
+  /tasks/{taskId}:
+    get:
+      summary: Returns a task by ID.
+      tags: [Task]
+      parameters:
+      - in: path
+        name: taskId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        200:
+          description: OK
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No task found with the given ID.
+
+  /taskGroups:
+    get:
+      summary: List all the task groups.
+      tags: [Task Group]
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TaskGroup'
+            # da aggiungere esempio (?)
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No user found.
+
+  /taskGroups/{taskGroupId}:
+    get:
+      summary: Returns a task group by ID.
+      tags: [Task Group]
+      parameters:
+      - in: path
+        name: taskGroupId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        200:
+          description: OK
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No task group found with the given ID.
+
+  /exams:
+    get:
+      summary: List all the exams.
+      tags: [Exam]
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Exam'
+            # da aggiungere esempio (?)
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No exam found.
+
+  /exams/{examId}:
+    get:
+      summary: Returns a exam by ID.
+      tags: [Exam]
+      parameters:
+      - in: path
+        name: examId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        200:
+          description: OK
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No exam found with the given ID.
 
 #global definition of common data structures we use in our API
 definitions:
@@ -48,7 +276,7 @@ definitions:
       uniNumber:
         type: string
         description: the identifier for the user provided by the university
-        example: 123456
+        example: '123456'
       isTeacher:
         type: boolean
         description: >
@@ -58,14 +286,18 @@ definitions:
         type: string
         description: the user's email
         example: britney@spears.com
-        
+      examsList:
+        type: array
+        items:
+          $ref: '#/definitions/Exam'
+        example: [exam1, exam2, exam3]
     required:
     - id
     - name
     - uniNumber
     - isTeacher
     - email
-  
+
   Class:
     title: class
     type: object
@@ -84,12 +316,12 @@ definitions:
           $ref: '#/definitions/User'
         description: the collection of users taking part in a class
         example: [user1, user2, user3]
-    
+
     required:
     - id
     - name
     - participants
-    
+
   Task:
     title: task
     type: object
@@ -109,7 +341,7 @@ definitions:
       choices:
         type: array #we give all possible answers
         items:
-          type: string    
+          type: string
         description: >
           in case of multipleChoice task, all the possible answers
         example: [Fabio, Luigi, Mario, Giovanni]
@@ -119,7 +351,7 @@ definitions:
           in case of multipleChoice, it's false when the correct answers is only one,
           true otherwise
         example: false
-      teacher: 
+      teacher:
         $ref: "#/definitions/User"
         description: the teacher who have created the task
 
@@ -127,11 +359,11 @@ definitions:
     - id
     - question
     - questionType
-    
+
   TaskGroup:
     title: taskgroup
     type: object
-    properties: 
+    properties:
       id:
         type: integer
         description: the taskgroup ID
@@ -144,20 +376,20 @@ definitions:
         items:  #tipo di dato degli elementi contenuti nell'array
           $ref: "#/definitions/Task"
         description: the array of all the tasks of the exam
-        
+
     required:
     - id
     - tasks
-    
+
   Exam:
     title: exam
     type: object
     properties:
-      id: 
+      id:
         type: integer
         description: the exam ID
         example: 7
-      taskgroup: 
+      taskgroup:
         $ref: "#/definitions/TaskGroup"
         description: the set of all the tasks
       startline:
@@ -174,7 +406,7 @@ definitions:
       teacher:
         $ref: "#/definitions/User"
         description: the teacher who has assigned the exam to the class
-       
+
     required:
     - id
     - taskgroup

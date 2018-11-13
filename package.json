@@ -8,8 +8,8 @@
     "test": "jest"
   },
   "jest": {
-  	"verbose": true,
-  	"collectCoverage": true
+    "verbose": true,
+    "collectCoverage": true
   },
   "repository": {
     "type": "git",
