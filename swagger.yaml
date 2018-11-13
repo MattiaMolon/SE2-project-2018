@@ -23,14 +23,12 @@ securityDefinitions:
     in: header
     name: X-API-Key
     description: >
-      You must have an API-key in order to use all the APIs. The `API-key` (or `token`) is
-      unique to each user. To get this token, you need to call `/user/registration` API and
-      it has to sent as a `X-API-Key` header with any other API request.
+      You must have an API-key in order to use all the APIs.
 
 #global security (applies to all operations):
 security:
   - ApiKeyAuth: []
-
+  
 #inserire paths
 
 #global definition of common data structures we use in our API
@@ -60,15 +58,14 @@ definitions:
         type: string
         description: the user's email
         example: britney@spears.com
-
+        
     required:
     - id
     - name
     - uniNumber
     - isTeacher
     - email
-
-
+  
   Class:
     title: class
     type: object
@@ -84,7 +81,7 @@ definitions:
       participants:
         type: array
         items:
-          $ref: "#/definitions/user"
+          $ref: '#/definitions/User'
         description: the collection of users taking part in a class
         example: [user1, user2, user3]
     
@@ -92,8 +89,7 @@ definitions:
     - id
     - name
     - participants
-
-
+    
   Task:
     title: task
     type: object
@@ -124,23 +120,14 @@ definitions:
           true otherwise
         example: false
       teacher: 
-        $ref: "#definitions/user"
+        $ref: "#/definitions/User"
         description: the teacher who have created the task
- #     class:
- #      type: object
- #      description: classe alla quale è capitata questa domanda 
 
     required:
     - id
     - question
     - questionType
- #     - class 
-
-
-  #Choice:
-   #vanno considerati risorse se comprese in altre risorse (?) 
-
-
+    
   TaskGroup:
     title: taskgroup
     type: object
@@ -155,14 +142,13 @@ definitions:
       tasks:
         type: array #array di task
         items:  #tipo di dato degli elementi contenuti nell'array
-          $ref: "#/definitions/task"
+          $ref: "#/definitions/Task"
         description: the array of all the tasks of the exam
         
     required:
     - id
     - tasks
-
-
+    
   Exam:
     title: exam
     type: object
@@ -172,7 +158,7 @@ definitions:
         description: the exam ID
         example: 7
       taskgroup: 
-        $ref: "#/definitions/taskgroup"
+        $ref: "#/definitions/TaskGroup"
         description: the set of all the tasks
       startline:
         type: string
@@ -183,10 +169,10 @@ definitions:
       classes:
         type: array
         items:
-          $ref: "#/definitions/user"
+          $ref: "#/definitions/User"
         description: the specific class/classes to which the exam is assigned
       teacher:
-        $ref: "#/definitions/user"
+        $ref: "#/definitions/User"
         description: the teacher who has assigned the exam to the class
        
     required:
