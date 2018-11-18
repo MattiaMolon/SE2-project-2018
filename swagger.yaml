@@ -101,6 +101,53 @@ paths:
         404:
           description: We're sorry. No user found.
 
+    post: 
+      summary: Create a new users.
+      tags: [User]
+      parameters:
+        - in: body
+          name: User parameters
+          description: The parameters necessary to create a new user.
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              idNumber:
+                type: string
+              password: 
+                type: string
+              name:
+                type: string
+              surname:
+                type: string
+      responses:
+        201:
+          description: The user has been created.
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/User'
+        400:
+          description: Ops! Something went wrong.
+
+    delete:
+      summary: Delete all specified users.
+      tags: [User]
+      parameters:
+        - in: body
+          name: Users' IDs
+          description: An array of usersIDs to delete
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        204: 
+          description: All given users has been deleted.
+        400: 
+          description: Ops! Something went wrong.
+        
   /users/{userId}:
     get:
       summary: Returns a user by ID.
@@ -114,6 +161,53 @@ paths:
       responses:
         200:
           description: OK
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No user found with the given ID.
+    put: 
+      summary: Update a user with the given ID
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+          minimum: 1
+        - in: body
+          name: User properties
+          description: The user properties that can be modified
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password: 
+                type: string
+              name:
+                type: string
+              surname:
+                type: string
+      responses:
+        204:
+          description: User updated successfully
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No user found with the given ID.
+          
+    delete:
+      summary: Delete the user with the given ID
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+          minimum: 1 
+      responses:
+        204:
+          description: User deleted successfully
         400:
           description: Ops! Something went wrong.
         404:
