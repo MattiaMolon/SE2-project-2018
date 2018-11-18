@@ -235,11 +235,83 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Exam'
-            # da aggiungere esempio (?)
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found.
+    post:
+      summary: Create an exam
+      tags: [Exam]
+      parameters:
+        - in: body
+          name: Exam params
+          description: Creation of Exam
+          schema:
+            type: array 
+            properties:
+              taskgroup:
+                $ref: "#/definitions/TaskGroup"
+              startline:
+                type: string
+              deadline:
+                type: string
+              classes:
+                type: array
+                items:
+                  $ref: "#/definitions/Class"
+              teacher:
+                  $ref: "#/definitions/User"
+        responses:
+          201:
+            description: Exam created
+          400:
+            description: Bad Request 
+
+    put: # Da rivedere.
+      summary: Update collection of exams
+      tags: [Exam]
+      parameters:
+        - in: path
+          name: 
+          description: Update a collection of exams
+          schema:
+            type: array 
+            properties: 
+              taskgroup:
+                $ref: "#/definitions/TaskGroup"
+              startline:
+                type: string
+              deadline:
+                type: string
+              classes:
+                type: array
+                items:
+                  $ref: "#/definitions/Class"
+              teacher:
+                  $ref: "#/definitions/User"
+        responses:
+          200:
+            description: OK. Exams updates successfully
+          400:
+            description: Bad Request 
+          409:
+            description: Conflict while updating
+    delete: # delete all exams and not the exams with a specific Id (?)
+      summary: Delete all the exams
+      tags: [Exam]
+      parameters:
+        - in: body
+          name: Exams' ID
+          description: List of exams to delete # all exams deleted 
+          schema:
+            type: array 
+              items:
+                type: integer
+        responses:
+          204:
+            description: Exams deleted
+          400:
+            description: Bad Request
 
   /exams/{examId}:
     get:
@@ -247,7 +319,7 @@ paths:
       tags: [Exam]
       parameters:
       - in: path
-        name: examId
+        name: examID
         required: true
         type: integer
         minimum: 1
@@ -258,6 +330,51 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found with the given ID.
+
+    # post: method not allowed (405)
+
+    put:  
+      summary: Update a specific Exam with the given ID
+      tags: [Exam]
+      parameters:
+      - in: path
+        name: examID
+        required: true
+        type: integer
+        minimum: 1
+      - in: body
+        name: Exam properties
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict.
+        404:
+          description: We're sorry. No exam found with the given ID.
+
+    delete:  
+      summary: Delete a specific Exam with the given ID
+      tags: [Exam]
+      parameters:
+      - in: path
+        name: examID
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        204:
+          description: No Content. Exam deleted with success
+        400:
+          description: Bad Request.
+        404:
+          description: We're sorry. No exam found with the given ID.
+
+
 
 #global definition of common data structures we use in our API
 definitions:
@@ -401,7 +518,7 @@ definitions:
       classes:
         type: array
         items:
-          $ref: "#/definitions/User"
+          $ref: "#/definitions/Class"
         description: the specific class/classes to which the exam is assigned
       teacher:
         $ref: "#/definitions/User"
