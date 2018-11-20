@@ -28,7 +28,7 @@ securityDefinitions:
 #global security (applies to all operations):
 security:
   - ApiKeyAuth: []
-
+  
 paths:
   /registration:
     post:
@@ -39,7 +39,7 @@ paths:
       - in: body
         name: body
         description: Registration of a new user.
-        schema:
+        schema: 
           type: object
           properties:
             email:
@@ -49,20 +49,20 @@ paths:
             password:
               type: string
       responses:
-        201:
+        200:
           description: Successful registration.
           schema:
             type: object
             properties:
-              user:
-                $ref: '#/definitions/User'
               token:
                 type: string
                 description: Authentication token.
                 example: ABCDEF123
         400:
           description: Ops! Something went wrong.
-
+        409:
+          description: We're sorry. Duplicate email.
+  
   /login:
     post:
       summary: Login.
@@ -71,6 +71,7 @@ paths:
       parameters:
       - in: body
         name: body
+        description: login page # ? 
         schema:
           type: object
           properties:
@@ -79,10 +80,10 @@ paths:
             password:
               type: string
       responses:
-        204:
-          description: Successfully login.
-        400:
-          description: Ops! Something went wrong.
+        200:
+          description: successfully login
+        404:
+          description: user or email incorrect. not found
 
   /users:
     get:
@@ -100,7 +101,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No user found.
-
+    
   /users/{userId}:
     get:
       summary: Returns a user by ID.
@@ -118,7 +119,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No user found with the given ID.
-
+  
   /classes:
     get:
       summary: List all the classes.
@@ -135,7 +136,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found.
-
+    
   /classes/{classId}:
     get:
       summary: Returns a class by ID.
@@ -153,7 +154,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found with the given ID.
-
+    
   /tasks:
     get:
       summary: List all the tasks.
@@ -170,7 +171,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task found.
-
+    
   /tasks/{taskId}:
     get:
       summary: Returns a task by ID.
@@ -188,7 +189,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task found with the given ID.
-
+    
   /taskGroups:
     get:
       summary: List all the task groups.
@@ -205,6 +206,23 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task group found.
+          
+    put: 
+      summary: Update all task groups
+      tags: [Task Group]
+      #parameters:
+       # - in: body
+        #  name: task groups properties
+         # description: Task group's properties that can be modified
+          #schema:
+            # aggiungere parametri 
+      responses:
+        204:
+          description: task groups updated successfully
+        400:
+          description: Ops! Something went wrong.
+        409:
+          description: Ops! It seems there are some conflicts.
 
     post:
       summary: Create a new task group.
@@ -231,16 +249,8 @@ paths:
           description: Ops! Something went wrong.
 
     delete:
-      summary: Delete a pool of task groups.
+      summary: Delete all the task groups.
       tags: [Task Group]
-      parameters:
-      - in: body
-        name: TaskGroups' IDs
-        description: an array of TaskGroupIDs to delete
-        schema:
-          type: array
-          items:
-              type: integer
       responses:
         204:
           description: All task groups deleted.
@@ -270,7 +280,7 @@ paths:
       tags: [Task Group]
       parameters:
       - in: path
-        name: classId
+        name: taskGroupId
         required: true
         type: integer
         minimum: 1
@@ -293,6 +303,24 @@ paths:
         404:
           description: We're sorry. No task group found with the given ID.
 
+    post:
+      summary : Create a task group by a given ID
+      tags : [Task Group]
+      parameters:
+      - in: path
+        name: taskGroupId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        201:
+          description: The task group has been created.
+          schema:
+            $ref: '#/definitions/TaskGroup'
+        400:
+          description: Ops! Something went wrong.
+
+
     delete:
       summary: Delete a task group by a given ID.
       tags: [Task Group]
@@ -309,7 +337,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task group found with the given ID.
-
+    
   /exams:
     get:
       summary: List all the exams.
@@ -326,7 +354,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found.
-
+    
   /exams/{examId}:
     get:
       summary: Returns a exam by ID.
@@ -344,6 +372,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found with the given ID.
+  
 
 #global definition of common data structures we use in our API
 definitions:
@@ -383,7 +412,7 @@ definitions:
     - uniNumber
     - isTeacher
     - email
-
+  
   Class:
     title: class
     type: object
@@ -402,12 +431,12 @@ definitions:
           $ref: '#/definitions/User'
         description: the collection of users taking part in a class
         example: [user1, user2, user3]
-
+    
     required:
     - id
     - name
     - participants
-
+    
   Task:
     title: task
     type: object
@@ -427,7 +456,7 @@ definitions:
       choices:
         type: array #we give all possible answers
         items:
-          type: string
+          type: string    
         description: >
           in case of multipleChoice task, all the possible answers
         example: [Fabio, Luigi, Mario, Giovanni]
@@ -437,7 +466,7 @@ definitions:
           in case of multipleChoice, it's false when the correct answers is only one,
           true otherwise
         example: false
-      teacher:
+      teacher: 
         $ref: "#/definitions/User"
         description: the teacher who have created the task
 
@@ -445,11 +474,11 @@ definitions:
     - id
     - question
     - questionType
-
+    
   TaskGroup:
     title: taskgroup
     type: object
-    properties:
+    properties: 
       id:
         type: integer
         description: the taskgroup ID
@@ -462,20 +491,20 @@ definitions:
         items:  #tipo di dato degli elementi contenuti nell'array
           $ref: "#/definitions/Task"
         description: the array of all the tasks of the exam
-
+        
     required:
     - id
     - tasks
-
+    
   Exam:
     title: exam
     type: object
     properties:
-      id:
+      id: 
         type: integer
         description: the exam ID
         example: 7
-      taskgroup:
+      taskgroup: 
         $ref: "#/definitions/TaskGroup"
         description: the set of all the tasks
       startline:
@@ -492,7 +521,7 @@ definitions:
       teacher:
         $ref: "#/definitions/User"
         description: the teacher who has assigned the exam to the class
-
+       
     required:
     - id
     - taskgroup
