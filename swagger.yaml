@@ -838,18 +838,113 @@ paths:
                 description: mark written by the teacher
       responses:
         201:
-          description: Exam created
+          description: Review created
           schema:
             $ref: '#/definitions/Review'
         400:
           description: Bad Request 
 
     put:
+      summary: Update collection of reviews
+      tags: [Review]
+      #parameters:
+      #  - in: body
+      #    name: exam properties
+      #    description: Update a collection of exams
+      #    schema: 
+      #     $ref: "#/definitions/Review"
+      responses:
+        200:
+          description: OK. Review updates successfully
+        400:
+          description: Bad Request 
+        409:
+          description: Conflict while updating
 
     delete:
+      summary: Delete all the reviews
+      tags: [Review]
+      responses:
+        204:
+          description: Reviews deleted
+        400:
+         description: Bad Request
 
-  /reviews/{reviews}:
+  /reviews/{reviewsId}:
+    get:
+      summary: Returns a review by ID.
+      tags: [Review]
+      parameters:
+      - in: path
+        name: reviewsId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Review'
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No exam found with the given ID.
 
+    post:
+      summary: Create a new review
+      tags: [Review]
+      deprecated: true
+      parameters:
+      - in: path
+        name: reviewId
+        required: true
+        type: integer
+      responses:
+        405: 
+          description: Method not supported
+
+    put:
+      summary: Update a specific review with the given ID
+      tags: [Review]
+      parameters:
+      - in: path
+        name: reviewId
+        required: true
+        type: integer
+        minimum: 1
+      - in: body
+        name: Review properties
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict.
+        400:
+          description: Bad Request.
+        404:
+          description: We're sorry. No review found with the given ID.
+
+    delete:
+      summary: Delete a specific review with the given ID
+      tags: [Review]
+      parameters:
+      - in: path
+        name: reviewId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        204:
+          description: No Content. Review deleted with success
+        400:
+          description: Bad Request.
+        404:
+          description: We're sorry. No review found with the given ID.
 
 #global definition of common data structures we use in our API
 definitions:
