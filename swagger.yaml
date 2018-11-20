@@ -238,7 +238,7 @@ paths:
         400:
           description: Ops! Something went wrong.
         404:
-          description: We're sorry. No exam found.
+          description: We're sorry. No exams found.
     post:
       summary: Create an exam
       tags: [Exam]
@@ -247,10 +247,10 @@ paths:
           name: Exam params
           description: Creation of Exam
           schema:
-            type: array 
+            type: object 
             properties:
               taskgroup:
-                $ref: "#/definitions/TaskGroup"
+                $ref: '#/definitions/TaskGroup'
               startline:
                 type: string
               deadline:
@@ -258,60 +258,42 @@ paths:
               classes:
                 type: array
                 items:
-                  $ref: "#/definitions/Class"
+                  $ref: '#/definitions/Class'
               teacher:
-                  $ref: "#/definitions/User"
-        responses:
-          201:
-            description: Exam created
-          400:
-            description: Bad Request 
+                  $ref: '#/definitions/User'
+      responses:
+        201:
+          description: Exam created
+          schema:
+            $ref: '#/definitions/Exam'
+        400:
+          description: Bad Request 
 
-    put: # Da rivedere.
+    put:
       summary: Update collection of exams
       tags: [Exam]
-      parameters:
-        - in: path
-          name: 
-          description: Update a collection of exams
-          schema:
-            type: array 
-            properties: 
-              taskgroup:
-                $ref: "#/definitions/TaskGroup"
-              startline:
-                type: string
-              deadline:
-                type: string
-              classes:
-                type: array
-                items:
-                  $ref: "#/definitions/Class"
-              teacher:
-                  $ref: "#/definitions/User"
-        responses:
-          200:
-            description: OK. Exams updates successfully
-          400:
-            description: Bad Request 
-          409:
-            description: Conflict while updating
-    delete: # delete all exams and not the exams with a specific Id (?)
+      #parameters:
+      #  - in: body
+      #    name: exam properties
+      #    description: Update a collection of exams
+      #    schema: 
+      #     $ref: "#/definitions/Exam"
+      responses:
+        200:
+          description: OK. Exams updates successfully
+        400:
+          description: Bad Request 
+        409:
+          description: Conflict while updating
+          
+    delete:
       summary: Delete all the exams
       tags: [Exam]
-      parameters:
-        - in: body
-          name: Exams' ID
-          description: List of exams to delete # all exams deleted 
-          schema:
-            type: array 
-              items:
-                type: integer
-        responses:
-          204:
-            description: Exams deleted
-          400:
-            description: Bad Request
+      responses:
+        204:
+          description: Exams deleted
+        400:
+         description: Bad Request
 
   /exams/{examId}:
     get:
@@ -319,26 +301,39 @@ paths:
       tags: [Exam]
       parameters:
       - in: path
-        name: examID
+        name: examId
         required: true
         type: integer
         minimum: 1
       responses:
         200:
           description: OK
+          schema:
+            $ref: '#/definitions/Exam'
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found with the given ID.
 
-    # post: method not allowed (405)
+    post:
+      summary: Create a new exam
+      tags: [Exam]
+      deprecated: true
+      parameters:
+      - in: path
+        name: examId
+        required: true
+        type: integer
+      responses:
+        405: 
+          description: Method not supported
 
     put:  
       summary: Update a specific Exam with the given ID
       tags: [Exam]
       parameters:
       - in: path
-        name: examID
+        name: examId
         required: true
         type: integer
         minimum: 1
@@ -354,6 +349,8 @@ paths:
           description: OK
         409:
           description: Conflict.
+        400:
+          description: Bad Request.
         404:
           description: We're sorry. No exam found with the given ID.
 
@@ -362,7 +359,7 @@ paths:
       tags: [Exam]
       parameters:
       - in: path
-        name: examID
+        name: examId
         required: true
         type: integer
         minimum: 1
