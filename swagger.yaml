@@ -92,15 +92,70 @@ paths:
         200:
           description: Successful response.
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/User'
-            # da aggiungere esempio (?)
+            $ref: '#/definitions/User'
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No user found.
-    
+
+    post: 
+      summary: Create a new users.
+      tags: [User]
+      parameters:
+        - in: body
+          name: User parameters
+          description: The parameters necessary to create a new user.
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              uniNumber:
+                type: string
+              password: 
+                type: string
+              name:
+                type: string
+              surname:
+                type: string
+      responses:
+        201:
+          description: The user has been created.
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/User'
+        400:
+          description: Ops! Something went wrong.
+
+    put: 
+      summary: Update all user
+      tags: [User]
+      # aggiungere parametri 
+      #parameters:
+       # - in: body
+        #  name: User properties
+         # description: The user properties that can be modified
+          #schema:
+            #$ref: '#/definitions/User'
+            
+      responses:
+        204:
+          description: User updated successfully
+        400:
+          description: Ops! Something went wrong.
+        409:
+          description: Ops! It seems there are some conflicts.
+
+    delete:
+      summary: Delete all users.
+      tags: [User]
+      responses:
+        204: 
+          description: All given users has been deleted.
+        400: 
+          description: Ops! Something went wrong.
+        
   /users/{userId}:
     get:
       summary: Returns a user by ID.
@@ -118,7 +173,61 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No user found with the given ID.
-  
+    
+    post:
+      summary: Create a new user.
+      tags: [User]
+      deprecated: true
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+      responses:
+        405:
+          description: Method not supported
+    
+    put: 
+      summary: Update a user with the given ID
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+          minimum: 1
+        - in: body
+          name: User properties
+          description: The user properties that can be modified
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        204:
+          description: User updated successfully
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No user found with the given ID.
+        409:
+          description: Ops! It seems there are some conflicts.
+          
+    delete:
+      summary: Delete the user with the given ID
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+          minimum: 1 
+      responses:
+        204:
+          description: User deleted successfully
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No user found with the given ID.
+
   /classes:
     get:
       summary: List all the classes.
