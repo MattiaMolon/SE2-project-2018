@@ -36,18 +36,18 @@ paths:
       tags: [No Token]
       security: [] #no token required
       parameters:
-      - in: body
-        name: body
-        description: Registration of a new user.
-        schema:
-          type: object
-          properties:
-            email:
-              type: string
-            idNumber:
-              type: string
-            password:
-              type: string
+        - in: body
+          name: body
+          description: Registration of a new user.
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              idNumber:
+                type: string
+              password:
+                type: string
       responses:
         201:
           description: Successful registration.
@@ -69,15 +69,15 @@ paths:
       tags: [No Token]
       security: [] #no token required
       parameters:
-      - in: body
-        name: body
-        schema:
-          type: object
-          properties:
-            email:
-              type: string
-            password:
-              type: string
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
       responses:
         204:
           description: Successfully login.
@@ -130,27 +130,43 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Class'
-            # da aggiungere esempio (?)
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found.
+    put:
+      summary: Update all the classes.
+      tags: [Class]
+      # che parametri metto per la put?
+      # parameters:
+      #   - in: body
+      #     name: Classes update
+      #     description: Updates all the classe of the collection
+      #     schema:
+      #       $ref: '#/definitions/Class'
+      responses:
+        204:
+          description: Classes updated.
+        400:
+          description: Ops! Something went wrong.
+        409:
+          description: Conflict!
     post:
       summary: Create a new class.
       tags: [Class]
       parameters:
-      - in: body
-        name: Class parameters
-        description: Class creation
-        schema:
-          type: object
-          properties:
-            name:
-              type: string
-            participants:
-              type: array
-              items:
-                  $ref: '#/definitions/User'
+        - in: body
+          name: Class parameters
+          description: Class creation
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              participants:
+                type: array
+                items:
+                    $ref: '#/definitions/User'
       responses:
         201:
           description: The class has been created.
@@ -159,16 +175,8 @@ paths:
         400:
           description: Ops! Something went wrong.
     delete:
-      summary: Delete a pool of classes.
+      summary: Delete all classes.
       tags: [Class]
-      parameters:
-      - in: body
-        name: Classes' IDs
-        description: an array of classIDs to delete
-        schema:
-          type: array
-          items:
-              type: integer
       responses:
         204:
           description: All classes deleted.
@@ -180,11 +188,11 @@ paths:
       summary: Returns a class by ID.
       tags: [Class]
       parameters:
-      - in: path
-        name: classId
-        required: true
-        type: integer
-        minimum: 1
+        - in: path
+          name: classId
+          required: true
+          type: integer
+          minimum: 1
       responses:
         200:
           description: OK
@@ -196,22 +204,15 @@ paths:
       summary: Updates a class by a given ID.
       tags: [Class]
       parameters:
-      - in: path
-        name: classId
-        required: true
-        type: integer
-        minimum: 1
-      - in: body
-        name: Class properties
-        schema:
-          type: object
-          properties:
-              name:
-                type: string
-              participants:
-                type: array
-                items:
-                  type: integer
+        - in: path
+          name: classId
+          required: true
+          type: integer
+          minimum: 1
+        - in: body
+          name: Class properties
+          schema:
+            $ref: '#/definitions/Class'
       responses:
         204:
           description: Class updated.
@@ -219,15 +220,27 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found with the given ID.
+    post:
+      summary: Create a class with a choosen ID.
+      tags: [Class]
+      deprecated: true
+      parameters:
+        - in: path
+          name: classId
+          required: true
+          type: integer
+      responses:
+        405:
+            description: Method not supported.
     delete:
       summary: Delete a class by a given ID.
       tags: [Class]
       parameters:
-      - in: path
-        name: classId
-        required: true
-        type: integer
-        minimum: 1
+        - in: path
+          name: classId
+          required: true
+          type: integer
+          minimum: 1
       responses:
         204:
           description: Class deleted.
