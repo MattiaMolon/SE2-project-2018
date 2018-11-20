@@ -795,6 +795,60 @@ paths:
         404:
           description: We're sorry. No exam found with the given ID.
 
+  /reviews:
+    get:
+      summary: List of all the reviews
+      tags: [Review]
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Review'
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No review found.
+
+    post:
+      summary: Create a review.
+      tags: [Review]
+      parameters:
+        - in: body
+          name: Review params
+          description: Creation of review
+          schema:
+            type: object 
+            properties:
+              id:
+                type: integer
+                description: the review ID
+              submission:
+                description: the review is referred to this submission
+                $ref: '#/definitions/Submission'
+              uniNumber:
+                type: string
+                description: the user who is performing the review
+              feedback:
+                type: string
+                description: feedback of the reviewer
+              mark:
+                type: string
+                description: mark written by the teacher
+      responses:
+        201:
+          description: Exam created
+          schema:
+            $ref: '#/definitions/Review'
+        400:
+          description: Bad Request 
+
+    put:
+
+    delete:
+
+  /reviews/{reviews}:
 
 
 #global definition of common data structures we use in our API
@@ -950,3 +1004,28 @@ definitions:
     - taskgroup
     - deadline
     - classes
+
+  Review:
+    title: review
+    type: 
+    properties:
+      id:
+        type: integer
+        description: the review ID
+      submission:
+        description: the review is referred to this submission
+        $ref: '#/definitions/Submission'
+      uniNumber:
+        type: string
+        description: the user who is performing the review
+      feedback:
+        type: string
+        description: feedback of the reviewer
+      mark:
+        type: string
+        description: mark written by the teacher
+    
+    required:
+    - id
+    - submission
+    - uniNumber
