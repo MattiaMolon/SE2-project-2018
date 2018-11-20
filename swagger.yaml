@@ -618,6 +618,7 @@ paths:
     post:
       summary : Create a task group by a given ID
       tags : [Task Group]
+      deprecated: true
       parameters:
       - in: path
         name: taskGroupId
@@ -625,12 +626,8 @@ paths:
         type: integer
         minimum: 1
       responses:
-        201:
-          description: The task group has been created.
-          schema:
-            $ref: '#/definitions/TaskGroup'
-        400:
-          description: Ops! Something went wrong.
+        405: 
+          description: Method not supported.
 
 
     delete:
