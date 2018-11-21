@@ -176,19 +176,6 @@ paths:
         404:
           description: We're sorry. No user found with the given ID.
     
-    post:
-      summary: Create a new user.
-      tags: [User]
-      deprecated: true
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          type: integer
-      responses:
-        405:
-          description: Method not supported
-    
     put: 
       summary: Update a user with the given ID
       tags: [User]
@@ -331,18 +318,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found with the given ID.
-    post:
-      summary: Create a class with a choosen ID.
-      tags: [Class]
-      deprecated: true
-      parameters:
-        - in: path
-          name: classId
-          required: true
-          type: integer
-      responses:
-        405:
-            description: Method not supported.
+    
     delete:
       summary: Delete a class by a given ID.
       tags: [Class]
@@ -615,21 +591,6 @@ paths:
         404:
           description: We're sorry. No task group found with the given ID.
 
-    post:
-      summary : Create a task group by a given ID
-      tags : [Task Group]
-      deprecated: true
-      parameters:
-      - in: path
-        name: taskGroupId
-        required: true
-        type: integer
-        minimum: 1
-      responses:
-        405: 
-          description: Method not supported.
-
-
     delete:
       summary: Delete a task group by a given ID.
       tags: [Task Group]
@@ -738,20 +699,6 @@ paths:
         404:
           description: We're sorry. No exam found with the given ID.
   
-
-    post:
-      summary: Create a new exam
-      tags: [Exam]
-      deprecated: true
-      parameters:
-      - in: path
-        name: examId
-        required: true
-        type: integer
-      responses:
-        405: 
-          description: Method not supported
-
     put:  
       summary: Update a specific Exam with the given ID
       tags: [Exam]
@@ -805,10 +752,10 @@ paths:
           name: submission  
           description: Creation of a submission 
           schema:
-            type: obkect
+            type: object
             properties:
               id:
-                $ref: '#/definitions/Submission'
+                $ref: '#/definitions/Submission' #?????
               exam:
                 $ref: '#/definitions/Exam'
       responses:
@@ -824,7 +771,7 @@ paths:
       tags: [Submission]
       responses:
         204:
-          description: SUbmission deleted
+          description: Submission deleted
         400:
           description: Bad Request
     
@@ -844,7 +791,7 @@ paths:
           description: We're sorry. No submission found.
     put:
       summary: Update collection of submissions
-      tags: [Submissions]
+      tags: [Submission]
       #parameters:
       #  - in: body
       #    name: submission properties
@@ -879,22 +826,9 @@ paths:
         404:
           description: We're sorry. No submission found with the given ID.
     
-    post:
-      summary: Create a new submission
-      tags: [submission]
-      deprecated: true
-      parameters:
-      - in: path
-        name: submissionId
-        required: true
-        type: integer
-      responses:
-        405: 
-          description: Method not supported
-
     put:  
       summary: Update a specific submission with the given ID
-      tags: [SUbmission]
+      tags: [Submission]
       parameters:
       - in: path
         name: submissionId
@@ -1106,7 +1040,7 @@ definitions:
         $ref: '#/definitions/User'
         description: the student that sends the submission
       exam:
-        $ref: '#definitions/exam'
+        $ref: '#/definitions/Exam'
       id:
         type: integer
         description: the id of the specific submission
@@ -1114,8 +1048,9 @@ definitions:
         type: string
         description: time of submission
         
-      required:
-      - exam
-      - id
+    required:
+    - exam
+    - id
+    - student
 
 
