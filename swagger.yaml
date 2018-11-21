@@ -176,19 +176,6 @@ paths:
         404:
           description: We're sorry. No user found with the given ID.
     
-    post:
-      summary: Create a new user.
-      tags: [User]
-      deprecated: true
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          type: integer
-      responses:
-        405:
-          description: Method not supported
-    
     put: 
       summary: Update a user with the given ID
       tags: [User]
@@ -331,18 +318,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found with the given ID.
-    post:
-      summary: Create a class with a choosen ID.
-      tags: [Class]
-      deprecated: true
-      parameters:
-        - in: path
-          name: classId
-          required: true
-          type: integer
-      responses:
-        405:
-            description: Method not supported.
+    
     delete:
       summary: Delete a class by a given ID.
       tags: [Class]
@@ -615,21 +591,6 @@ paths:
         404:
           description: We're sorry. No task group found with the given ID.
 
-    post:
-      summary : Create a task group by a given ID
-      tags : [Task Group]
-      deprecated: true
-      parameters:
-      - in: path
-        name: taskGroupId
-        required: true
-        type: integer
-        minimum: 1
-      responses:
-        405: 
-          description: Method not supported.
-
-
     delete:
       summary: Delete a task group by a given ID.
       tags: [Task Group]
@@ -738,20 +699,6 @@ paths:
         404:
           description: We're sorry. No exam found with the given ID.
   
-
-    post:
-      summary: Create a new exam
-      tags: [Exam]
-      deprecated: true
-      parameters:
-      - in: path
-        name: examId
-        required: true
-        type: integer
-      responses:
-        405: 
-          description: Method not supported
-
     put:  
       summary: Update a specific Exam with the given ID
       tags: [Exam]
@@ -794,6 +741,132 @@ paths:
           description: Bad Request.
         404:
           description: We're sorry. No exam found with the given ID.
+  
+  /submission:
+    post:
+      summary: Create a submission
+      tags: [Submission]
+      parameters:
+        - in: body
+          name: submission  
+          description: Creation of a submission 
+          schema:
+            type: object
+            properties:
+              id:
+                $ref: '#/definitions/Submission' #?????
+              exam:
+                $ref: '#/definitions/Exam'
+      responses:
+        201:
+          description: Submission created
+          schema:
+            $ref: '#/definitions/Submission'
+        400:
+          description: Bad Request 
+
+    delete:
+      summary: Delete all the submissions
+      tags: [Submission]
+      responses:
+        204:
+          description: Submission deleted
+        400:
+          description: Bad Request
+    
+    get:
+      summary: List all the submissions.
+      tags: [Submission]
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Submission'
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No submission found.
+    put:
+      summary: Update collection of submissions
+      tags: [Submission]
+      #parameters:
+      #  - in: body
+      #    name: submission properties
+      #    description: Update a collection of submissions
+      #    schema: 
+      #     $ref: "#/definitions/SUbmission"
+      responses:
+        200:
+          description: OK. Submission updates successfully
+        400:
+          description: Bad Request 
+        409:
+          description: Conflict while updating
+   
+  /submission/{submissionId}:
+    get:
+      summary: Returns a submission by ID.
+      tags: [Submission]
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Submission'
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No submission found with the given ID.
+    
+    put:  
+      summary: Update a specific submission with the given ID
+      tags: [Submission]
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        type: integer
+        minimum: 1
+      - in: body
+        name: submission properties
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict.
+        400:
+          description: Bad Request.
+        404:
+          description: We're sorry. No exam found with the given ID.
+
+    delete:  
+      summary: Delete a specific Submission with the given ID
+      tags: [Submission]
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        type: integer
+        minimum: 1
+      responses:
+        204:
+          description: No Content. Submission deleted with success
+        400:
+          description: Bad Request.
+        404:
+          description: We're sorry. No submission found with the given ID.
 
   /reviews:
     get:
@@ -896,7 +969,7 @@ paths:
       deprecated: true
       parameters:
       - in: path
-        name: reviewId
+        name: reviewsId
         required: true
         type: integer
       responses:
@@ -908,7 +981,7 @@ paths:
       tags: [Review]
       parameters:
       - in: path
-        name: reviewId
+        name: reviewsId
         required: true
         type: integer
         minimum: 1
@@ -934,7 +1007,7 @@ paths:
       tags: [Review]
       parameters:
       - in: path
-        name: reviewId
+        name: reviewsId
         required: true
         type: integer
         minimum: 1
@@ -1077,7 +1150,7 @@ definitions:
         description: the exam ID
         example: 7
       taskgroup: 
-        $ref: "#/definitions/TaskGroup"
+        $ref: '#/definitions/TaskGroup'
         description: the set of all the tasks
       startline:
         type: string
@@ -1088,10 +1161,10 @@ definitions:
       classes:
         type: array
         items:
-          $ref: "#/definitions/Class"
+          $ref: '#/definitions/Class'
         description: the specific class/classes to which the exam is assigned
       teacher:
-        $ref: "#/definitions/User"
+        $ref: '#/definitions/User'
         description: the teacher who has assigned the exam to the class
        
     required:
@@ -1100,9 +1173,35 @@ definitions:
     - deadline
     - classes
 
+  Submission:
+    title: submission
+    type: object
+    properties:
+      class: 
+        type: string
+        description: class' exam
+      teacher:
+        $ref: '#/definitions/User'
+        description: TA that assigned the exam
+      student:
+        $ref: '#/definitions/User'
+        description: the student that sends the submission
+      exam:
+        $ref: '#/definitions/Exam'
+      id:
+        type: integer
+        description: the id of the specific submission
+      data:
+        type: string
+        description: time of submission
+        
+    required:
+    - exam
+    - id
+
   Review:
     title: review
-    type: 
+    type: object
     properties:
       id:
         type: integer
