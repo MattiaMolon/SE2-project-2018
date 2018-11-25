@@ -261,10 +261,12 @@ paths:
             properties:
               name:
                 type: string
+                description: the name of the class
               participants:
                 type: array
                 items:
                     $ref: '#/definitions/User'
+                description: an array with the participants of the class
       responses:
         201:
           description: The class has been created.
@@ -294,6 +296,8 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            $ref: '#/definitions/Class'
         400:
           description: Ops! Something went wrong.
         404:
@@ -352,8 +356,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task found.
-    
-    
+
     post:
       summary: Create a new task.
       tags: [Task]
@@ -376,8 +379,7 @@ paths:
             $ref: '#/definitions/Task'
         400:
           description: Ops! something went wrong.
-    
-    
+
     delete:
       summary: Delete all tasks.
       tags: [Task]
@@ -386,8 +388,7 @@ paths:
           description: All tasks deleted.
         400:
           description: Ops! Something went wrong.
-    
-    
+
     put:
       summary: Update all tasks
       tags: [Task]
@@ -397,9 +398,7 @@ paths:
           description: Collection updated
         409:
           description: Conflict!
-    
-  
-  
+
   /tasks/{taskId}:
     get:
       summary: Returns a task by ID.
@@ -419,8 +418,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task found with the given ID.
-    
-    
+
     put:
       summary: Update a specific task by a given ID
       tags: [Task]
@@ -443,8 +441,7 @@ paths:
           description: We're sorry. No task found with the given ID.
         409:
           description: Conflict!
-    
-    
+
     delete:
       summary: Delete a specific task by a given ID
       tags: [Task]
@@ -461,8 +458,7 @@ paths:
           description: Ops! Something went wrong
         404:
           description: We're sorry. No Task found with the given ID.
-    
-    
+
     post:
       summary: Create a new User
       tags: [Task]
@@ -475,8 +471,6 @@ paths:
       responses:
         405:
           description: Metod not supported
-        
-    
     
   /taskGroups:
     get:
@@ -623,6 +617,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No exams found.
+
     post:
       summary: Create an exam
       tags: [Exam]
@@ -669,7 +664,7 @@ paths:
           description: Bad Request 
         409:
           description: Conflict while updating
-          
+
     delete:
       summary: Delete all the exams
       tags: [Exam]
@@ -788,6 +783,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No submission found.
+          
     put:
       summary: Update collection of submissions
       tags: [Submission]
