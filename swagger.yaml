@@ -411,6 +411,7 @@ paths:
       parameters:
       - in: path
         name: taskId
+        description: the ID required to get the specific task
         required: true
         type: integer
         minimum: 1
@@ -430,6 +431,7 @@ paths:
       parameters:
       - in: path
         name: taskId
+        description: the ID required to update the specific task
         required: true
         type: integer
         minimum: 1
@@ -453,6 +455,7 @@ paths:
       parameters:
       - in: path
         name: taskId
+        description: the ID required to delete the specific task
         required: true
         type: integer
         minimum: 1
@@ -463,19 +466,6 @@ paths:
           description: Ops! Something went wrong
         404:
           description: We're sorry. No Task found with the given ID.
-
-    post:
-      summary: Create a new User
-      tags: [Task]
-      parameters:
-        - in: path
-          name: taskId
-          required: true
-          type: integer
-          minimum: 1
-      responses:
-        405:
-          description: Metod not supported
     
   /taskGroups:
     get:
@@ -1097,6 +1087,7 @@ definitions:
         example: "Il nome di Rovazzi, il cantante"
       questionType:
         type: string
+        description: the type of question asked
         enum: [multipleChoice, openAnswer]
         example: multipleChoice
       choices:
@@ -1104,7 +1095,8 @@ definitions:
         items:
           type: string    
         description: >
-          in case of multipleChoice task, all the possible answers
+          all the possible answers to the question, if multipleAnswers more than one 
+          answer can be submitted
         example: [Fabio, Luigi, Mario, Giovanni]
       multipleAnswers:
         type: boolean
