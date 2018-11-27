@@ -19,7 +19,7 @@ var classes = [
 
 // v1/classes
 
-// FATTA
+// GET /classes (READY)
 app.get('/classes', (req, res) => {
     if(classes.length == 0) { 
         res.status(404);
@@ -29,10 +29,7 @@ app.get('/classes', (req, res) => {
     }
 });
 
-// app.put('/classes', (req, res) => {
-// });
-
-// FATTA
+// POST /classes (READY)
 app.post('/classes', (req, res) => {
     const class_id = (classes.length + 1);
     const class_name = req.body.name;
@@ -44,7 +41,7 @@ app.post('/classes', (req, res) => {
     // console.log(classes);
 });
 
-// FATTA
+// DELETE /classes (READY)
 app.delete('/classes', (req, res) => {
     const length = classes.length;
     // console.log(length);
@@ -54,7 +51,7 @@ app.delete('/classes', (req, res) => {
 
 // v1/classes/{classId}
 
-// FATTA
+// GET /classes/{classId} (READY)
 app.get('/classes/:classId', (req, res) => {
     const temp = classes.find(c => c.id === parseInt(req.params.classId));
     // console.log(temp);
@@ -66,12 +63,23 @@ app.get('/classes/:classId', (req, res) => {
     }
 });
 
-// app.put('/classes/:classId', (req, res) => {
-//     const class_name = req.body.name;
-//     const class_participants = req.body.participants;
-// });
+// PUT /classes/{classId}
+app.put('/classes/:classId', (req, res) => {
+    const temp = classes.find(c => c.id === parseInt(req.params.classId));
+    const index = classes.indexOf(temp);
+    const class_name = req.body.name;
+    const class_participants = req.body.participants;
+    if(class_name != null) {
+        classes[index].name = class_name;
+    }
+    if(class_participants != null) {
+        classes[index].participants = class_participants;
+    }
+    res.status(204);
+    res.json(classes[index]);
+});
 
-// FATTA
+// DELETE /classes/{classId} (READY)
 app.delete('/classes/:classId', (req, res) => {
     const temp = classes.find(c => c.id === parseInt(req.params.classId));
     const index = classes.indexOf(temp);
