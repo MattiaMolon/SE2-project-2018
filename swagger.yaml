@@ -347,7 +347,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Task'
-            # da aggiungere esempio (?)
         400:
           description: Ops! Something went wrong.
         404:
@@ -1113,12 +1112,13 @@ definitions:
         description: >
           in case of multipleChoice task, all the possible answers
         example: [Fabio, Luigi, Mario, Giovanni]
-      multipleAnswers:
-        type: boolean
+      answers:
+        type: array
+        items:
+          type: string
         description: >
-          in case of multipleChoice, it's false when the correct answers is only one,
-          true otherwise
-        example: false
+          in case of multipleChoice, it describes all the correct answers
+        example: [Fabio]
       teacher: 
         $ref: "#/definitions/User"
         description: the teacher who have created the task
@@ -1127,6 +1127,7 @@ definitions:
     - id
     - question
     - questionType
+    - teacher
     
   TaskGroup:
     title: taskgroup
