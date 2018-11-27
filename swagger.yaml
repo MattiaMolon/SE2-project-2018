@@ -1032,7 +1032,11 @@ definitions:
       name:
         type: string
         description: the user's name
-        example: Britney Spears
+        example: Britney
+      surname:
+        type: string
+        description: the user's surname
+        example: Spears
       uniNumber:
         type: string
         description: the identifier for the user provided by the university
@@ -1046,6 +1050,10 @@ definitions:
         type: string
         description: the user's email
         example: britney@spears.com
+      password: # andrebbe criptata
+        type: string
+        description: the user's password
+        example: abc123
       examsList:
         type: array
         items:
