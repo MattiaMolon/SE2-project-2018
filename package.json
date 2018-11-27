@@ -4,7 +4,7 @@
   "description": "Software Engineering II Project 2018/2019",
   "main": "index.js",
   "scripts": {
-    "start": "node api.js",
+    "start": "node app.js",
     "test": "jest"
   },
   "jest": {

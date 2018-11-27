@@ -176,6 +176,19 @@ paths:
         404:
           description: We're sorry. No user found with the given ID.
     
+    post:
+      summary: Create a new user.
+      tags: [User]
+      deprecated: true
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+      responses:
+        405:
+          description: Method not supported
+    
     put: 
       summary: Update a user with the given ID
       tags: [User]
@@ -318,7 +331,18 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found with the given ID.
-    
+    post:
+      summary: Create a class with a choosen ID.
+      tags: [Class]
+      deprecated: true
+      parameters:
+        - in: path
+          name: classId
+          required: true
+          type: integer
+      responses:
+        405:
+            description: Method not supported.
     delete:
       summary: Delete a class by a given ID.
       tags: [Class]
@@ -464,7 +488,7 @@ paths:
     
     
     post:
-      summary: Create a new User
+      summary: Create a new Task
       tags: [Task]
       parameters:
         - in: path
@@ -499,11 +523,11 @@ paths:
       summary: Update all task groups
       tags: [Task Group]
       #parameters:
-       # - in: body
-        #  name: task groups properties
-         # description: Task group's properties that can be modified
-          #schema:
-            # aggiungere parametri 
+      #- in: body
+      #  name: task groups properties
+      #  description: Task group's properties that can be modified
+      #  schema:
+      # aggiungere parametri 
       responses:
         204:
           description: task groups updated successfully
@@ -522,8 +546,12 @@ paths:
         schema:
           type: object
           properties:
+            id:
+              type: integer
             name:
               type: string
+            numberTasks:
+              type: integer
             tasks:
               type: array
               items:
@@ -558,6 +586,8 @@ paths:
       responses:
         200:
           description: OK
+          schema: 
+            $ref: '#/definitions/TaskGroup'
         400:
           description: Ops! Something went wrong.
         404:
@@ -566,30 +596,34 @@ paths:
     put:
       summary: Updates a task group by a given ID.
       tags: [Task Group]
+      #parameters:
+      #- in: body
+      #  name: task groups properties
+      #  description: Task group's properties that can be modified
+      #  schema:
+      # aggiungere parametri 
+      responses:
+        204:
+          description: TaskGroup Exams updated.
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No task group found with the given ID.
+
+    post:
+      summary : Create a task group by a given ID
+      tags : [Task Group]
+      deprecated: true
       parameters:
       - in: path
         name: taskGroupId
         required: true
         type: integer
         minimum: 1
-      - in: body
-        name: Task Group properties
-        schema:
-          type: object
-          properties:
-              name:
-                type: string
-              tasks:
-                type: array
-                items:
-                  type: integer
       responses:
-        204:
-          description: Task Group updated.
-        400:
-          description: Ops! Something went wrong.
-        404:
-          description: We're sorry. No task group found with the given ID.
+        405: 
+          description: Method not supported.
+
 
     delete:
       summary: Delete a task group by a given ID.
@@ -607,7 +641,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task group found with the given ID.
-    
+            
   /exams:
     get:
       summary: List all the exams.
@@ -699,6 +733,20 @@ paths:
         404:
           description: We're sorry. No exam found with the given ID.
   
+
+    post:
+      summary: Create a new exam
+      tags: [Exam]
+      deprecated: true
+      parameters:
+      - in: path
+        name: examId
+        required: true
+        type: integer
+      responses:
+        405: 
+          description: Method not supported
+
     put:  
       summary: Update a specific Exam with the given ID
       tags: [Exam]
@@ -741,283 +789,8 @@ paths:
           description: Bad Request.
         404:
           description: We're sorry. No exam found with the given ID.
-  
-  /submission:
-    post:
-      summary: Create a submission
-      tags: [Submission]
-      parameters:
-        - in: body
-          name: submission  
-          description: Creation of a submission 
-          schema:
-            type: object
-            properties:
-              id:
-                $ref: '#/definitions/Submission' #?????
-              exam:
-                $ref: '#/definitions/Exam'
-      responses:
-        201:
-          description: Submission created
-          schema:
-            $ref: '#/definitions/Submission'
-        400:
-          description: Bad Request 
 
-    delete:
-      summary: Delete all the submissions
-      tags: [Submission]
-      responses:
-        204:
-          description: Submission deleted
-        400:
-          description: Bad Request
-    
-    get:
-      summary: List all the submissions.
-      tags: [Submission]
-      responses:
-        200:
-          description: Successful response.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Submission'
-        400:
-          description: Ops! Something went wrong.
-        404:
-          description: We're sorry. No submission found.
-    put:
-      summary: Update collection of submissions
-      tags: [Submission]
-      #parameters:
-      #  - in: body
-      #    name: submission properties
-      #    description: Update a collection of submissions
-      #    schema: 
-      #     $ref: "#/definitions/SUbmission"
-      responses:
-        200:
-          description: OK. Submission updates successfully
-        400:
-          description: Bad Request 
-        409:
-          description: Conflict while updating
-   
-  /submission/{submissionId}:
-    get:
-      summary: Returns a submission by ID.
-      tags: [Submission]
-      parameters:
-      - in: path
-        name: submissionId
-        required: true
-        type: integer
-        minimum: 1
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/Submission'
-        400:
-          description: Ops! Something went wrong.
-        404:
-          description: We're sorry. No submission found with the given ID.
-    
-    put:  
-      summary: Update a specific submission with the given ID
-      tags: [Submission]
-      parameters:
-      - in: path
-        name: submissionId
-        required: true
-        type: integer
-        minimum: 1
-      - in: body
-        name: submission properties
-        schema:
-          type: object
-          properties:
-            id:
-              type: integer
-      responses:
-        200:
-          description: OK
-        409:
-          description: Conflict.
-        400:
-          description: Bad Request.
-        404:
-          description: We're sorry. No exam found with the given ID.
 
-    delete:  
-      summary: Delete a specific Submission with the given ID
-      tags: [Submission]
-      parameters:
-      - in: path
-        name: submissionId
-        required: true
-        type: integer
-        minimum: 1
-      responses:
-        204:
-          description: No Content. Submission deleted with success
-        400:
-          description: Bad Request.
-        404:
-          description: We're sorry. No submission found with the given ID.
-
-  /reviews:
-    get:
-      summary: List of all the reviews
-      tags: [Review]
-      responses:
-        200:
-          description: Successful response.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Review'
-        400:
-          description: Ops! Something went wrong.
-        404:
-          description: We're sorry. No review found.
-
-    post:
-      summary: Create a review.
-      tags: [Review]
-      parameters:
-        - in: body
-          name: Review params
-          description: Creation of review
-          schema:
-            type: object 
-            properties:
-              id:
-                type: integer
-                description: the review ID
-              submission:
-                description: the review is referred to this submission
-                $ref: '#/definitions/Submission'
-              uniNumber:
-                type: string
-                description: the user who is performing the review
-              feedback:
-                type: string
-                description: feedback of the reviewer
-              mark:
-                type: string
-                description: mark written by the teacher
-      responses:
-        201:
-          description: Review created
-          schema:
-            $ref: '#/definitions/Review'
-        400:
-          description: Bad Request 
-
-    put:
-      summary: Update collection of reviews
-      tags: [Review]
-      #parameters:
-      #  - in: body
-      #    name: exam properties
-      #    description: Update a collection of exams
-      #    schema: 
-      #     $ref: "#/definitions/Review"
-      responses:
-        200:
-          description: OK. Review updates successfully
-        400:
-          description: Bad Request 
-        409:
-          description: Conflict while updating
-
-    delete:
-      summary: Delete all the reviews
-      tags: [Review]
-      responses:
-        204:
-          description: Reviews deleted
-        400:
-         description: Bad Request
-
-  /reviews/{reviewsId}:
-    get:
-      summary: Returns a review by ID.
-      tags: [Review]
-      parameters:
-      - in: path
-        name: reviewsId
-        required: true
-        type: integer
-        minimum: 1
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/Review'
-        400:
-          description: Ops! Something went wrong.
-        404:
-          description: We're sorry. No exam found with the given ID.
-
-    post:
-      summary: Create a new review
-      tags: [Review]
-      deprecated: true
-      parameters:
-      - in: path
-        name: reviewsId
-        required: true
-        type: integer
-      responses:
-        405: 
-          description: Method not supported
-
-    put:
-      summary: Update a specific review with the given ID
-      tags: [Review]
-      parameters:
-      - in: path
-        name: reviewsId
-        required: true
-        type: integer
-        minimum: 1
-      - in: body
-        name: Review properties
-        schema:
-          type: object
-          properties:
-            id:
-              type: integer
-      responses:
-        200:
-          description: OK
-        409:
-          description: Conflict.
-        400:
-          description: Bad Request.
-        404:
-          description: We're sorry. No review found with the given ID.
-
-    delete:
-      summary: Delete a specific review with the given ID
-      tags: [Review]
-      parameters:
-      - in: path
-        name: reviewsId
-        required: true
-        type: integer
-        minimum: 1
-      responses:
-        204:
-          description: No Content. Review deleted with success
-        400:
-          description: Bad Request.
-        404:
-          description: We're sorry. No review found with the given ID.
 
 #global definition of common data structures we use in our API
 definitions:
@@ -1128,6 +901,9 @@ definitions:
         type: integer
         description: the taskgroup ID
         example: 6
+      name:
+        type: string
+        description: name given to the taskGroup
       numberTasks:
         type: integer
         description: the number of question selected for the exam
@@ -1150,7 +926,7 @@ definitions:
         description: the exam ID
         example: 7
       taskgroup: 
-        $ref: '#/definitions/TaskGroup'
+        $ref: "#/definitions/TaskGroup"
         description: the set of all the tasks
       startline:
         type: string
@@ -1161,10 +937,10 @@ definitions:
       classes:
         type: array
         items:
-          $ref: '#/definitions/Class'
+          $ref: "#/definitions/Class"
         description: the specific class/classes to which the exam is assigned
       teacher:
-        $ref: '#/definitions/User'
+        $ref: "#/definitions/User"
         description: the teacher who has assigned the exam to the class
        
     required:
@@ -1172,54 +948,3 @@ definitions:
     - taskgroup
     - deadline
     - classes
-
-  Submission:
-    title: submission
-    type: object
-    properties:
-      class: 
-        type: string
-        description: class' exam
-      teacher:
-        $ref: '#/definitions/User'
-        description: TA that assigned the exam
-      student:
-        $ref: '#/definitions/User'
-        description: the student that sends the submission
-      exam:
-        $ref: '#/definitions/Exam'
-      id:
-        type: integer
-        description: the id of the specific submission
-      data:
-        type: string
-        description: time of submission
-        
-    required:
-    - exam
-    - id
-
-  Review:
-    title: review
-    type: object
-    properties:
-      id:
-        type: integer
-        description: the review ID
-      submission:
-        description: the review is referred to this submission
-        $ref: '#/definitions/Submission'
-      uniNumber:
-        type: string
-        description: the user who is performing the review
-      feedback:
-        type: string
-        description: feedback of the reviewer
-      mark:
-        type: string
-        description: mark written by the teacher
-    
-    required:
-    - id
-    - submission
-    - uniNumber
