@@ -237,23 +237,6 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found.
-    put:
-      summary: Update all the classes.
-      tags: [Class]
-      # che parametri metto per la put?
-      # parameters:
-      #   - in: body
-      #     name: Classes update
-      #     description: Updates all the classe of the collection
-      #     schema:
-      #       $ref: '#/definitions/Class'
-      responses:
-        204:
-          description: Classes updated.
-        400:
-          description: Ops! Something went wrong.
-        409:
-          description: Conflict!
     post:
       summary: Create a new class.
       tags: [Class]
@@ -323,6 +306,8 @@ paths:
       responses:
         204:
           description: Class updated.
+          schema:
+            $ref: '#/definitions/Class'
         400:
           description: Ops! Something went wrong.
         404:
