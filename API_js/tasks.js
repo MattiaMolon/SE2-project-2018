@@ -41,17 +41,41 @@ let tasks = [
 // Funzione di errore 400
 function error400 (res) {
     let message = {
-        errore: 400,
+        codiceDiStato: 400,
         message: 'We\'re sorry. No task found'
     }
-    res.status(400);
-    res.json(message);
-};
+    res.status(400).json(message);
+}
 
 // Funzione per controllare che un oggetto sia una stringa
 function isString (x){
     return (typeof x === "string" || x instanceof String);
 }
+
+// Funzione per controlllare che un id sia scritto giusto
+function isIdCorrect(taskId, res){
+    let corretto = true;
+
+    if( isNaN(taskId) ){
+        error400(res); 
+        corretto = false; //console.log(1); 
+    }
+    else if( taskId == null){
+        error400(res);
+        corretto = false; //console.log(2);
+    }
+    else if( taskId < 0  ){
+        error400(res);
+        corretto = false; //console.log(3);
+    }
+    else if ( taskId % 1 != 0 ){
+        error400(res);
+        corretto = false; //console.log(4);
+    }
+
+    return corretto;
+}
+
 
 
 ///// METODI ///// 
@@ -62,12 +86,10 @@ app.get('/tasks', (req, res) => {
         error400(res);
     }
     else{
-        res.status(200);
-        res.json(tasks);
+        res.status(200).json(tasks);
     }
 
 });
-
 
 // POST /task
 app.post('/tasks', (req, res) => {
@@ -91,16 +113,22 @@ app.post('/tasks', (req, res) => {
         error400(res); //console.log(5);
     }
     else if(!isString(risp.question) || !isString(risp.questionType) || !isString(risp.teacher)){
-        error400(res); console.log(6);
+        error400(res); //console.log(6);
     }
     else{
         // setto la newtask e la setto
         try{
 
-            let newtask;
+            let newTask, newId;
+            if(tasks.length == 0){
+                newId = 1;
+            }else {
+                newId = tasks[tasks.length - 1].id + 1;
+            }
+
             if(risp.questionType == 'multipleChoice'){
-                newtask = {
-                    id : tasks.length,
+                newTask = {
+                    id : newId,
                     question : risp.question,
                     questionType : 'multipleChoice',
                     choices : risp.choices,
@@ -108,8 +136,8 @@ app.post('/tasks', (req, res) => {
                     teacher : risp.teacher
                 };
             } else if(risp.questionType == 'openAnswer'){
-                newtask = {
-                    id : tasks.length,
+                newTask = {
+                    id : newId,
                     question : risp.question,
                     questionType : 'openAnswer',
                     choices : undefined,
@@ -118,9 +146,8 @@ app.post('/tasks', (req, res) => {
                 };
             }
 
-            tasks.push(newtask);
-            res.status(201);
-            res.json(newtask);
+            tasks.push(newTask);
+            res.status(201).json(newTask);
             
         }catch{
             error400(res); //console.log(7);
@@ -128,6 +155,83 @@ app.post('/tasks', (req, res) => {
     }
 });
 
+// DELETE /task
+app.delete('/tasks', (req, res) => {
+    tasks = [];
+    res.status(204);
+});
 
-// Metto in ascolto la funzione
+// GET /task/:taskId
+app.get('/tasks/:taskId', (req, res) =>{
+
+    let taskId = +req.params.taskId;
+
+    if(isIdCorrect(taskId, res)){
+        try{
+
+            let taskToSend, trovato = false;
+
+            // cerco l'id che mi interessa
+            for( let i = 0; i<tasks.length && !trovato; i++){
+                if (tasks[i].id == taskId){
+                    trovato = true;
+                    taskToSend = tasks[i];
+                    res.status(200).json(taskToSend);
+                }
+            }
+
+            // non ho trovato l'id che cercavo
+            if (!trovato){
+                let message = {
+                    codiceDiStato : 404,
+                    message : 'We\'re sorry. No task found with the given ID'
+                };
+                res.status(404).json(message);
+            }
+
+        }catch{
+            error400(res); //console.log(5);
+        }
+    }
+
+});
+
+// DELETE /task/:taskId
+app.delete('/tasks/:taskId', (req, res) => {
+    
+    let taskId = +req.params.taskId;
+
+    if( isIdCorrect(taskId, res)){
+        try{
+
+            let trovato = false;
+
+            // cerco l'id che mi interessa
+            for( let i = 0; i<tasks.length && !trovato; i++){
+                if (tasks[i].id == taskId){
+                    trovato = true;
+                    tasks.splice(i, 1);
+                    res.status(204);
+                }
+            }
+
+            // non ho trovato l'id che cercavo
+            if (!trovato){
+                let message = {
+                    codiceDiStato : 404,
+                    message : 'We\'re sorry. No task found with the given ID'
+                };
+                res.status(404).json(message);
+            }
+
+        }catch{
+            error400(res); console.log(5);
+        }
+    }
+
+});
+
+
+
+// Metto in ascolto l'applicazione
 app.listen(PORT);
