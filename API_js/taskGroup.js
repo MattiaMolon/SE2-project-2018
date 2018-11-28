@@ -24,7 +24,12 @@ var taskGroups_offered = [
 app.get('/', (req, res) => res.send('HELLO WORD! no fail no on fail'+SOME_NUM))
 
 app.get('/taskGroups', (req, res) => {
+    if(taskGroups_offered.length > 0){
     res.json(taskGroups_offered);
+    }
+    else{
+        res.status(404).send("Error 404 : No Task-Groups found!");
+    }
  })
 
  app.post('/taskGroups', (req, res) => {
@@ -32,11 +37,18 @@ app.get('/taskGroups', (req, res) => {
     const taskGroup_id = taskGroups_offered.length + 1;
     const taskGroup_tasks = req.body.tasks;
     const taskGroup_numberTasks = taskGroup_tasks.length;
-    const new_taskGroup =  {id: taskGroup_id, name: taskGroup_name, numberTasks: taskGroup_numberTasks, tasks: taskGroup_tasks};
-    taskGroups_offered.push(new_taskGroup);
-    res.status(201);
-    res.json(new_taskGroup);
-    console.log(taskGroups_offered);
+
+    if(taskGroup_name == null || taskGroup_tasks == null || taskGroup_id == null || taskGroup_numberTasks == null){
+        res.status(400).send("Error 400 : Something went wrong!");
+    }else if(!isNaN(taskGroup_name) || !(taskGroup_tasks instanceof Array)){
+        res.status(400).send("Error 400 : Something went wrong!");
+    }else{
+        const new_taskGroup =  {id: taskGroup_id, name: taskGroup_name, numberTasks: taskGroup_numberTasks, tasks: taskGroup_tasks};
+        taskGroups_offered.push(new_taskGroup);
+        res.status(201);
+        res.json(new_taskGroup);
+        console.log(taskGroups_offered);
+    }
 })
 
 app.put('/taskGroups', (req, res) =>{
@@ -45,11 +57,15 @@ app.put('/taskGroups', (req, res) =>{
 
 app.delete('/taskGroups', (req, res) =>{
     
-    taskGroups_offered.splice(0, taskGroups_offered.length);
+    if(taskGroups_offered.error){
+        res.status(400).send("Error 400 : Something went wrong!");
+    }else{
+        taskGroups_offered.splice(0, taskGroups_offered.length);
 
-    res.status(204);
-    res.json(taskGroups_offered);
-    console.log('All the users have been deleted successfully');
+        res.status(204);
+        res.json(taskGroups_offered);
+        console.log('All the users have been deleted successfully');
+    }
 
 })
 
@@ -80,11 +96,11 @@ app.put('/taskGroups/:taskGroupID' , (req, res) =>{
             const update_name = req.body.name;
             const update_tasks = req.body.tasks;
 
-            if(update_name!=null){
+            if(update_name!=null && update_name.isNaN()){
                 taskGroups_offered[index].name = update_name;
             }
 
-            if(update_tasks!=null){
+            if(update_tasks!=null && (update_tasks instanceof Array)){
                 taskGroups_offered[index].tasks = update_tasks;
                 taskGroups_offered[index].numberTasks = update_tasks.length;
             }
