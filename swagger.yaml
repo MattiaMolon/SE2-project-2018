@@ -134,12 +134,12 @@ paths:
       summary: Update all user
       tags: [User]
       # aggiungere parametri 
-      #parameters:
-       # - in: body
-        #  name: User properties
-         # description: The user properties that can be modified
-          #schema:
-            #$ref: '#/definitions/User'
+      # parameters:
+      #   - in: body
+      #     name: User properties
+      #     description: The user properties that can be modified
+      #     schema:
+      #       $ref: '#/definitions/User'
             
       responses:
         204:
@@ -262,6 +262,23 @@ paths:
             $ref: '#/definitions/Class'
         400:
           description: Ops! Something went wrong.
+    put:
+      summary: Update all the classes.
+      tags: [Class]
+      # che parametri metto per la put?
+      # parameters:
+      #   - in: body
+      #     name: Classes update
+      #     description: Updates all the classe of the collection
+      #     schema:
+      #       $ref: '#/definitions/Class'
+      responses:
+        204:
+          description: Classes updated.
+        400:
+          description: Ops! Something went wrong.
+        409:
+          description: Conflict!
     delete:
       summary: Delete all classes.
       tags: [Class]
@@ -312,7 +329,6 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found with the given ID.
-    
     delete:
       summary: Delete a class by a given ID.
       tags: [Class]
@@ -341,7 +357,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Task'
-            # da aggiungere esempio (?)
         400:
           description: Ops! Something went wrong.
         404:
@@ -452,6 +467,19 @@ paths:
         404:
           description: We're sorry. No Task found with the given ID.
     
+    post:
+      summary: Create a new Task
+      tags: [Task]
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          type: integer
+          minimum: 1
+      responses:
+        405:
+          description: Metod not supported
+        
   /taskGroups:
     get:
       summary: List all the task groups.
@@ -472,12 +500,11 @@ paths:
     put: 
       summary: Update all task groups
       tags: [Task Group]
+      # aggiungere parametri 
       #parameters:
-       # - in: body
-        #  name: task groups properties
-         # description: Task group's properties that can be modified
-          #schema:
-            # aggiungere parametri 
+      #- in: body
+      #  name: task groups properties
+      #  description: Task group's properties that can be modified
       responses:
         204:
           description: task groups updated successfully
@@ -496,8 +523,12 @@ paths:
         schema:
           type: object
           properties:
+            id:
+              type: integer
             name:
               type: string
+            numberTasks:
+              type: integer
             tasks:
               type: array
               items:
@@ -527,11 +558,14 @@ paths:
       - in: path
         name: taskGroupId
         required: true
+        description: The ID necessary to return the specified taskGroup.
         type: integer
         minimum: 1
       responses:
         200:
           description: OK
+          schema: 
+            $ref: '#/definitions/TaskGroup'
         400:
           description: Ops! Something went wrong.
         404:
@@ -541,29 +575,26 @@ paths:
       summary: Updates a task group by a given ID.
       tags: [Task Group]
       parameters:
-      - in: path
-        name: taskGroupId
-        required: true
-        type: integer
-        minimum: 1
-      - in: body
-        name: Task Group properties
-        schema:
-          type: object
-          properties:
-              name:
-                type: string
-              tasks:
-                type: array
-                items:
-                  type: integer
+        - in: path
+          name: taskGroupId
+          required: true
+          description: The ID necessary to return the specified taskGroup.
+          type: integer
+          minimum: 1
+        - in: body
+          name: task groups properties to update
+          description: Task group's properties that can be modified
+          schema:
+            $ref: '#/definitions/TaskGroup'
       responses:
         204:
-          description: Task Group updated.
+          description: TaskGroup Exams updated.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task group found with the given ID.
+        409:
+          description: Conflict!
 
     delete:
       summary: Delete a task group by a given ID.
@@ -572,6 +603,7 @@ paths:
       - in: path
         name: taskGroupId
         required: true
+        description: The ID necessary to return the specified taskGroup.
         type: integer
         minimum: 1
       responses:
@@ -581,7 +613,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task group found with the given ID.
-    
+            
   /exams:
     get:
       summary: List all the exams.
@@ -662,6 +694,7 @@ paths:
       - in: path
         name: examId
         required: true
+        description: The ID necessary to return the specified exam.
         type: integer
         minimum: 1
       responses:
@@ -673,7 +706,6 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found with the given ID.
-  
     put:  
       summary: Update a specific Exam with the given ID
       tags: [Exam]
@@ -681,6 +713,7 @@ paths:
       - in: path
         name: examId
         required: true
+        description: The ID necessary to return the specified exam.
         type: integer
         minimum: 1
       - in: body
@@ -699,7 +732,6 @@ paths:
           description: Bad Request.
         404:
           description: We're sorry. No exam found with the given ID.
-
     delete:  
       summary: Delete a specific Exam with the given ID
       tags: [Exam]
@@ -707,6 +739,7 @@ paths:
       - in: path
         name: examId
         required: true
+        description: The ID necessary to return the specified exam.
         type: integer
         minimum: 1
       responses:
@@ -843,7 +876,7 @@ paths:
           description: Bad Request.
         404:
           description: We're sorry. No submission found with the given ID.
-
+    
   /reviews:
     get:
       summary: List of all the reviews
@@ -939,19 +972,6 @@ paths:
         404:
           description: We're sorry. No exam found with the given ID.
 
-    post:
-      summary: Create a new review
-      tags: [Review]
-      deprecated: true
-      parameters:
-      - in: path
-        name: reviewsId
-        required: true
-        type: integer
-      responses:
-        405: 
-          description: Method not supported
-
     put:
       summary: Update a specific review with the given ID
       tags: [Review]
@@ -994,7 +1014,7 @@ paths:
           description: Bad Request.
         404:
           description: We're sorry. No review found with the given ID.
-
+    
 #global definition of common data structures we use in our API
 definitions:
   User:
@@ -1008,7 +1028,11 @@ definitions:
       name:
         type: string
         description: the user's name
-        example: Britney Spears
+        example: Britney
+      surname:
+        type: string
+        description: the user's surname
+        example: Spears
       uniNumber:
         type: string
         description: the identifier for the user provided by the university
@@ -1022,6 +1046,10 @@ definitions:
         type: string
         description: the user's email
         example: britney@spears.com
+      password: # andrebbe criptata
+        type: string
+        description: the user's password
+        example: abc123
       examsList:
         type: array
         items:
@@ -1030,8 +1058,8 @@ definitions:
     required:
     - id
     - name
+    - surname
     - uniNumber
-    - isTeacher
     - email
   
   Class:
@@ -1083,12 +1111,13 @@ definitions:
           all the possible answers to the question, if multipleAnswers more than one 
           answer can be submitted
         example: [Fabio, Luigi, Mario, Giovanni]
-      multipleAnswers:
-        type: boolean
+      answers:
+        type: array
+        items:
+          type: string
         description: >
-          in case of multipleChoice, it's false when the correct answers is only one,
-          true otherwise
-        example: false
+          in case of multipleChoice, it describes all the correct answers
+        example: [Fabio]
       teacher: 
         $ref: "#/definitions/User"
         description: the teacher who have created the task
@@ -1097,6 +1126,7 @@ definitions:
     - id
     - question
     - questionType
+    - teacher
     
   TaskGroup:
     title: taskgroup
@@ -1106,6 +1136,9 @@ definitions:
         type: integer
         description: the taskgroup ID
         example: 6
+      name:
+        type: string
+        description: name given to the taskGroup
       numberTasks:
         type: integer
         description: the number of question selected for the exam
@@ -1128,7 +1161,7 @@ definitions:
         description: the exam ID
         example: 7
       taskgroup: 
-        $ref: '#/definitions/TaskGroup'
+        $ref: "#/definitions/TaskGroup"
         description: the set of all the tasks
       startline:
         type: string
@@ -1139,10 +1172,10 @@ definitions:
       classes:
         type: array
         items:
-          $ref: '#/definitions/Class'
+          $ref: "#/definitions/Class"
         description: the specific class/classes to which the exam is assigned
       teacher:
-        $ref: '#/definitions/User'
+        $ref: "#/definitions/User"
         description: the teacher who has assigned the exam to the class
        
     required:
