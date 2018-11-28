@@ -1062,8 +1062,8 @@ definitions:
     required:
     - id
     - name
+    - surname
     - uniNumber
-    - isTeacher
     - email
   
   Class:

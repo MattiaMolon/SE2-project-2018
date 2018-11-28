@@ -1,3 +1,6 @@
+// Group: SiamoVeramenteEuforici
+// Author: Tommaso
+
 const express = require('express')
 var bodyParser = require ('body-parser')
 const app = express()
@@ -9,7 +12,7 @@ const PORT = process.env.PORT || 3000
 
 var usersList = [
     {
-        id: 1, 
+        id: 0, 
         name: 'Piero', 
         surname: 'Grasso', 
         uniNumber: 182930, 
@@ -19,7 +22,7 @@ var usersList = [
         examsList: ['Logic', 'Math']
     },
     {
-        id: 2, 
+        id: 1, 
         name: 'Giovanni', 
         surname: 'Guru', 
         uniNumber: 156789, 
@@ -29,7 +32,7 @@ var usersList = [
         examsList: ['Italian', 'Math']
     },
     {
-        id: 3, 
+        id: 2, 
         name: 'Aurora', 
         surname: 'Gelmini', 
         uniNumber: 182930, 
@@ -43,9 +46,14 @@ var usersList = [
 app.get('/', (req, res) => res.send('Hello, I am Toby, your personal assistant'))
 
 app.get('/users', (req, res) => {
-    res.status(200)
-    res.json(usersList)
-    console.log('Print of all the users successfully executed')
+    if (usersList.length == 0) {
+        res.status(404) 
+        console.log('Sorry, no user found - error 404');
+    } else {
+        res.status(200)
+        res.json(usersList)
+        console.log('Print of all the users successfully executed')
+    }
 })
 
 app.get('/users/:userId', (req, res) => {
@@ -54,6 +62,9 @@ app.get('/users/:userId', (req, res) => {
     if (user == null) {
         res.status(404).send('We are sorry, user not found')
         console.log('We are sorry, user not found')
+    } else if (user.error) {
+        res.status(400).send('Bad request - error 400');
+        console.log('We are sorry, there was a general error');
     } else {
         res.status(200)
         res.json(user)
@@ -62,22 +73,47 @@ app.get('/users/:userId', (req, res) => {
 })
 
 // quando creo un nuovo user ovviamente non ha esami registrati, però dovrei dire se è un insegnante oppure no?
+// aggiungere il controllo sui parametri required
 app.post('/users', (req, res) => {
-    const newId = usersList.length+1
+    
+    const newId = usersList.length
+    
     const newEmail = req.body.email
     const newUniNumber = req.body.uniNumber
+    const newIsTeacher = req.body.isTeacher
     const newPassword = req.body.password
     const newName = req.body.name
     const newSurname = req.body.surname
     const newExamsList = req.body.examsList
+    
+    if (newEmail == null) {
+        res.status(400)
+        console.log('Ops, there was an error with the email. Please try again')
+    } else if (newUniNumber == null) {
+        res.status(400)
+        console.log('Ops, there was an error with the uniNumber. Please try again')
+    } else if (newPassword == null) {
+        res.status(400)
+        console.log('Ops, there was an error with the password. Please try again')
+    } else if (newName == null) {
+        res.status(400)
+        console.log('Ops, there was an error with the name. Please try again')
+    } else if (newSurname == null) {
+        res.status(400)
+        console.log('Ops, there was an error with the surname. Please try again')
+    } else if (newIsTeacher == null) {
+        res.status(400)
+        console.log('Ops, there was an error with the role of the user. Please try again')
+    } else {
+        const newUser = {id: newId, name: newName, surname: newSurname, uniNumber: newUniNumber, isTeacher: newIsTeacher, email: newEmail, password: newPassword, examsList: newExamsList}
 
-    const newUser = {id: newId, name: newName, surname: newSurname, uniNumber: newUniNumber, email: newEmail, password: newPassword, examsList: newExamsList}
+        usersList.push(newUser)
 
-    usersList.push(newUser)
+        res.status(201)
+        res.json(usersList)
+        console.log('User created successfully')
+    }
 
-    res.status(201)
-    res.json(usersList)
-    console.log('User created successfully')
 })
 
 app.put('/users', (req, res) => {
@@ -89,7 +125,7 @@ app.put('/users/:userId', (req, res) => {
     const userCurrent = usersList.find(tmp => tmp.id === parseInt(req.params.userId))
 
     if (userCurrent == null) {
-        res.status(404).send('We are sorry, user not found')
+        res.status(404)
         console.log('We are sorry, user not found')
     } else {
         
@@ -102,6 +138,10 @@ app.put('/users/:userId', (req, res) => {
         const newName = req.body.name;
         const newSurname = req.body.surname;
         const newExamsList = req.body.examsList;
+        const newIsTeacher = req.body.isTeacher;
+
+        // e se mi passa l'id come controllo?
+        // e se mi passa dei valori che sbagliati?
 
         // qui cambio effettivamente le cose da cambiare
         if (newEmail != null) {
@@ -127,10 +167,14 @@ app.put('/users/:userId', (req, res) => {
         if (newExamsList != null) {
             usersList[index].examsList = newExamsList
         }
+
+        if (newIsTeacher != null) {
+            usersList[index].isTeacher = newIsTeacher
+        }
         
         // da aggiungere examsList, ovvero gli esami che fa quella persona
 
-        res.status(204);
+        res.status(200)
         res.json(usersList[index]);
         console.log('User updated successfully')
     }
@@ -138,18 +182,24 @@ app.put('/users/:userId', (req, res) => {
 })
 
 app.delete('/users', (req, res) => {
-    usersList.splice(0, usersList.length)
 
-    res.status(204)
-    res.json(usersList)
-    console.log('All the users have been deleted successfully')
+    if (usersList.error) {
+        res.status(400)
+        console.log('Ops, something went wrong - error 400');
+    } else {
+        usersList.splice(0, usersList.length)
+
+        res.status(204);
+        console.log('All the users have been deleted successfully')
+    }
+    
 })
 
 app.delete('/users/:userId', (req, res) => {
     const user = usersList.find(tmp => tmp.id === parseInt(req.params.userId))
 
     if (user == null) {
-        res.status(404).send('We are sorry, user not found')
+        res.status(404)
         console.log('We are sorry, user not found')
     } else { 
         const index = usersList.indexOf(user)
@@ -157,10 +207,9 @@ app.delete('/users/:userId', (req, res) => {
         usersList.splice(index, 1)    
         console.log('Utenti attualmente registrati: ', usersList)
         res.status(204)
-        res.json(usersList)
     }
 })
 
 module.exports = {app}
 
-app.listen(PORT, () => console.log('sto ascoltando sulla porta (?)'))
+app.listen(PORT, () => console.log('sto ascoltando sulla porta '+ PORT))
