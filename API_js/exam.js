@@ -23,7 +23,7 @@ app.get('/exams', (req, res) => {
         console.log('No exams found')
         res.status(404)
     } else if(exams.error){ //error 
-        res.status(400).send('Bad Request - 400')
+        res.status(400) //Bad Request
     } else {
         res.json(exams)
         res.status(200)
@@ -32,47 +32,58 @@ app.get('/exams', (req, res) => {
 })
 
 app.post('/exams', (req, res) => {
+
     const task_group = req.body.taskgroup
     const start_line = req.body.startline
     const dead_line = req.body.deadline
     const classe = req.body.classes
     const new_id = exams.length +1
 
-//manca controllo. NON DEVE INSERIRE ID ALTRIMENTI LO SOVRASCRIVE
+    //manca controllo. NON DEVE INSERIRE ID ALTRIMENTI LO SOVRASCRIVE
     if(task_group==null || classe == null || dead_line ==null){ //params required
-        res.status(400).send('Bad Request - 400')
-        return;
+        res.status(400) //Bad Request
+        console.log('Params required cannot be null')
+    } else {
+        const new_exam =  {id:new_id, taskgroup: task_group, startline: start_line, deadline: dead_line, classes: classe} 
+        exams.push(new_exam)
+
+        res.json(exams)
+        console.log(exams)
+        console.log('Exam created')
+        res.status(201)
     }
 
-    const new_exam =  {id:new_id, taskgroup: task_group, startline: start_line, deadline: dead_line, classes: classe} 
-    exams.push(new_exam)
-
-    res.json(exams)
-    console.log(exams)
-    console.log('Exam created')
-    res.status(201)
-
-    if(exams.error){ //error 
-        res.status(400).send('Bad Request - 400')
+    if(exams.error){ //generic error 
+        res.status(400) //Bad Request
     } 
-
 
 })
 
 app.put('/exams', (req, res) => {
-    //trova quale modifica vuole fare. poi applicala a tutti gli items
+
     const task_group = req.body.taskgroup
     const start_line = req.body.startline
     const dead_line = req.body.deadline
     const classe = req.body.classes
 
-    if(task_group==null || classe == null || dead_line ==null){ //params required
+    //params required  
+    if(task_group === null){
         console.log('Bad Request')
-        res.status(400).send('Bad Request - 400')
+        res.status(400) //Bad Request
+        return;
+    }
+    if(classe === null){
+        console.log('Bad Request')
+        res.status(400) //Bad Request
+        return;
+    }
+    if(dead_line === null){ 
+        console.log('Bad Request')
+        res.status(400) //Bad Request
         return;
     }
 
-//manca controllo. NON DEVE ESSERE POSSIBILE MODIFICARE L'ID
+    //manca controllo. NON DEVE ESSERE POSSIBILE MODIFICARE L'ID
 
     for(i=0; i< exams.length; i++){
         let ex = exams[i];
@@ -83,17 +94,18 @@ app.put('/exams', (req, res) => {
     }
     res.status(200)
     res.send(exams)
-   if(exams.error){ //error 
-        res.status(400).send('Bad Request - 400')
+    if(exams.error){ //error 
+        res.status(400) //Bad Request
     } 
 })
 
 app.delete('/exams', (req, res) => {
+
     exams.splice(0, exams.length)
     console.log('Deleted all the exams')
     res.sendStatus(204) // delete, no content
     if(exams.error){ //error 
-        res.status(400).send('Bad Request - 400')
+        res.status(400) //Bad Request
     } 
 
 })
@@ -101,21 +113,23 @@ app.delete('/exams', (req, res) => {
 
 // paths: /collection/:item
 app.get('/exams/:examId', (req, res) => {
+
     const exam = exams.find(ex => ex.id === parseInt(req.params.examId)); 
     console.log(req.params.examId) //id=1
     if(exam == null){
+
         console.log('Exam not found')
-        res.status(404).send('Exam not found - 404')
-        return;
+        res.status(404) //Exam not foun
+
+    } else if(exams.error){ //error 
+
+        res.status(400) //Bad Request
+
+    } else {
+
+        res.json(exam)
+        res.status(200)
     }
-
-    if(exams.error){ //error 
-        res.status(400).send('Bad Request - 400')
-    } 
-
-    res.json(exam)
-    res.status(200)
-  
 })
 
 
@@ -123,64 +137,69 @@ app.post('/exams/:examId', (req, res) => {
 
     //NON È SUPPORTATO UNA POST SU ID SPECIFICO
     console.log('Bad Request')
-    res.status(400).send('Bad request - 400')
+    res.status(400) //Bad Request
 
 })
 
 
 app.put('/exams/:examId', (req, res) => {
-    //trova quale modifica vuole fare. Poi applicala al rispettivo items 
+    
     const exam = exams.find(ex => ex.id === parseInt(req.params.examId));
+
+    if(!exam){
+        console.log('Exam not found')
+        res.status(404) //Exam not found
+        return;
+    }
+
     const task_group = req.body.taskgroup
     const start_line = req.body.startline
     const dead_line = req.body.deadline
     const classe = req.body.classes
 
-    if(task_group==null || classe == null || dead_line ==null){ //params required
-        res.status(400).send('Bad Request - 400')
+    //params required
+    if(task_group!=null){
+        exam.taskgroup = task_group;
+    }
+    if(classe!=null){
+        exam.classes=classe;
+    }
+    if(dead_line!=null){
+        exam.deadline = dead_line;
+    }
+
+    if(start_line!=null){
+        exam.startline = start_line;
+    }
+
+    if(exam.error){ 
+        res.status(400) //Bad Request
         return;
     }
 
-//manca controllo. NON DEVE ESSERE POSSIBILE MODIFICARE L'ID
-
-    for(i=0; i< exams.length; i++){
-        let ex = exam;
-        ex.taskgroup = task_group;
-        ex.startline = start_line;
-        ex.deadline = dead_line;
-        ex.classes=classe;
-    }
+    //manca controllo. NON DEVE ESSERE POSSIBILE MODIFICARE L'ID
+    
+    console.log('Exam Updated')
     res.status(200)
-    res.send(exams)
+    res.json(exams)
 
 
 //fai un form ? per prendere in input cambiamenti dell'utente
 
-    if(exam == null){
-        console.log('Exam not found')
-        res.status(404).send('Exam not found - 404')
-        return;
-    } else {
-
-        exam.taskgroup = task_group;
-        exam.startline = start_line;
-        exam.deadline = dead_line;
-        exam.classes = classe;
-        res.send(exam)
-        res.status(200).send('OK')
-    }
 })
 
 app.delete('/exams/:examId', (req, res) => {
+
     const exam = exams.find(ex => ex.id === parseInt(req.params.examId)); 
     if(!exam){
         console.log('Exam not found')
-        res.status(404).send('Exam not found - 404')
+        res.status(404) //Exam not found
+    } else {
+        const index = exams.indexOf(exam)
+        exams.splice(index,1) 
+        res.json(exams) //controllo se è stato eliminato
+        res.status(204)
     }
-    const index = exams.indexOf(exam)
-    exams.splice(index,1) 
-    res.json(exams) //controllo se è stato eliminato
-    res.status(200)
 })
 
 app.use((req,res,next) => {
