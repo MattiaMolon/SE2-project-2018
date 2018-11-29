@@ -2,11 +2,12 @@
 Software Engineering II Project 2018/2019
 
 Group members:
-Bosetti Tommaso        185286
-Chiari Sebastiano      185858 
-Molon Mattia           187916
-Remondini Leonardo     184563
-Toniolli Marta         187839
+
+* [Tommaso Bosetti](https://github.com/tommasobosetti) 1855286
+* [Sebastiano Chiari](https://github.com/sebastianochiari) 185858
+* [Mattia Molon](https://github.com/MattiaMolon) 187916
+* [Leonardo Remondini](https://github.com/leonardoremondini) 184563
+* [Marta Toniolli](https://github.com/toniollimarta) 187839
 
 Apiary Link: https://se2project2018.docs.apiary.io/#
 
