@@ -60,10 +60,10 @@ app.get('/users/:userId', (req, res) => {
     var user = usersList.find(tmp => tmp.id === parseInt(req.params.userId))
 
     if (user == null) {
-        res.status(404).send('We are sorry, user not found')
+        res.status(404)
         console.log('We are sorry, user not found')
     } else if (user.error) {
-        res.status(400).send('Bad request - error 400');
+        res.status(400)
         console.log('We are sorry, there was a general error');
     } else {
         res.status(200)
@@ -88,7 +88,7 @@ app.post('/users', (req, res) => {
     
     if (newEmail == null) {
         res.status(400)
-        console.log('Ops, there was an error with the email. Please try again')
+        console.log('Ops, there was an error with the email. Please try again - bad request')
     } else if (newUniNumber == null) {
         res.status(400)
         console.log('Ops, there was an error with the uniNumber. Please try again')
@@ -116,17 +116,13 @@ app.post('/users', (req, res) => {
 
 })
 
-app.put('/users', (req, res) => {
-    // cosa ci mettiamo qui? 
-})
-
 app.put('/users/:userId', (req, res) => {
 
     const userCurrent = usersList.find(tmp => tmp.id === parseInt(req.params.userId))
 
     if (userCurrent == null) {
         res.status(404)
-        console.log('We are sorry, user not found')
+        console.log('We are sorry, user not found - error 404');
     } else {
         
         const index = usersList.indexOf(userCurrent)
@@ -142,6 +138,8 @@ app.put('/users/:userId', (req, res) => {
 
         // e se mi passa l'id come controllo?
         // e se mi passa dei valori che sbagliati?
+
+        // si recupera tutto l'oggetto dal database, si cambiano solo i campi che si vuole cambiare e poi si ritorna tutto l'oggetto al database. 
 
         // qui cambio effettivamente le cose da cambiare
         if (newEmail != null) {
@@ -171,8 +169,6 @@ app.put('/users/:userId', (req, res) => {
         if (newIsTeacher != null) {
             usersList[index].isTeacher = newIsTeacher
         }
-        
-        // da aggiungere examsList, ovvero gli esami che fa quella persona
 
         res.status(200)
         res.json(usersList[index]);
