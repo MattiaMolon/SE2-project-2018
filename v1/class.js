@@ -90,7 +90,7 @@ app.put('/classes/:classId', (req, res) => {
     } else {
         const temp = classes.find(c => c.id === parseInt(req.params.classId));
         if(temp == null) {
-            res.status(404).send('404 - We are sorry. No class found with the given ID');
+            res.status(404).send('http status code: 404 - We are sorry. No class found with the given ID.');
         } else {
             const index = classes.indexOf(temp);
             const class_name = req.body.name;
