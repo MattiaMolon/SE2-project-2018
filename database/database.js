@@ -356,7 +356,3 @@ const getAll = (tabella) => {
     return null;
 }
 
-
-console.log(getById('User', 3));
-//console.log(deleteById('User', 3));
-//console.log(getAll('User'));
