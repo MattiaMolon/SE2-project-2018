@@ -357,4 +357,27 @@ const getAll = (tabella) => {
 }
 
 
-module.exports = {getAll, getById, deleteAll, deleteById, addItem, updateItem};
+/**
+ * calcola l'id corretto per inserire un nuovo elemento in una tabella
+ * @param {String} tabella tabella da cui prendere l'id
+ * @returns l'id se va a buon fine altrimenti -1 
+ */
+const getNewId = (tabella) => {
+    if( tabella == 'User' || tabella == 'Task' ||
+        tabella == 'Taskgroup' || tabella == 'Class' || tabella == 'Exam' ||
+        tabella == 'Review' || tabella == 'Submission'){
+
+            let vettore = database[tabella];
+            
+            if(vettore.length == 0){
+                return 1;
+            }else {
+                return vettore[vettore.length - 1].id + 1;
+            }
+    }
+
+    return -1;
+}
+
+
+module.exports = {getAll, getById, deleteAll, deleteById, addItem, updateItem, getNewId};
