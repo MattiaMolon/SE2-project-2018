@@ -25,7 +25,8 @@ app.get('/', (req, res) => res.send('HELLO WORD! no fail no on fail'+SOME_NUM))
 
 app.get('/taskGroups', (req, res) => {
     if(taskGroups_offered.length > 0){
-    res.json(taskGroups_offered);
+        res.status(200);
+        res.json(taskGroups_offered);
     }
     else{
         res.status(404).send("Error 404 : No Task-Groups found!");
@@ -87,27 +88,26 @@ app.put('/taskGroups/:taskGroupID' , (req, res) =>{
     const taskGroup_searched = taskGroups_offered.find(t => t.id === parseInt(req.params.taskGroupID));
 
     if(taskGroup_searched == null){
-
         res.status(404).send('404 - We are sorry. No taskGroup found with given id');
+    } 
+    else {
 
-    }else{
+        const index = taskGroups_offered.indexOf(taskGroup_searched);
+        const update_name = req.body.name;
+        const update_tasks = req.body.tasks;
 
-            const index = taskGroups_offered.indexOf(taskGroup_searched);
-            const update_name = req.body.name;
-            const update_tasks = req.body.tasks;
+        if(update_name!=null && update_name.isNaN()){
+            taskGroups_offered[index].name = update_name;
+        }
 
-            if(update_name!=null && update_name.isNaN()){
-                taskGroups_offered[index].name = update_name;
-            }
+        if(update_tasks!=null && update_tasks instanceof Array){
+            taskGroups_offered[index].tasks = update_tasks;
+            taskGroups_offered[index].numberTasks = update_tasks.length;
+        }
 
-            if(update_tasks!=null && (update_tasks instanceof Array)){
-                taskGroups_offered[index].tasks = update_tasks;
-                taskGroups_offered[index].numberTasks = update_tasks.length;
-            }
-
-            res.status(204);
-            res.json(taskGroups_offered[index]);
-            console.log('User update successfully');
+        res.status(204);
+        res.json(taskGroups_offered[index]);
+        console.log('User has been updated successfully');
     }
 
 })

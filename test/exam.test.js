@@ -1,4 +1,3 @@
-const request = require('supertest');
 const app = require('./exam').app
 const url = 'http://localhost:3000'
 const fetch = require('node-fetch');
@@ -35,6 +34,30 @@ test('Testing method=GET url=www.localhost expectedStatus=200', async () => {
     expect(response.body.success).toBe(true);
   });
 */
+
+test('Get exams response status if correct', () =>{
+
+  return fetch('http:localhost:3000/exam', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+        .then(getResponse => { exept(getResponse.status).toBe(200)});
+
+})
+
+test('Post exam, with a given valid exam', () =>{
+  const valid_exam = {
+      taskgroup : 1,
+      startline : 30,
+      deadline : 37,
+      class : 3
+  }
+
+
+
+})
 
 
 
