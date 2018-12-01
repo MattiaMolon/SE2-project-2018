@@ -32,7 +32,7 @@ security:
 paths:
   /registration:
     post:
-      summary: Registration.
+      summary: Registration
       tags: [No Token]
       security: [] #no token required
       parameters:
@@ -65,7 +65,7 @@ paths:
   
   /login:
     post:
-      summary: Login.
+      summary: Login
       tags: [No Token]
       security: [] #no token required
       parameters:
@@ -86,7 +86,7 @@ paths:
 
   /users:
     get:
-      summary: List all the users.
+      summary: List all the users
       tags: [User]
       responses:
         200:
@@ -95,85 +95,77 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
+            description: It returns an array with all the users.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No user found.
 
     post: 
-      summary: Create a new users.
+      summary: Create a new user
       tags: [User]
       parameters:
         - in: body
           name: User parameters
-          description: The parameters necessary to create a new user.
+          description: The parameters necessary to create a new user (required fields for the definition "User" are mandatory).
           schema:
             type: object
             properties:
-              email:
-                type: string
-              uniNumber:
-                type: string
-              password: 
-                type: string
               name:
                 type: string
+                description: The name of the new user.
               surname:
                 type: string
+                description: The surname of the new user.
+              uniNumber:
+                type: string
+                description: The identification number given by the University.
+              isTeacher:
+                type: boolean
+                description: The identifier for the user provided by the university.
+              email:
+                type: string
+                description: The email of the new user.
+              password:
+                type: string
+                description: The password the user chooses.
       responses:
         201:
           description: The user has been created.
           schema:
-            type: object
-            items:
-              $ref: '#/definitions/User'
+            $ref: '#/definitions/User'
+            description: It returns the created user.
         400:
           description: Ops! Something went wrong.
-
-    put: 
-      summary: Update all user
-      tags: [User]
-      # aggiungere parametri 
-      # parameters:
-      #   - in: body
-      #     name: User properties
-      #     description: The user properties that can be modified
-      #     schema:
-      #       $ref: '#/definitions/User'
-            
-      responses:
-        204:
-          description: User updated successfully
-        400:
-          description: Ops! Something went wrong.
-        409:
-          description: Ops! It seems there are some conflicts.
 
     delete:
-      summary: Delete all users.
+      summary: Delete all users
       tags: [User]
       responses:
-        204: 
-          description: All given users has been deleted.
-        400: 
+        204:
+          description: All users have been deleted.
+        400:
           description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No user found.
         
   /users/{userId}:
     get:
-      summary: Returns a user by ID.
+      summary: Returns a user by ID
       tags: [User]
       parameters:
-      - in: path
-        name: userId
-        description: The ID necessary to return the specified user.
-        required: true
-        type: integer
-        minimum: 1
+        - in: path
+          name: userId
+          description: The ID necessary to return the specified user.
+          required: true
+          type: integer
+          minimum: 1
       responses:
         200:
           description: Successful response.
           schema:
             $ref: '#/definitions/User'
+            description: It returns the selected user.
         400:
           description: Ops! Something went wrong.
         404:
@@ -190,13 +182,20 @@ paths:
           type: integer
           minimum: 1
         - in: body
-          name: User properties
-          description: The user properties that can be modified.
+          name: The updated user.
+          description: The user properties that can be changed.
           schema:
             $ref: '#/definitions/User'
+            description: >
+              You can choose to modify only certain fields or the entire object.
+              This is all handled by the API implementation.
+              Of course, you can't change the ID of the object.
       responses:
-        204:
-          description: User updated successfully
+        200:
+          description: User updated.
+          schema:
+            $ref: '#/definitions/User'
+            description: This response returns the updated user.
         400:
           description: Ops! Something went wrong.
         404:
@@ -216,7 +215,7 @@ paths:
           minimum: 1 
       responses:
         204:
-          description: User deleted successfully
+          description: User deleted.
         400:
           description: Ops! Something went wrong.
         404:
@@ -224,7 +223,7 @@ paths:
 
   /classes:
     get:
-      summary: List all the classes.
+      summary: List all the classes
       tags: [Class]
       responses:
         200:
@@ -233,108 +232,111 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Class'
+            description: It returns an array with all the classes.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found.
+
     post:
-      summary: Create a new class.
+      summary: Create a new class
       tags: [Class]
       parameters:
         - in: body
           name: Class parameters
-          description: Class creation
+          description: The parameters necessary to create a new class (required fields for the definition "Class" are mandatory).
           schema:
             type: object
             properties:
               name:
                 type: string
-                description: the name of the class
+                description: The name of the new class.
               participants:
                 type: array
                 items:
                     $ref: '#/definitions/User'
-                description: an array with the participants of the class
+                description: An array with the participants of the new class.
       responses:
         201:
           description: The class has been created.
           schema:
             $ref: '#/definitions/Class'
-        400:
-          description: Ops! Something went wrong.
-    put:
-      summary: Update all the classes.
-      tags: [Class]
-      # che parametri metto per la put?
-      # parameters:
-      #   - in: body
-      #     name: Classes update
-      #     description: Updates all the classe of the collection
-      #     schema:
-      #       $ref: '#/definitions/Class'
-      responses:
-        204:
-          description: Classes updated.
-        400:
-          description: Ops! Something went wrong.
-        409:
-          description: Conflict!
-    delete:
-      summary: Delete all classes.
-      tags: [Class]
-      responses:
-        204:
-          description: All classes deleted.
+            description: It returns the created class.
         400:
           description: Ops! Something went wrong.
 
+    delete:
+      summary: Delete all classes
+      tags: [Class]
+      responses:
+        204:
+          description: All classes have been deleted.
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No class found.
+
   /classes/{classId}:
     get:
-      summary: Returns a class by ID.
+      summary: Returns a class by ID
       tags: [Class]
       parameters:
         - in: path
           name: classId
+          description: The ID necessary to return the specified class.
           required: true
           type: integer
           minimum: 1
       responses:
         200:
-          description: OK
+          description: Successful response.
           schema:
             $ref: '#/definitions/Class'
+            description: It returns the selected class.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found with the given ID.
+
     put:
-      summary: Updates a class by a given ID.
+      summary: Updates a class by a given ID
       tags: [Class]
       parameters:
         - in: path
           name: classId
+          description: The ID required to update the specified class.
           required: true
           type: integer
           minimum: 1
         - in: body
-          name: Class properties
+          name: The updated class.
+          description: The class properties that can be changed.
           schema:
             $ref: '#/definitions/Class'
+            description: >
+              You can choose to modify only certain fields or the entire object.
+              This is all handled by the API implementation.
+              Of course, you can't change the ID of the object.
       responses:
-        204:
+        200:
           description: Class updated.
           schema:
             $ref: '#/definitions/Class'
+            description: This response returns the updated class.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No class found with the given ID.
+        409:
+          description: Ops! It seems there are some conflicts.
+
     delete:
-      summary: Delete a class by a given ID.
+      summary: Delete the class with the given ID
       tags: [Class]
       parameters:
         - in: path
           name: classId
+          description: The ID required to delete the specified class.
           required: true
           type: integer
           minimum: 1
@@ -348,7 +350,7 @@ paths:
 
   /tasks:
     get:
-      summary: List all the tasks.
+      summary: List all the tasks
       tags: [Task]
       responses:
         200:
@@ -357,6 +359,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Task'
+            description: It returns an array with all the tasks.
         400:
           description: Ops! Something went wrong.
         404:
@@ -366,123 +369,127 @@ paths:
       summary: Create a new task.
       tags: [Task]
       parameters:
-      - in: body
-        name: Task parameters
-        description: Task creation
-        schema:
-          type: object
-          properties: 
-            question:
-              type: string
-            questionType:
-              type: string
-              enum: [multipleChoice, openAnswer]
+        - in: body
+          name: Task parameters
+          description: The parameters necessary to create a new task (required fields for the definition "Task" are mandatory).
+          schema:
+            type: object
+            properties: 
+              question:
+                type: string
+                description: The question for the new task.
+              questionType:
+                type: string
+                enum: [multipleChoice, openAnswer]
+                description: The type of question asked for the new task.
+              choices:
+                type: array
+                items:
+                  type: string
+                description: In case of multipleChoice question type, all the possible choices to the question.
+              answer:
+                type: array
+                items:
+                  type: string
+                description: In case of multipleChoice, it describes all the correct answers.
+              teacher:
+                $ref: '#/definitions/User'
+                description: The teacher who is creating the task.
       responses:
         201:
-          description: the task has been created.
+          description: The task has been created.
           schema: 
             $ref: '#/definitions/Task'
+            description: It returns the created class.
         400:
           description: Ops! something went wrong.
 
     delete:
-      summary: Delete all tasks.
+      summary: Delete all tasks
       tags: [Task]
       responses:
         204:
-          description: All tasks deleted.
+          description: All tasks have been deleted.
         400:
           description: Ops! Something went wrong.
-
-    put:
-      summary: Update all tasks
-      tags: [Task]
-      # aggiungere parametri
-      responses:
-        200:
-          description: Collection updated
-        409:
-          description: Conflict!
+        404:
+          description: We're sorry. No task found.
 
   /tasks/{taskId}:
     get:
       summary: Returns a task by ID.
       tags: [Task]
       parameters:
-      - in: path
-        name: taskId
-        description: the ID required to get the specific task
-        required: true
-        type: integer
-        minimum: 1
+        - in: path
+          name: taskId
+          description: The ID required to return the specific task.
+          required: true
+          type: integer
+          minimum: 1
       responses:
         200:
-          description: OK
-          schema: 
+          description: Successful response.
+          schema:
             $ref: '#/definitions/Task'
+            description: It returns the selected task.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task found with the given ID.
 
     put:
-      summary: Update a specific task by a given ID
+      summary: Update a task by a given ID
       tags: [Task]
       parameters:
-      - in: path
-        name: taskId
-        description: the ID required to update the specific task
-        required: true
-        type: integer
-        minimum: 1
-      - in: body
-        name: Task to update
-        schema:
-          $ref: '#/definitions/Task'
+        - in: path
+          name: taskId
+          description: The ID required to update the specified task.
+          required: true
+          type: integer
+          minimum: 1
+        - in: body
+          name: The updated task.
+          description: The task properties that can be changed.
+          schema:
+            $ref: '#/definitions/Task'
+            description: >
+                You can choose to modify only certain fields or the entire object.
+                This is all handled by the API implementation.
+                Of course, you can't change the ID of the object.
       responses:
-        204:
+        200:
           description: Task updated.
+          schema:
+            $ref: '#/definitions/Task'
+            description: This response returns the updated task.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task found with the given ID.
         409:
-          description: Conflict!
+          description: Ops! It seems there are some conflicts.
 
     delete:
-      summary: Delete a specific task by a given ID
-      tags: [Task]
-      parameters:
-      - in: path
-        name: taskId
-        description: the ID required to delete the specific task
-        required: true
-        type: integer
-        minimum: 1
-      responses: 
-        204:
-          description: Task deleted
-        400:
-          description: Ops! Something went wrong
-        404:
-          description: We're sorry. No Task found with the given ID.
-    
-    post:
-      summary: Create a new Task
+      summary: Delete a task with the given ID
       tags: [Task]
       parameters:
         - in: path
           name: taskId
+          description: The ID required to delete the specific task.
           required: true
           type: integer
           minimum: 1
       responses:
-        405:
-          description: Metod not supported
+        204:
+          description: Task deleted.
+        400:
+          description: Ops! Something went wrong
+        404:
+          description: We're sorry. No task found with the given ID.
         
   /taskGroups:
     get:
-      summary: List all the task groups.
+      summary: List all the task groups
       tags: [Task Group]
       responses:
         200:
@@ -491,124 +498,120 @@ paths:
             type: array
             items:
               $ref: '#/definitions/TaskGroup'
-            # da aggiungere esempio (?)
+            description: It returns an array with all the task groups.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task group found.
-          
-    put: 
-      summary: Update all task groups
-      tags: [Task Group]
-      # aggiungere parametri 
-      #parameters:
-      #- in: body
-      #  name: task groups properties
-      #  description: Task group's properties that can be modified
-      responses:
-        204:
-          description: task groups updated successfully
-        400:
-          description: Ops! Something went wrong.
-        409:
-          description: Ops! It seems there are some conflicts.
 
     post:
-      summary: Create a new task group.
+      summary: Create a new task group
       tags: [Task Group]
       parameters:
-      - in: body
-        name: Task Group parameters
-        description: Task Group creation
-        schema:
-          type: object
-          properties:
-            id:
-              type: integer
-            name:
-              type: string
-            numberTasks:
-              type: integer
-            tasks:
-              type: array
-              items:
-                  $ref: '#/definitions/Task'
+        - in: body
+          name: Task group parameters.
+          description: The parameters necessary to create a new task group (required fields for the definition "taskGroup" are mandatory).
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name given to the new task group.
+              numberTasks:
+                type: integer
+                description: The number of questions selected for the new task group.
+              tasks:
+                type: array
+                items:
+                    $ref: '#/definitions/Task'
+                description: An array with all the tasks.
       responses:
         201:
           description: The task group has been created.
           schema:
             $ref: '#/definitions/TaskGroup'
+            description: It returns the created task group.
         400:
           description: Ops! Something went wrong.
 
     delete:
-      summary: Delete all the task groups.
+      summary: Delete all task groups
       tags: [Task Group]
       responses:
         204:
-          description: All task groups deleted.
+          description: All task groups have been deleted.
         400:
           description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No task group found.
 
   /taskGroups/{taskGroupId}:
     get:
-      summary: Returns a task group by ID.
+      summary: Returns a task group by ID
       tags: [Task Group]
       parameters:
-      - in: path
-        name: taskGroupId
-        required: true
-        description: The ID necessary to return the specified taskGroup.
-        type: integer
-        minimum: 1
+        - in: path
+          name: taskGroupId
+          description: The ID required to return the specific task group.
+          required: true
+          type: integer
+          minimum: 1
       responses:
         200:
-          description: OK
-          schema: 
+          description: Successful response.
+          schema:
             $ref: '#/definitions/TaskGroup'
+            description: It returns the selected task.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task group found with the given ID.
 
     put:
-      summary: Updates a task group by a given ID.
+      summary: Updates a task group by a given ID
       tags: [Task Group]
       parameters:
         - in: path
           name: taskGroupId
+          description: The ID required to return the specific task group.
           required: true
-          description: The ID necessary to return the specified taskGroup.
           type: integer
           minimum: 1
         - in: body
-          name: task groups properties to update
-          description: Task group's properties that can be modified
+          name: The updated task group.
+          description: The task properties that can be changed.
           schema:
             $ref: '#/definitions/TaskGroup'
+            description: >
+                You can choose to modify only certain fields or the entire object.
+                This is all handled by the API implementation.
+                Of course, you can't change the ID of the object.
       responses:
-        204:
-          description: TaskGroup Exams updated.
+        200:
+          description: Task group updated.
+          schema:
+            $ref: '#/definitions/TaskGroup'
+            description: This response returns the updated task group.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No task group found with the given ID.
         409:
-          description: Conflict!
+          description: Ops! It seems there are some conflicts.
 
     delete:
-      summary: Delete a task group by a given ID.
+      summary: Delete a task group by a given ID
       tags: [Task Group]
       parameters:
-      - in: path
-        name: taskGroupId
-        required: true
-        description: The ID necessary to return the specified taskGroup.
-        type: integer
-        minimum: 1
+        - in: path
+          name: taskGroupId
+          description: The ID required to delete the specific task group.
+          required: true
+          type: integer
+          minimum: 1
       responses:
         204:
-          description: Task Group deleted.
+          description: Task group deleted.
         400:
           description: Ops! Something went wrong.
         404:
@@ -616,7 +619,7 @@ paths:
             
   /exams:
     get:
-      summary: List all the exams.
+      summary: List all the exams
       tags: [Exam]
       responses:
         200:
@@ -625,165 +628,134 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Exam'
+            description: It returns an array with all the exams.
         400:
           description: Ops! Something went wrong.
         404:
-          description: We're sorry. No exams found.
+          description: We're sorry. No exam found.
 
     post:
-      summary: Create an exam
+      summary: Create a new exam
       tags: [Exam]
       parameters:
         - in: body
-          name: Exam params
-          description: Creation of Exam
+          name: Exam parameters.
+          description: The parameters necessary to create a new exam (required fields for the definition "exam" are mandatory).
           schema:
             type: object 
             properties:
               taskgroup:
                 $ref: '#/definitions/TaskGroup'
+                description: The set of all the tasks.
               startline:
                 type: string
+                description: When the exam starts.
               deadline:
                 type: string
+                description: When the exam expires.
               classes:
                 type: array
                 items:
                   $ref: '#/definitions/Class'
+                description: The specific class/classes to which the exam is assigned.
               teacher:
-                  $ref: '#/definitions/User'
+                $ref: '#/definitions/User'
+                description: The teacher who has assigned the exam to the class.
       responses:
         201:
-          description: Exam created
+          description: The exam has been created.
           schema:
             $ref: '#/definitions/Exam'
+            description: It returns the created exam.
         400:
-          description: Bad Request 
-
-    put:
-      summary: Update collection of exams
-      tags: [Exam]
-      #parameters:
-      #  - in: body
-      #    name: exam properties
-      #    description: Update a collection of exams
-      #    schema: 
-      #     $ref: "#/definitions/Exam"
-      responses:
-        200:
-          description: OK. Exams updates successfully
-        400:
-          description: Bad Request 
-        409:
-          description: Conflict while updating
+          description: Ops! Something went wrong.
 
     delete:
       summary: Delete all the exams
       tags: [Exam]
       responses:
         204:
-          description: Exams deleted
+          description: All exams have been deleted.
         400:
-         description: Bad Request
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No exam found.
 
   /exams/{examId}:
     get:
-      summary: Returns a exam by ID.
+      summary: Returns an exam by ID
       tags: [Exam]
       parameters:
-      - in: path
-        name: examId
-        required: true
-        description: The ID necessary to return the specified exam.
-        type: integer
-        minimum: 1
+        - in: path
+          name: examId
+          description: The ID required to return the specific exam.
+          required: true
+          type: integer
+          minimum: 1
       responses:
         200:
-          description: OK
+          description: Successful response.
           schema:
             $ref: '#/definitions/Exam'
+            description: It returns the selected exam.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found with the given ID.
+
     put:  
       summary: Update a specific Exam with the given ID
       tags: [Exam]
       parameters:
-      - in: path
-        name: examId
-        required: true
-        description: The ID necessary to return the specified exam.
-        type: integer
-        minimum: 1
-      - in: body
-        name: Exam properties
-        schema:
-          type: object
-          properties:
-            id:
-              type: integer
+        - in: path
+          name: examId
+          description: The ID required to return the specific exam.
+          required: true
+          type: integer
+          minimum: 1
+        - in: body
+          name: The updated exam.
+          description: The exam properties that can be changed.
+          schema:
+            $ref: '#/definitions/Exam'
+            description: >
+              You can choose to modify only certain fields or the entire object.
+              This is all handled by the API implementation.
+              Of course, you can't change the ID of the object.
       responses:
         200:
-          description: OK
-        409:
-          description: Conflict.
+          description: Exam updated.
+          schema:
+            $ref: '#/definitions/Exam'
+            description: This response returns the updated exam.
         400:
-          description: Bad Request.
+          description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found with the given ID.
+        409:
+          description: Ops! It seems there are some conflicts.
+
     delete:  
-      summary: Delete a specific Exam with the given ID
+      summary: Delete an exam by a given ID
       tags: [Exam]
       parameters:
-      - in: path
-        name: examId
-        required: true
-        description: The ID necessary to return the specified exam.
-        type: integer
-        minimum: 1
+        - in: path
+          name: examId
+          description: The ID required to delete the specified exam.
+          required: true
+          type: integer
+          minimum: 1
       responses:
         204:
-          description: No Content. Exam deleted with success
+          description: Exam deleted.
         400:
-          description: Bad Request.
+          description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found with the given ID.
   
-  /submission:
-    post:
-      summary: Create a submission
-      tags: [Submission]
-      parameters:
-        - in: body
-          name: submission  
-          description: Creation of a submission 
-          schema:
-            type: object
-            properties:
-              id:
-                $ref: '#/definitions/Submission' #?????
-              exam:
-                $ref: '#/definitions/Exam'
-      responses:
-        201:
-          description: Submission created
-          schema:
-            $ref: '#/definitions/Submission'
-        400:
-          description: Bad Request 
-
-    delete:
-      summary: Delete all the submissions
-      tags: [Submission]
-      responses:
-        204:
-          description: Submission deleted
-        400:
-          description: Bad Request
-    
+  /submissions:
     get:
-      summary: List all the submissions.
+      summary: List all the submissions
       tags: [Submission]
       responses:
         200:
@@ -792,43 +764,79 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Submission'
+            description: It returns an array with all the submissions.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No submission found.
-          
-    put:
-      summary: Update collection of submissions
-      tags: [Submission]
-      #parameters:
-      #  - in: body
-      #    name: submission properties
-      #    description: Update a collection of submissions
-      #    schema: 
-      #     $ref: "#/definitions/SUbmission"
-      responses:
-        200:
-          description: OK. Submission updates successfully
-        400:
-          description: Bad Request 
-        409:
-          description: Conflict while updating
-   
-  /submission/{submissionId}:
-    get:
-      summary: Returns a submission by ID.
+
+    post:
+      summary: Create a new submission
       tags: [Submission]
       parameters:
-      - in: path
-        name: submissionId
-        required: true
-        type: integer
-        minimum: 1
+        - in: body
+          name: Submission parameters.
+          description: The parameters necessary to create a new submission (required fields for the definition "submission" are mandatory).
+          schema:
+            type: object
+            properties:
+              student:
+                $ref: '#/definitions/User'
+                description: The student who sends the submission.
+              exam:
+                $ref: '#/definitions/Exam'
+                description: The exam the submission is referred to.
+              answers:
+                type: array
+                items:
+                  type: string
+                description: The answers to the exam questions.
+              class:
+                $ref: '#/definitions/Class'
+                description: The class the exam is referred to.
+              teacher:
+                $ref: '#/definitions/User'
+                description: The teacher who assigned the exam.
+              data:
+                type: string
+                description: The exact moment when the submission was made.
       responses:
-        200:
-          description: OK
+        201:
+          description: The submission has been created.
           schema:
             $ref: '#/definitions/Submission'
+            description: It returns the created submission.
+        400:
+          description: Ops! Something went wrong.
+
+    delete:
+      summary: Delete all the submissions
+      tags: [Submission]
+      responses:
+        204:
+          description: All submissions have been deleted.
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No submission found.
+
+  /submission/{submissionId}:
+    get:
+      summary: Returns a submission by ID
+      tags: [Submission]
+      parameters:
+        - in: path
+          name: submissionId
+          description: The ID required to return the specific submission.
+          required: true
+          type: integer
+          minimum: 1
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            $ref: '#/definitions/Submission'
+            description: It returns the selected submission.
         400:
           description: Ops! Something went wrong.
         404:
@@ -838,48 +846,55 @@ paths:
       summary: Update a specific submission with the given ID
       tags: [Submission]
       parameters:
-      - in: path
-        name: submissionId
-        required: true
-        type: integer
-        minimum: 1
-      - in: body
-        name: submission properties
-        schema:
-          type: object
-          properties:
-            id:
-              type: integer
+        - in: path
+          name: submissionId
+          description: The ID required to return the specific submission.
+          required: true
+          type: integer
+          minimum: 1
+        - in: body
+          name: The updated submission.
+          description: The exam properties that can be changed.
+          schema:
+            $ref: '#/definitions/Submission'
+            description: >
+              You can choose to modify only certain fields or the entire object.
+              This is all handled by the API implementation.
+              Of course, you can't change the ID of the object.
       responses:
         200:
-          description: OK
-        409:
-          description: Conflict.
+          description: Submission updated.
+          schema:
+            $ref: '#/definitions/Submission'
+            description: This response returns the updated submission.
         400:
-          description: Bad Request.
+          description: Ops! Something went wrong.
         404:
           description: We're sorry. No exam found with the given ID.
+        409:
+          description: Ops! It seems there are some conflicts.
 
     delete:  
-      summary: Delete a specific Submission with the given ID
+      summary: Delete a specific submission with the given ID
       tags: [Submission]
       parameters:
-      - in: path
-        name: submissionId
-        required: true
-        type: integer
-        minimum: 1
+        - in: path
+          name: submissionId
+          description: The ID required to delete the specific submission.
+          required: true
+          type: integer
+          minimum: 1
       responses:
         204:
-          description: No Content. Submission deleted with success
+          description: Submission deleted.
         400:
-          description: Bad Request.
+          description: Ops! Something went wrong.
         404:
           description: We're sorry. No submission found with the given ID.
     
   /reviews:
     get:
-      summary: List of all the reviews
+      summary: List all the reviews
       tags: [Review]
       responses:
         200:
@@ -888,130 +903,123 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Review'
+            description: It returns an array with all the reviews.
         400:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No review found.
 
     post:
-      summary: Create a review.
+      summary: Create a new review
       tags: [Review]
       parameters:
         - in: body
-          name: Review params
-          description: Creation of review
+          name: Review parameters.
+          description: The parameters necessary to create a new review (required fields are mandatory for the definition "review").
           schema:
-            type: object 
+            type: object
             properties:
-              id:
-                type: integer
-                description: the review ID
               submission:
-                description: the review is referred to this submission
                 $ref: '#/definitions/Submission'
-              uniNumber:
-                type: string
-                description: the user who is performing the review
+                description: The submission referred to the review we're creating.
+              reviewer:
+                $ref: '#/definitions/User'
+                description: The user who is performing the review.
               feedback:
                 type: string
-                description: feedback of the reviewer
+                description: Feedback of the reviewer about the submission.
               mark:
                 type: string
-                description: mark written by the teacher
+                description: The mark of the submission.
       responses:
         201:
-          description: Review created
+          description: The review has been created.
           schema:
             $ref: '#/definitions/Review'
+            description: It returns the created review.
         400:
-          description: Bad Request 
-
-    put:
-      summary: Update collection of reviews
-      tags: [Review]
-      #parameters:
-      #  - in: body
-      #    name: exam properties
-      #    description: Update a collection of exams
-      #    schema: 
-      #     $ref: "#/definitions/Review"
-      responses:
-        200:
-          description: OK. Review updates successfully
-        400:
-          description: Bad Request 
-        409:
-          description: Conflict while updating
+          description: Ops! Something went wrong.
 
     delete:
       summary: Delete all the reviews
       tags: [Review]
       responses:
         204:
-          description: Reviews deleted
-        400:
-         description: Bad Request
-
-  /reviews/{reviewsId}:
-    get:
-      summary: Returns a review by ID.
-      tags: [Review]
-      parameters:
-      - in: path
-        name: reviewsId
-        required: true
-        type: integer
-        minimum: 1
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/Review'
+          description: All reviews have been deleted.
         400:
           description: Ops! Something went wrong.
         404:
-          description: We're sorry. No exam found with the given ID.
+          description: We're sorry. No review found.
+
+  /reviews/{reviewsId}:
+    get:
+      summary: Returns a review by ID
+      tags: [Review]
+      parameters:
+        - in: path
+          name: reviewsId
+          description: The ID required to return the specific review.
+          required: true
+          type: integer
+          minimum: 1
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            $ref: '#/definitions/Review'
+            description: It returns the selected review.
+        400:
+          description: Ops! Something went wrong.
+        404:
+          description: We're sorry. No review found with the given ID.
 
     put:
       summary: Update a specific review with the given ID
       tags: [Review]
       parameters:
-      - in: path
-        name: reviewsId
-        required: true
-        type: integer
-        minimum: 1
-      - in: body
-        name: Review properties
-        schema:
-          type: object
-          properties:
-            id:
-              type: integer
+        - in: path
+          name: reviewsId
+          description: The ID required to return the specific review.
+          required: true
+          type: integer
+          minimum: 1
+        - in: body
+          name: The updated review
+          description: The review properties that can be changed.
+          schema:
+            $ref: '#/definitions/Review'
+            description: >
+              You can choose to modify only certain fields or the entire object.
+              This is all handled by the API implementation.
+              Of course, you can't change the ID of the object.
       responses:
         200:
-          description: OK
-        409:
-          description: Conflict.
+          description: Review updated.
+          schema:
+            $ref: '#/definitions/Review'
+            description: This response returns the updated review.
         400:
-          description: Bad Request.
+          description: Ops! Something went wrong.
         404:
           description: We're sorry. No review found with the given ID.
+        409:
+          description: Ops! It seems there are some conflicts.
 
     delete:
       summary: Delete a specific review with the given ID
       tags: [Review]
       parameters:
-      - in: path
-        name: reviewsId
-        required: true
-        type: integer
-        minimum: 1
+        - in: path
+          name: reviewsId
+          description: The ID required to delete the specific review.
+          required: true
+          type: integer
+          minimum: 1
       responses:
         204:
-          description: No Content. Review deleted with success
+          description: Review deleted.
         400:
-          description: Bad Request.
+          description: Ops! Something went wrong.
         404:
           description: We're sorry. No review found with the given ID.
     
@@ -1028,11 +1036,11 @@ definitions:
       name:
         type: string
         description: the user's name
-        example: Britney
+        example: 'Britney'
       surname:
         type: string
         description: the user's surname
-        example: Spears
+        example: 'Spears'
       uniNumber:
         type: string
         description: the identifier for the user provided by the university
@@ -1040,27 +1048,30 @@ definitions:
       isTeacher:
         type: boolean
         description: >
-          This value is true if the user is a teacher, false otherwise
+          this value is true if the user is a teacher, false otherwise
         example: false
       email:
         type: string
         description: the user's email
-        example: britney@spears.com
+        example: 'britney@spears.com'
       password: # andrebbe criptata
         type: string
         description: the user's password
-        example: abc123
+        example: 'abc123'
       examsList:
         type: array
         items:
           $ref: '#/definitions/Exam'
+        description: the list of all the exams the user (if student) is taking
         example: [exam1, exam2, exam3]
     required:
     - id
     - name
     - surname
     - uniNumber
+    - isTeacher
     - email
+    - password
   
   Class:
     title: class
@@ -1073,14 +1084,13 @@ definitions:
       name:
         type: string
         description: the class' name
-        example: Siamo Veramente Euforici
+        example: 'Siamo Veramente Euforici'
       participants:
         type: array
         items:
           $ref: '#/definitions/User'
         description: the collection of users taking part in a class
         example: [user1, user2, user3]
-    
     required:
     - id
     - name
@@ -1097,31 +1107,28 @@ definitions:
       question:
         type: string
         description: the question
-        example: "Il nome di Rovazzi, il cantante"
+        example: 'Il nome di Rovazzi, il cantante'
       questionType:
         type: string
-        description: the type of question asked
         enum: [multipleChoice, openAnswer]
-        example: multipleChoice
+        description: the type of question asked
+        example: 'multipleChoice'
       choices:
-        type: array #we give all possible answers
+        type: array
         items:
           type: string    
-        description: >
-          all the possible answers to the question, if multipleAnswers more than one 
-          answer can be submitted
+        description: if multipleChoice, all the possible answers to the question
         example: [Fabio, Luigi, Mario, Giovanni]
       answers:
         type: array
         items:
           type: string
-        description: >
-          in case of multipleChoice, it describes all the correct answers
+        description: if multipleChoice, it describes all the correct answers
         example: [Fabio]
       teacher: 
-        $ref: "#/definitions/User"
+        $ref: '#/definitions/User'
         description: the teacher who have created the task
-
+        example: Pippo Baudo
     required:
     - id
     - question
@@ -1139,19 +1146,21 @@ definitions:
       name:
         type: string
         description: name given to the taskGroup
+        example: 'Ingegneria del Software 2 - Questions pool #1'
       numberTasks:
         type: integer
-        description: the number of question selected for the exam
+        description: the number of questions selected for the task group
+        example: 3
       tasks:
-        type: array #array di task
-        items:  #tipo di dato degli elementi contenuti nell'array
-          $ref: "#/definitions/Task"
+        type: array
+        items:
+          $ref: '#/definitions/Task'
         description: the array of all the tasks of the exam
-        
+        example: [task1, task2, task3]
     required:
     - id
     - tasks
-    
+
   Exam:
     title: exam
     type: object
@@ -1161,54 +1170,73 @@ definitions:
         description: the exam ID
         example: 7
       taskgroup: 
-        $ref: "#/definitions/TaskGroup"
+        $ref: '#/definitions/TaskGroup'
         description: the set of all the tasks
+        example: Ingegneria del Software 2
       startline:
         type: string
         description: when the exam starts
+        example: '19/12/2018 10:30'
       deadline:
         type: string
         description: the deadline for the delivery of the exam
+        example: '19/12/2018 12:30'
       classes:
         type: array
         items:
-          $ref: "#/definitions/Class"
+          $ref: '#/definitions/Class'
         description: the specific class/classes to which the exam is assigned
+        example: [class1, class2]
       teacher:
-        $ref: "#/definitions/User"
+        $ref: '#/definitions/User'
         description: the teacher who has assigned the exam to the class
-       
+        example: Fabio Casati
     required:
     - id
     - taskgroup
     - deadline
     - classes
+    - teacher
 
   Submission:
     title: submission
     type: object
     properties:
-      class: 
-        type: string
-        description: class' exam
-      teacher:
-        $ref: '#/definitions/User'
-        description: TA that assigned the exam
-      student:
-        $ref: '#/definitions/User'
-        description: the student that sends the submission
-      exam:
-        $ref: '#/definitions/Exam'
       id:
         type: integer
         description: the id of the specific submission
+        example: 3
+      student:
+        $ref: '#/definitions/User'
+        description: the student that sends the submission
+        example: Gianni Morandi
+      exam:
+        $ref: '#/definitions/Exam'
+        description: the exam the submission is referred to
+      answers:
+        type: array
+        items:
+          type: string
+        description: the answers to the exam questions.
+        example: ['Fabio', 'git commit -m <inserire commit>', 'A, B']
+      class:
+        $ref: '#/definitions/Class'
+        description: the class the exam is referred to.
+        example: class1
+      teacher:
+        $ref: '#/definitions/User'
+        description: the teacher who assigned the exam
+        example: Fabio Casati
       data:
         type: string
-        description: time of submission
-        
+        description: the exact moment when the submission was made
+        example: '19/12/2018 12:17'
     required:
-    - exam
     - id
+    - student
+    - exam
+    - answers
+    - data
 
   Review:
     title: review
@@ -1217,20 +1245,26 @@ definitions:
       id:
         type: integer
         description: the review ID
+        example: 6
       submission:
-        description: the review is referred to this submission
         $ref: '#/definitions/Submission'
-      uniNumber:
-        type: string
+        description: the submission referred to the review
+        example: sub1
+      reviewer:
+        $ref: '#/definitions/User'
         description: the user who is performing the review
+        example: Fabio Casati
       feedback:
         type: string
         description: feedback of the reviewer
+        example: 'Very good work'
       mark:
-        type: string
+        type: integer
         description: mark written by the teacher
+        example: 30
     
     required:
     - id
     - submission
-    - uniNumber
+    - reviewer
+    - feedback
