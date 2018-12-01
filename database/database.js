@@ -356,3 +356,5 @@ const getAll = (tabella) => {
     return null;
 }
 
+
+module.exports = {getAll, getById, deleteAll, deleteById, addItem, updateItem};
