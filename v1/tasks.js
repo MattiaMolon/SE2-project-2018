@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const db = require('../database/database');
 const app = express();
 app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({ extended: true}));
@@ -9,34 +10,6 @@ app.use( bodyParser.urlencoded({ extended: true}));
 ///// UTILI /////
 // porta del programma
 const PORT = process.env.PORT || 3000;
-
-// database DEMO
-let tasks = [
-    {
-        id : 1,
-        question: 'domanda1',
-        questionType: 'multipleChoice',
-        choices: ['ris1', 'ris2', 'ris3', 'ris4'],
-        answers: ['ris1', 'ris2'],
-        teacher: 'teacher1'
-    },
-    {
-        id : 2,
-        question: 'domanda2',
-        questionType: 'multipleChoice',
-        choices: ['ris1', 'ris2', 'ris3'],
-        answers: ['ris3'],
-        teacher: 'teacher2'
-    },
-    {
-        id : 3,
-        question: 'domanda3',
-        questionType: 'openAnswer',
-        choices: undefined,
-        answers: undefined,
-        teacher: 'teacher3'
-    },
-];
 
 // Funzione di errore 400
 function error400 (res) {
@@ -82,6 +55,8 @@ function isIdCorrect(taskId, res){
 // GET /tasks
 app.get('/tasks', (req, res) => {
     
+    tasks = db.getAll('Task');
+
     if(tasks.length == 0){
         error400(res);
     }
@@ -120,11 +95,7 @@ app.post('/tasks', (req, res) => {
         try{
 
             let newTask, newId;
-            if(tasks.length == 0){
-                newId = 1;
-            }else {
-                newId = tasks[tasks.length - 1].id + 1;
-            }
+            newId = db.getNewId('Task');
 
             if(risp.questionType == 'multipleChoice'){
                 newTask = {
@@ -146,7 +117,7 @@ app.post('/tasks', (req, res) => {
                 };
             }
 
-            tasks.push(newTask);
+            db.addItem('Task', newTask);
             res.status(201).json(newTask);
             
         }catch{
@@ -157,36 +128,32 @@ app.post('/tasks', (req, res) => {
 
 // DELETE /task
 app.delete('/tasks', (req, res) => {
-    tasks = [];
+    db.deleteAll('Task');
     res.status(204);
 });
 
 // GET /task/:taskId
-app.get('/tasks/:taskId', (req, res) =>{
+app.get('/tasks/:taskId', (req, res) => {
 
     let taskId = +req.params.taskId;
 
     if(isIdCorrect(taskId, res)){
         try{
 
-            let taskToSend, trovato = false;
+            // prendo task dal database se esiste
+            let taskToSend;
+            taskToSend = db.getById('Task', taskId);
 
-            // cerco l'id che mi interessa
-            for( let i = 0; i<tasks.length && !trovato; i++){
-                if (tasks[i].id == taskId){
-                    trovato = true;
-                    taskToSend = tasks[i];
-                    res.status(200).json(taskToSend);
-                }
-            }
-
-            // non ho trovato l'id che cercavo
-            if (!trovato){
+            // spedisco errore o il task in base alla risposta del database
+            if(taskToSend == null){
                 let message = {
                     codiceDiStato : 404,
                     message : 'We\'re sorry. No task found with the given ID'
                 };
                 res.status(404).json(message);
+            }
+            else{
+                res.status(200).json(taskToSend);
             }
 
         }catch{
@@ -204,19 +171,10 @@ app.delete('/tasks/:taskId', (req, res) => {
     if( isIdCorrect(taskId, res)){
         try{
 
-            let trovato = false;
-
-            // cerco l'id che mi interessa
-            for( let i = 0; i<tasks.length && !trovato; i++){
-                if (tasks[i].id == taskId){
-                    trovato = true;
-                    tasks.splice(i, 1);
-                    res.status(204);
-                }
+            if( db.deleteById('Task', taskId) ){
+                res.status(204);
             }
-
-            // non ho trovato l'id che cercavo
-            if (!trovato){
+            else{
                 let message = {
                     codiceDiStato : 404,
                     message : 'We\'re sorry. No task found with the given ID'
