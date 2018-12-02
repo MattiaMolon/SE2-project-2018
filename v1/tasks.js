@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const db = require('../database/database');
 const app = express();
 app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({ extended: true}));
@@ -10,34 +11,6 @@ app.use( bodyParser.urlencoded({ extended: true}));
 // porta del programma
 const PORT = process.env.PORT || 3000;
 
-// database DEMO
-let tasks = [
-    {
-        id : 1,
-        question: 'domanda1',
-        questionType: 'multipleChoice',
-        choices: ['ris1', 'ris2', 'ris3', 'ris4'],
-        answers: ['ris1', 'ris2'],
-        teacher: 'teacher1'
-    },
-    {
-        id : 2,
-        question: 'domanda2',
-        questionType: 'multipleChoice',
-        choices: ['ris1', 'ris2', 'ris3'],
-        answers: ['ris3'],
-        teacher: 'teacher2'
-    },
-    {
-        id : 3,
-        question: 'domanda3',
-        questionType: 'openAnswer',
-        choices: undefined,
-        answers: undefined,
-        teacher: 'teacher3'
-    },
-];
-
 // Funzione di errore 400
 function error400 (res) {
     let message = {
@@ -45,6 +18,24 @@ function error400 (res) {
         message: 'We\'re sorry. No task found'
     }
     res.status(400).json(message);
+}
+
+// Funzione di errore 404
+function error404 (res) {
+    let message = {
+        codiceDiStato: 404,
+        message: 'We\'re sorry. No task found with the given ID'
+    }
+    res.status(404).json(message);
+}
+
+// Funzione di errore 409
+function error409 (res) {
+    let message = {
+        codiceDiStato: 409,
+        message: 'Ops! It seems there are some conflicts.'
+    }
+    res.status(409).json(message);
 }
 
 // Funzione per controllare che un oggetto sia una stringa
@@ -82,6 +73,8 @@ function isIdCorrect(taskId, res){
 // GET /tasks
 app.get('/tasks', (req, res) => {
     
+    tasks = db.getAll('Task');
+
     if(tasks.length == 0){
         error400(res);
     }
@@ -115,16 +108,15 @@ app.post('/tasks', (req, res) => {
     else if(!isString(risp.question) || !isString(risp.questionType) || !isString(risp.teacher)){
         error400(res); //console.log(6);
     }
+    else if(db.getById('User', risp.teacher) == null || !db.getById('User', risp.teacher).isTeacher == true){
+        error400(res) //console.log(7);
+    }
     else{
         // setto la newtask e la setto
         try{
 
             let newTask, newId;
-            if(tasks.length == 0){
-                newId = 1;
-            }else {
-                newId = tasks[tasks.length - 1].id + 1;
-            }
+            newId = db.getNewId('Task');
 
             if(risp.questionType == 'multipleChoice'){
                 newTask = {
@@ -146,47 +138,39 @@ app.post('/tasks', (req, res) => {
                 };
             }
 
-            tasks.push(newTask);
+            db.addItem('Task', newTask);
             res.status(201).json(newTask);
             
         }catch{
-            error400(res); //console.log(7);
+            error400(res); //console.log(8);
         }
     }
 });
 
 // DELETE /task
 app.delete('/tasks', (req, res) => {
-    tasks = [];
+    db.deleteAll('Task');
     res.status(204);
 });
 
 // GET /task/:taskId
-app.get('/tasks/:taskId', (req, res) =>{
+app.get('/tasks/:taskId', (req, res) => {
 
     let taskId = +req.params.taskId;
 
     if(isIdCorrect(taskId, res)){
         try{
 
-            let taskToSend, trovato = false;
+            // prendo task dal database se esiste
+            let taskToSend;
+            taskToSend = db.getById('Task', taskId);
 
-            // cerco l'id che mi interessa
-            for( let i = 0; i<tasks.length && !trovato; i++){
-                if (tasks[i].id == taskId){
-                    trovato = true;
-                    taskToSend = tasks[i];
-                    res.status(200).json(taskToSend);
-                }
+            // spedisco errore o il task in base alla risposta del database
+            if(taskToSend == null){
+                error404(res);
             }
-
-            // non ho trovato l'id che cercavo
-            if (!trovato){
-                let message = {
-                    codiceDiStato : 404,
-                    message : 'We\'re sorry. No task found with the given ID'
-                };
-                res.status(404).json(message);
+            else{
+                res.status(200).json(taskToSend);
             }
 
         }catch{
@@ -204,33 +188,135 @@ app.delete('/tasks/:taskId', (req, res) => {
     if( isIdCorrect(taskId, res)){
         try{
 
+            // controllo che non appartenga a nessun taskGroup
+            let taskGroups = db.getAll('TaskGroup');
             let trovato = false;
-
-            // cerco l'id che mi interessa
-            for( let i = 0; i<tasks.length && !trovato; i++){
-                if (tasks[i].id == taskId){
-                    trovato = true;
-                    tasks.splice(i, 1);
-                    res.status(204);
+            for(let i =0; i<taskGroups.length && !trovato; i++){
+                for(let z=0; z<taskGroups[i].tasks.length && !trovato; z++){
+                    if(taskGroups[i].tasks[z] == taskId){
+                        error409(res); trovato = true;
+                    }
                 }
             }
 
-            // non ho trovato l'id che cercavo
-            if (!trovato){
-                let message = {
-                    codiceDiStato : 404,
-                    message : 'We\'re sorry. No task found with the given ID'
-                };
-                res.status(404).json(message);
+            if(!trovato){
+                if( db.deleteById('Task', taskId) ){
+                    res.status(204);
+                }
+                else{
+                    error404(res);
+                }
             }
 
         }catch{
-            error400(res); console.log(5);
+            error400(res); //console.log(5);
         }
     }
 
 });
 
+// PUT /task/:taskId
+app.put('/tasks/:taskId', (req, res) => {
+    
+    taskId = +req.params.taskId;
+
+    if( isIdCorrect(taskId) ){
+        try{
+            
+            let risp = req.body;
+            let oldItem = db.getById('Task', taskId);
+
+            if( oldItem != null){
+
+                let sendError = false;
+
+                // controllo sulla domanda
+                if( risp.question != null){
+                    if(isNaN(risp.question)){
+                        oldItem.question = risp.question;
+                    }
+                    else{
+                        sendError = true; console.log(1);
+                    }
+                }
+
+                // controllo sull'insegnante
+                if( risp.teacher != null){
+
+                    risp.teacher = +risp.teacher;
+                    let newTeacher = db.getById('User', risp.teacher);
+
+                    if( newTeacher != null && newTeacher.isTeacher == true){
+                        oldItem.teacher = risp.teacher;
+                    }
+                    else{
+                        sendError = true; console.log(2);
+                    }
+                }
+
+                // controllo sul tipo di domanda
+                if( risp.questionType != null){
+                    if( risp.questionType == 'multipleChoice'){
+                        if( risp.choices == null || risp.answers == null || 
+                            !Array.isArray(risp.choices) || !Array.isArray(risp.answers)){
+                            sendError = true; console.log(3);
+                        }
+                        else{
+                            oldItem.questionType == 'multipleChoice';
+                            oldItem.choices = risp.choices;
+                            oldItem.answers = risp.answers;
+                        }
+                    }
+                    else if (risp.questionType == 'openAnswer'){
+                        oldItem.questionType = 'openAnswer';
+                        oldItem.choices = undefined;
+                        oldItem.answers = undefined;
+                    }
+                    else{
+                        sendError = true; console.log(4);
+                    }
+                }
+
+                // controllo sulle scelte 
+                if (risp.choices != null){
+                    if( Array.isArray(risp.choices) && 
+                        (oldItem.questionType == 'multipleChoice' || risp.questionType == 'multipleChoice')){
+                            oldItem.choices = risp.choices;
+                    }
+                    else{
+                        sendError = true; console.log(5);
+                    }
+                }
+
+                // controllo le risposte
+                if (risp.answers != null){
+                    if( Array.isArray(risp.answers) && 
+                        (oldItem.questionType == 'multipleChoice' || risp.questionType == 'multipleChoice')){
+                            oldItem.answers = risp.answers;
+                    }
+                    else{
+                        sendError = true; console.log(6);
+                    }
+                }
+
+                if(sendError){
+                    error409(res);
+                }
+                else{
+                    db.updateItem('Task', oldItem);
+                    res.status(200).json(oldItem);
+                }
+
+            }
+            else{
+                error404(res); console.log(7);
+            }
+        }
+        catch{
+            error400(res); console.log(8);
+        }
+    }
+});
 
 
 // Metto in ascolto l'applicazione
