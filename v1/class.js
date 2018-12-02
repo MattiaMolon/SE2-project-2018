@@ -1,135 +1,199 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-app.use( bodyParser.json() );
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3000;
 
-const SOME_NUM = process.env.def || 40
+const SOME_NUM = process.env.def || 40;
 
-// database temporaneo di test
-var classes = [
-    {id: 21, name: 'Siamo Veramente Euforici', participants: ['Tommaso', 'Sebastiano', 'Marta', 'Mattia', 'Leonardo']}, //come gli passo gli utenti?
-    {id: 28, name: 'Povolesi', participants: ['user1', 'user1', 'user1', 'user1']},
-    {id: 33, name: 'Heroku Siffredi', participants:['user2', 'user2', 'user2', 'user2']},
-    {id: 47, name: 'JSONnambuli', participants:['user3', 'user3', 'user3', 'user3']}
-];
+// importo il database
+const db = require('../database/database');
+
+/**
+ * funzione per gestire l'errore da restituire con il rispettivo json
+ * @param {*} res la response della chiamata effettuata
+ * @param {Number} errorType il tipo di errore
+ * @returns lo status code dell'errore con il rispettivo json
+ */
+function errore(res, errorType) {
+    let message = {
+        statusCode: undefined,
+        description: undefined
+    }
+    
+    if(errorType == 400) {
+        message.statusCode = errorType;
+        message.description = 'Ops! Something went wrong.';
+    }
+    if(errorType == 404) {
+        message.statusCode = errorType;
+        message.description = 'We are sorry! No class found.';
+    }
+    if(errorType == 409) {
+        message.statusCode = errorType;
+        message.description = 'Ops! There are some conflicts.';
+    }
+
+    res.status(errorType).json(message);
+}
+
+/**
+ * funzione che controlla se l'id passato sia corretto formalmente (no confronto con esistenza nel DB)
+ * @param {Number} id 
+ * @param {*} res 
+ * @returns true se l'id è corretto, false altrimenti
+ */
+function rightId(id, res) {
+    let corretto = true;
+
+    if(isNaN(id)) {
+        corretto = false;
+    } else if(id == null) {
+        corretto = false;
+    } else if(id <= 0) {
+        corretto = false;
+    } else if((id % 1) != 0) {
+        corretto = false;
+    }
+
+    return corretto;
+}
+
+function isString(toCheck) {
+    return (typeof toCheck === "string" || toCheck instanceof String);
+}
 
 // v1/classes
 
 // GET /classes (READY)
 app.get('/classes', (req, res) => {
-    if(classes.length == 0) {
-        res.status(404).send('http status code: 404 - We are sorry. No classes found.');
-    } else {
-        res.status(200);
-        res.json(classes);
+    try {
+        var classes = db.getAll('Class');
+        if(classes.length == 0) {
+            errore(res, 404);
+        } else {
+            res.status(200);
+            res.json(classes);
+        }
+    } catch (error) {
+        console.log(error);
+        errore(res, 400);
     }
 });
 
 // POST /classes (READY)
 app.post('/classes', (req, res) => {
-    const class_id = (classes.length + 1);
-    const class_name = req.body.name;
-    const class_participants = req.body.participants;
-    if(class_name == null || class_participants == null) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else {
-        const new_class = {id: class_id, name: class_name, participants: class_participants};
-        classes.push(new_class);
-        res.status(201);
-        res.json(new_class);
+    try {
+        const class_id = db.getNewId('Class');
+        const class_name = req.body.name;
+        const class_participants = req.body.participants;
+        if(class_name == null || class_participants == null) {
+            errore(res, 400);
+        } else {
+            const new_class = {id: class_id, name: class_name, participants: class_participants};
+            db.addItem('Class', new_class);
+            res.status(201);
+            res.json(new_class);
+        }
+    } catch (error) {
+        console.log(error);
+        errore(res, 400);
     }
 });
 
 // DELETE /classes (READY)
 app.delete('/classes', (req, res) => {
-    classes = [];
-    console.log(1);
-    res.status(204);
+    try {
+        db.deleteAll('Class');
+        res.status(204);
+    } catch(error) {
+        console.log(error);
+        errore(res, 400);
+    }
 });
 
 // v1/classes/{classId}
 
 // GET /classes/{classId} (READY)
 app.get('/classes/:classId', (req, res) => {
-    const id = req.params.classId; 
-    if(isNaN(id)) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else if(id == null) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else if(id <= 0) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else if((id % 1) != 0) {
-        console.log(4);
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else {
-        const temp = classes.find(c => c.id === parseInt(req.params.classId));
-        // console.log(temp);
-        if(temp == null) {
-            res.status(404).send('http status code: 404 - We are sorry. No class found with the given ID');
+    try {
+        const id = req.params.classId;
+        if(rightId(id)) {
+            const temp = db.getById('Class', id);
+            if(temp == null) {
+                errore(res, 404);
+            } else {
+                res.status(200);
+                res.json(temp);
+            }
         } else {
-            res.status(200);
-            res.json(temp);
+            errore(res, 400);
         }
+    } catch (error) {
+        console.log(error);
+        errore(res, 400);
     }
 });
 
 // PUT /classes/{classId} (READY)
 app.put('/classes/:classId', (req, res) => {
-    const id = req.params.classId; 
-    if(isNaN(id)) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else if(id == null) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else if(id <= 0) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else if((id % 1) != 0) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else {
-        const temp = classes.find(c => c.id === parseInt(req.params.classId));
-        if(temp == null) {
-            res.status(404).send('http status code: 404 - We are sorry. No class found with the given ID.');
+    try {
+        const id = req.params.classId;
+        if(rightId(id)) {
+            let temp = db.getById('Class', id);
+            if(temp == null) {
+                errore(res, 404);
+            } else {
+                const class_name = req.body.name;
+                const class_participants = req.body.participants;
+                if(class_name != null && (isString(class_name))) {
+                    temp.name = class_name;
+                }
+                if(class_participants != null && (isString(class_name))) {
+                    temp.participants = class_participants;
+                }
+                console.log(temp);
+                db.updateItem('Class', temp);
+                res.status(200);
+                res.json(temp);
+            }
         } else {
-            const index = classes.indexOf(temp);
-            const class_name = req.body.name;
-            const class_participants = req.body.participants;
-            if(class_name != null) {
-                classes[index].name = class_name;
-            }
-            if(class_participants != null) {
-                classes[index].participants = class_participants;
-            }
-            res.status(200);
-            res.json(classes[index]);
+            errore(res, 400);
         }
+    } catch (error) {
+        console.log(error);
+        errore(res, 400);
     }
 });
 
 // DELETE /classes/{classId} (READY)
 app.delete('/classes/:classId', (req, res) => {
-    const id = req.params.classId; 
-    if(isNaN(id)) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else if(id == null) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else if(id <= 0) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else if((id % 1) != 0) {
-        res.status(400).send('http status code: 400 - Ops! Something went wrong.');
-    } else {
-        const temp = classes.find(c => c.id === parseInt(req.params.classId));
-        if(temp == null) {
-            res.status(404).send('http status code: 404 - We are sorry. No class found with the given ID');
+    try {
+        const id = req.params.classId;
+        if(rightId(id)) {
+            const temp = db.getById('Class', id);
+            if(temp == null) {
+                errore(res, 404);
+            } else {
+                db.deleteById('Class', temp);
+                res.status(204);
+            }
         } else {
-            const index = classes.indexOf(temp);
-            classes.splice(index, 1);
-            res.status(204);
+            errore(res, 400);
         }
+    } catch (error) {
+        console.log(error);
+        errore(res, 400);
     }
 });
 
-module.exports = {app};
+module.exports = {
+    app: app,
+    errore: errore,
+    rightId: rightId,
+    isString: isString
+};
 
 app.listen(PORT, () => console.log('Example app listening on port'+ PORT));
