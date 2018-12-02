@@ -364,7 +364,7 @@ const getAll = (tabella) => {
  */
 const getNewId = (tabella) => {
     if( tabella == 'User' || tabella == 'Task' ||
-        tabella == 'Taskgroup' || tabella == 'Class' || tabella == 'Exam' ||
+        tabella == 'TaskGroup' || tabella == 'Class' || tabella == 'Exam' ||
         tabella == 'Review' || tabella == 'Submission'){
 
             let vettore = database[tabella];

@@ -23,9 +23,8 @@ app.get('/taskGroups', (req, res) => {
 
  app.post('/taskGroups', (req, res) => {
     const taskGroup_name = req.body.name;
-    const taskGroup_id = db.getNewId('TaskGroup')
+    const taskGroup_id = db.getNewId('TaskGroup');
     const taskGroup_tasks = req.body.tasks;
-    const taskGroup_numberTasks = taskGroup_tasks.length;
 
     if(taskGroup_name == null){
         res.status(400).send("Error 400 : You must insert a valid taskGroup name!");
@@ -33,50 +32,37 @@ app.get('/taskGroups', (req, res) => {
         res.status(400).send("You must insert a taskGroup task list valid!");
     } else if(taskGroup_id == null){
         res.status(400).send("Error 400 : Something went wrong! (id null)");
-    } else if(taskGroup_numberTasks == null){
-        res.status(400).send("Error 400 : Something went wrong! (numberTasks null)");
     }else if(!isNaN(taskGroup_name)){
         res.status(400).send("Error 400 : You must insert a valid taskGroup name!");
-    }else if(taskGroup_tasks instanceof Array){
-        res.status(400).send("Error 400 : Something went wrong! (tasks not an array");
+    }else if(!Array.isArray(taskGroup_tasks)){
+        res.status(400).send("Error 400 : Something went wrong! (tasks not an array)");
     }else{
 
-        const controllo1 = true
-        const controllo2 = true
+        let controllo1 = true
+        let controllo2 = true
+        let taskGroup_numberTasks = taskGroup_tasks.length;
 
-        //for(const i = 0; i<taskGroup_tasks.length; i++){
-          //  if(isNaN(taskGroup_tasks[i])){
-            //    controllo1 = false;
-           // }
-
-           // const controllo_task = db.getById('taskGroup', taskGroup_tasks[i])
-           // if(controllo_task == null){
-            //    controllo2 = false;
-           // }
-       // }
-
-        taskGroup_tasks.forEach(element => {
-            if(isNaN(element)){
+        for(let i = 0; i<taskGroup_tasks.length; i++){
+            if(isNaN(taskGroup_tasks[i])){
                 controllo1 = false;
             }
 
-            const controllo_task = db.getByIdyId('taskGroup', element)
+            const controllo_task = db.getById('TaskGroup', taskGroup_tasks[i])
             if(controllo_task == null){
                 controllo2 = false;
             }
-        });
+        }
 
         if(controllo1 && controllo2){
             const new_taskGroup =  {id: taskGroup_id, name: taskGroup_name, numberTasks: taskGroup_numberTasks, tasks: taskGroup_tasks};
             db.addItem('TaskGroup', new_taskGroup);
             res.status(201);
             res.json(new_taskGroup);
-            console.log(db.deleteAll('TaskGroup'));
         }else{
             if(!controllo1){
-                res.status(400).send("Error 400 : Something went wrong! (tasks array contains NaN object");
+                res.status(400).send("Error 400 : Something went wrong! (tasks array contains NaN object)");
             }else{
-                res.status(400).send("Error 400 : Something went wrong! (tasks array contains invalid taskGroupID");
+                res.status(400).send("Error 400 : Something went wrong! (tasks array contains invalid taskGroupID)");
             }
         }
 
@@ -85,9 +71,9 @@ app.get('/taskGroups', (req, res) => {
 
 app.delete('/taskGroups', (req, res) =>{
     
-    if(db.deleteAll('taskGroup')){
+    if(db.deleteAll('TaskGroup')){
         res.status(204);
-        console.log('All the users have been deleted successfully');
+        // console.log('All the taskGroup have been deleted successfully');
     }else{
         res.status(400).send("Error 400 : Something went wrong!");
     }
@@ -96,7 +82,7 @@ app.delete('/taskGroups', (req, res) =>{
 
 app.get('/taskGroups/:taskGroupID' , (req, res) =>{
 
-    const taskGroup_searched = db.getById('TaskGroup', taskGroupID);
+    const taskGroup_searched = db.getById('TaskGroup', req.params.taskGroupID);
     if(taskGroup_searched == null){
         res.status(404).send('404 - We are sorry. No taskGroup found with given id');
     }
@@ -109,7 +95,7 @@ app.get('/taskGroups/:taskGroupID' , (req, res) =>{
 
 app.put('/taskGroups/:taskGroupID' , (req, res) =>{
 
-    const taskGroup_searched = db.getById('TaskGroup', taskGroupID);
+    let taskGroup_searched = db.getById('TaskGroup', req.params.taskGroupID);
 
     if(taskGroup_searched == null){
         res.status(404).send('404 - We are sorry. No taskGroup found with given id');
@@ -121,23 +107,25 @@ app.put('/taskGroups/:taskGroupID' , (req, res) =>{
 
         if(update_name!=null && !isNaN(update_name)){
             res.status(400).send("Error 400 : You have to insert a valid taskGroup name!");
-        } else if(update_tasks!=null && update_tasks instanceof Array){
+        } else if(update_tasks!=null && !Array.isArray(update_tasks)){
             res.status(400).send("Error 400 : Something went wrong! (task aray null or not an array)");
         } else{
 
-            const controllo1 = true
-            const controllo2 = true
+            let controllo1 = true
+            let controllo2 = true
 
-            update_tasks.forEach(element => {
-                if(isNaN(element)){
-                    controllo1 = false;
+            if(update_tasks != null){
+                for(let i = 0; i<update_tasks.length; i++){
+                    if(isNaN(update_tasks[i])){
+                        controllo1 = false;
+                    }
+        
+                    const controllo_task = db.getById('TaskGroup', update_tasks[i])
+                    if(controllo_task == null){
+                        controllo2 = false;
+                    }
                 }
-
-                const controllo_task = db.getByIdyId('TaskGroup', element)
-                if(controllo_task == null){
-                    controllo2 = false;
-                }
-            });
+            }
 
             if(controllo1 && controllo2){
 
@@ -150,18 +138,18 @@ app.put('/taskGroups/:taskGroupID' , (req, res) =>{
                 }
 
                 if(db.updateItem('TaskGroup', taskGroup_searched)){
-                    res.status(204);
+                    res.status(200);
                     res.json(taskGroup_searched);
-                    console.log('User has been updated successfully');
+                    //console.log('TaskGroup has been updated successfully');
                 }else{
                     res.status(400).send("Error 400 : Update error!");
                 }
 
             }else{
                 if(!controllo1){
-                    res.status(400).send("Error 400 : Something went wrong! (tasks array contains NaN object");
+                    res.status(400).send("Error 400 : Something went wrong! (tasks array contains NaN object)");
                 }else{
-                    res.status(400).send("Error 400 : Something went wrong! (tasks array contains invalid taskGroupID");
+                    res.status(400).send("Error 400 : Something went wrong! (tasks array contains invalid taskGroupID)");
                 }
             }
         }
@@ -172,12 +160,12 @@ app.put('/taskGroups/:taskGroupID' , (req, res) =>{
 
 app.delete('/taskGroups/:taskGroupID' , (req, res) =>{
 
-    const taskGroup_searched = db.getById('TaskGroup', taskGroupID);
+    const taskGroup_searched = db.getById('TaskGroup', req.params.taskGroupID);
     if(taskGroup_searched == null){
         res.status(404).send('404 - We are sorry. No taskGroup found with given id');
     }else{
-        db.deleteById('TaskGroup', taskGroupID);
-        res.status(204).json(db.getAll('TaskGroup'));
+        db.deleteById('TaskGroup', req.params.taskGroupID);
+        res.status(204);
     }
 
 })
