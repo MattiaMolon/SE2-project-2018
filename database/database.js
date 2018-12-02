@@ -122,8 +122,31 @@ let database = {
             classes: [4]
         }
     ],
-    Review: [],
-    Submission: []
+    Submission: [],
+    Review: [
+        {
+            id: 0,
+            submission: 1,
+            uniNumber: 185431,
+            feedback: 'Good exam',
+            mark: 24
+        },
+        {
+            id: 1,
+            submission: 4,
+            uniNumber: 123456,
+            feedback: 'Bad exam',
+            mark: 18
+        },
+        {
+            id: 2,
+            submission: 7,
+            uniNumber: 987234,
+            feedback: 'Quite perfect exam',
+            mark: 28
+        }
+    ]
+    
 };
 
 /**
