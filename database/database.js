@@ -60,7 +60,7 @@ let database = {
             questionType: 'multipleChoice',
             choices: ['ris1', 'ris2', 'ris3', 'ris4'],
             answers: ['ris1', 'ris2'],
-            teacher: 'teacher1'
+            teacher: 1
         },
         {
             id : 2,
@@ -68,7 +68,7 @@ let database = {
             questionType: 'multipleChoice',
             choices: ['ris1', 'ris2', 'ris3'],
             answers: ['ris3'],
-            teacher: 'teacher2'
+            teacher: 3
         },
         {
             id : 3,
@@ -76,7 +76,7 @@ let database = {
             questionType: 'openAnswer',
             choices: undefined,
             answers: undefined,
-            teacher: 'teacher3'
+            teacher: 3
         }
     ],
     TaskGroup: [

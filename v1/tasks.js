@@ -20,6 +20,24 @@ function error400 (res) {
     res.status(400).json(message);
 }
 
+// Funzione di errore 404
+function error404 (res) {
+    let message = {
+        codiceDiStato: 404,
+        message: 'We\'re sorry. No task found with the given ID'
+    }
+    res.status(404).json(message);
+}
+
+// Funzione di errore 409
+function error409 (res) {
+    let message = {
+        codiceDiStato: 409,
+        message: 'Ops! It seems there are some conflicts.'
+    }
+    res.status(409).json(message);
+}
+
 // Funzione per controllare che un oggetto sia una stringa
 function isString (x){
     return (typeof x === "string" || x instanceof String);
@@ -90,6 +108,9 @@ app.post('/tasks', (req, res) => {
     else if(!isString(risp.question) || !isString(risp.questionType) || !isString(risp.teacher)){
         error400(res); //console.log(6);
     }
+    else if(db.getById('User', risp.teacher) == null || !db.getById('User', risp.teacher).isTeacher == true){
+        error400(res) //console.log(7);
+    }
     else{
         // setto la newtask e la setto
         try{
@@ -121,7 +142,7 @@ app.post('/tasks', (req, res) => {
             res.status(201).json(newTask);
             
         }catch{
-            error400(res); //console.log(7);
+            error400(res); //console.log(8);
         }
     }
 });
@@ -146,11 +167,7 @@ app.get('/tasks/:taskId', (req, res) => {
 
             // spedisco errore o il task in base alla risposta del database
             if(taskToSend == null){
-                let message = {
-                    codiceDiStato : 404,
-                    message : 'We\'re sorry. No task found with the given ID'
-                };
-                res.status(404).json(message);
+                error404(res);
             }
             else{
                 res.status(200).json(taskToSend);
@@ -171,24 +188,135 @@ app.delete('/tasks/:taskId', (req, res) => {
     if( isIdCorrect(taskId, res)){
         try{
 
-            if( db.deleteById('Task', taskId) ){
-                res.status(204);
+            // controllo che non appartenga a nessun taskGroup
+            let taskGroups = db.getAll('TaskGroup');
+            let trovato = false;
+            for(let i =0; i<taskGroups.length && !trovato; i++){
+                for(let z=0; z<taskGroups[i].tasks.length && !trovato; z++){
+                    if(taskGroups[i].tasks[z] == taskId){
+                        error409(res); trovato = true;
+                    }
+                }
             }
-            else{
-                let message = {
-                    codiceDiStato : 404,
-                    message : 'We\'re sorry. No task found with the given ID'
-                };
-                res.status(404).json(message);
+
+            if(!trovato){
+                if( db.deleteById('Task', taskId) ){
+                    res.status(204);
+                }
+                else{
+                    error404(res);
+                }
             }
 
         }catch{
-            error400(res); console.log(5);
+            error400(res); //console.log(5);
         }
     }
 
 });
 
+// PUT /task/:taskId
+app.put('/tasks/:taskId', (req, res) => {
+    
+    taskId = +req.params.taskId;
+
+    if( isIdCorrect(taskId) ){
+        try{
+            
+            let risp = req.body;
+            let oldItem = db.getById('Task', taskId);
+
+            if( oldItem != null){
+
+                let sendError = false;
+
+                // controllo sulla domanda
+                if( risp.question != null){
+                    if(isNaN(risp.question)){
+                        oldItem.question = risp.question;
+                    }
+                    else{
+                        sendError = true; console.log(1);
+                    }
+                }
+
+                // controllo sull'insegnante
+                if( risp.teacher != null){
+
+                    risp.teacher = +risp.teacher;
+                    let newTeacher = db.getById('User', risp.teacher);
+
+                    if( newTeacher != null && newTeacher.isTeacher == true){
+                        oldItem.teacher = risp.teacher;
+                    }
+                    else{
+                        sendError = true; console.log(2);
+                    }
+                }
+
+                // controllo sul tipo di domanda
+                if( risp.questionType != null){
+                    if( risp.questionType == 'multipleChoice'){
+                        if( risp.choices == null || risp.answers == null || 
+                            !Array.isArray(risp.choices) || !Array.isArray(risp.answers)){
+                            sendError = true; console.log(3);
+                        }
+                        else{
+                            oldItem.questionType == 'multipleChoice';
+                            oldItem.choices = risp.choices;
+                            oldItem.answers = risp.answers;
+                        }
+                    }
+                    else if (risp.questionType == 'openAnswer'){
+                        oldItem.questionType = 'openAnswer';
+                        oldItem.choices = undefined;
+                        oldItem.answers = undefined;
+                    }
+                    else{
+                        sendError = true; console.log(4);
+                    }
+                }
+
+                // controllo sulle scelte 
+                if (risp.choices != null){
+                    if( Array.isArray(risp.choices) && 
+                        (oldItem.questionType == 'multipleChoice' || risp.questionType == 'multipleChoice')){
+                            oldItem.choices = risp.choices;
+                    }
+                    else{
+                        sendError = true; console.log(5);
+                    }
+                }
+
+                // controllo le risposte
+                if (risp.answers != null){
+                    if( Array.isArray(risp.answers) && 
+                        (oldItem.questionType == 'multipleChoice' || risp.questionType == 'multipleChoice')){
+                            oldItem.answers = risp.answers;
+                    }
+                    else{
+                        sendError = true; console.log(6);
+                    }
+                }
+
+                if(sendError){
+                    error409(res);
+                }
+                else{
+                    db.updateItem('Task', oldItem);
+                    res.status(200).json(oldItem);
+                }
+
+            }
+            else{
+                error404(res); console.log(7);
+            }
+        }
+        catch{
+            error400(res); console.log(8);
+        }
+    }
+});
 
 
 // Metto in ascolto l'applicazione
