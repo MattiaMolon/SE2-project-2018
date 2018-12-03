@@ -538,12 +538,10 @@ paths:
       summary: Delete all task groups
       tags: [Task Group]
       responses:
-        204:
+        200:
           description: All task groups have been deleted.
         400:
           description: Ops! Something went wrong.
-        404:
-          description: We're sorry. No task group found.
 
   /taskGroups/{taskGroupId}:
     get:
@@ -610,7 +608,7 @@ paths:
           type: integer
           minimum: 1
       responses:
-        204:
+        200:
           description: Task group deleted.
         400:
           description: Ops! Something went wrong.

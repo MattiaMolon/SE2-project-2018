@@ -72,7 +72,7 @@ app.get('/taskGroups', (req, res) => {
 app.delete('/taskGroups', (req, res) =>{
     
     if(db.deleteAll('TaskGroup')){
-        res.status(204);
+        res.status(200).send("All taskGroups deleted");
         // console.log('All the taskGroup have been deleted successfully');
     }else{
         res.status(400).send("Error 400 : Something went wrong!");
@@ -106,9 +106,9 @@ app.put('/taskGroups/:taskGroupID' , (req, res) =>{
         const update_tasks = req.body.tasks;
 
         if(update_name!=null && !isNaN(update_name)){
-            res.status(400).send("Error 400 : You have to insert a valid taskGroup name!");
+            res.status(409).send("Error 409 : You have to insert a valid taskGroup name!");
         } else if(update_tasks!=null && !Array.isArray(update_tasks)){
-            res.status(400).send("Error 400 : Something went wrong! (task aray null or not an array)");
+            res.status(409).send("Error 409 : Something went wrong! (task aray null or not an array)");
         } else{
 
             let controllo1 = true
@@ -147,9 +147,9 @@ app.put('/taskGroups/:taskGroupID' , (req, res) =>{
 
             }else{
                 if(!controllo1){
-                    res.status(400).send("Error 400 : Something went wrong! (tasks array contains NaN object)");
+                    res.status(409).send("Error 409 : Something went wrong! (tasks array contains NaN object)");
                 }else{
-                    res.status(400).send("Error 400 : Something went wrong! (tasks array contains invalid taskGroupID)");
+                    res.status(409).send("Error 409 : Something went wrong! (tasks array contains invalid taskGroupID)");
                 }
             }
         }
@@ -165,7 +165,7 @@ app.delete('/taskGroups/:taskGroupID' , (req, res) =>{
         res.status(404).send('404 - We are sorry. No taskGroup found with given id');
     }else{
         db.deleteById('TaskGroup', req.params.taskGroupID);
-        res.status(204);
+        res.status(200).send('taskGroup deleted');
     }
 
 })
