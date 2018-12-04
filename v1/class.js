@@ -70,12 +70,11 @@ function isString(toCheck) {
 // GET /classes (READY)
 app.get('/classes', (req, res) => {
     try {
-        var classes = db.getAll('Class');
+        let classes = db.getAll('Class');
         if(classes.length == 0) {
             errore(res, 404);
         } else {
-            res.status(200);
-            res.json(classes);
+            res.status(200).json(classes);
         }
     } catch (error) {
         console.log(error);
@@ -87,15 +86,19 @@ app.get('/classes', (req, res) => {
 app.post('/classes', (req, res) => {
     try {
         const class_id = db.getNewId('Class');
-        const class_name = req.body.name;
-        const class_participants = req.body.participants;
-        if(class_name == null || class_participants == null) {
+        if (class_id == -1) {
             errore(res, 400);
         } else {
-            const new_class = {id: class_id, name: class_name, participants: class_participants};
-            db.addItem('Class', new_class);
-            res.status(201);
-            res.json(new_class);
+            const class_name = req.body.name;
+            const class_participants = req.body.participants;
+            if(class_name == null || class_participants == null) {
+                errore(res, 400);
+            } else {
+                const new_class = {id: class_id, name: class_name, participants: class_participants};
+                db.addItem('Class', new_class);
+                res.status(201);
+                res.json(new_class);
+            }
         }
     } catch (error) {
         console.log(error);
@@ -106,8 +109,14 @@ app.post('/classes', (req, res) => {
 // DELETE /classes (READY)
 app.delete('/classes', (req, res) => {
     try {
-        db.deleteAll('Class');
-        res.status(204);
+        if (db.deleteAll('Class')) {
+            res.status(200).json('All classes have been correctly deleted');
+            console.log('All classes have been correctly deleted');
+        } else {
+            res.status(404).json('No classes found - error 404');
+            console.log('No classes found - error 404');
+        }
+        
     } catch(error) {
         console.log(error);
         errore(res, 400);
@@ -154,7 +163,7 @@ app.put('/classes/:classId', (req, res) => {
                 if(class_participants != null && (isString(class_name))) {
                     temp.participants = class_participants;
                 }
-                console.log(temp);
+                //console.log(temp);
                 db.updateItem('Class', temp);
                 res.status(200);
                 res.json(temp);
@@ -178,7 +187,7 @@ app.delete('/classes/:classId', (req, res) => {
                 errore(res, 404);
             } else {
                 db.deleteById('Class', temp);
-                res.status(204);
+                res.status(200).json('Delete successful');
             }
         } else {
             errore(res, 400);
@@ -194,6 +203,6 @@ module.exports = {
     errore: errore,
     rightId: rightId,
     isString: isString
-};
+}
 
 app.listen(PORT, () => console.log('Example app listening on port'+ PORT));
