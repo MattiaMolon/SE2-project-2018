@@ -159,31 +159,42 @@ let database = {
  * @returns true se va a buon fine false altrimenti
  */
 const addItem =  (tabella, item) => {
-    switch (tabella){
-        case 'User' :
-            database.User.push(item);
-            return true;
-        case 'Class' :
-            database.Class.push(item);
-            return true;
-        case 'Task' :
-            database.Task.push(item);
-            return true;
-        case 'TaskGroup' :
-            database.TaskGroup.push(item);
-            return true;
-        case 'Exam' :
-            database.Exam.push(item);
-            return true;
-        case 'Review' :
-            database.Review.push(item);
-            return true;
-        case 'Submission' :
-            database.Submission.push(item);
-            return true;
-    }
+    
+    let temp = getNewId(tabella)
+    if(temp != -1){
+        item.id = temp;
 
-    return false;
+        switch (tabella){
+            case 'User' :
+                database.User.push(item);
+                return true;
+            case 'Class' :
+                database.Class.push(item);
+                return true;
+            case 'Task' :
+                database.Task.push(item);
+                return true;
+            case 'TaskGroup' :
+                database.TaskGroup.push(item);
+                return true;
+            case 'Exam' :
+                database.Exam.push(item);
+                return true;
+            case 'Review' :
+                database.Review.push(item);
+                return true;
+            case 'Submission' :
+                database.Submission.push(item);
+                return true;
+        }
+
+        return false;
+
+    } else {
+
+        return false;
+        
+    }
 }
 
 
@@ -328,31 +339,34 @@ const getById =  (tabella, id) => {
  * @returns true se va a buon fine false altrimenti
  */
 const deleteAll = (tabella) => {
-    switch (tabella){
-        case 'User' :
-            database.User = [];
-            return true;
-        case 'Class' :
-            database.Class = [];
-            return true;
-        case 'Task' :
-            database.Task = []; 
-            return true;
-        case 'TaskGroup' :
-            database.TaskGroup = [];
-            return true;
-        case 'Exam' :
-            database.Exam = [];
-            return true;
-        case 'Review' :
-            database.Review = [];
-            return true; 
-        case 'Submission' :
-            database.Submission = [];
-            return true;
+    let tmp = getAll(tabella);
+    if (tmp.length > 0) {
+        switch (tabella){
+            case 'User' :
+                database.User = [];
+                return true;
+            case 'Class' :
+                database.Class = [];
+                return true;
+            case 'Task' :
+                database.Task = []; 
+                return true;
+            case 'TaskGroup' :
+                database.TaskGroup = [];
+                return true;
+            case 'Exam' :
+                database.Exam = [];
+                return true;
+            case 'Review' :
+                database.Review = [];
+                return true; 
+            case 'Submission' :
+                database.Submission = [];
+                return true;
+        }
+    } else {
+        return false;
     }
-
-    return false;
 }
 
 

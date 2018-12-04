@@ -95,7 +95,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
-              description: It returns an array with all the users.
+            description: It returns an array with all the users.
         400:
           description: Ops! Something went wrong.
         404:
@@ -148,7 +148,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
-              description: It returns an empty array.
+            description: It returns an empty array.
         400:
           description: Ops! Something went wrong.
         404:
