@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 function error400 (res) {
     let message = {
         codiceDiStato: 400,
-        message: 'We\'re sorry. No task found'
+        message: 'We\'re sorry. Something went wrong! But there is remo'
     }
     res.status(400).json(message);
 }
@@ -24,7 +24,7 @@ function error400 (res) {
 function error404 (res) {
     let message = {
         codiceDiStato: 404,
-        message: 'We\'re sorry. No task found with the given ID'
+        message: 'We\'re sorry. No task/s found'
     }
     res.status(404).json(message);
 }
@@ -76,7 +76,7 @@ app.get('/tasks', (req, res) => {
     tasks = db.getAll('Task');
 
     if(tasks.length == 0){
-        error400(res);
+        error404(res);
     }
     else{
         res.status(200).json(tasks);
@@ -105,7 +105,7 @@ app.post('/tasks', (req, res) => {
     else if(risp.questionType == 'multipleChoice' && !Array.isArray(risp.choices)){
         error400(res); //console.log(5);
     }
-    else if(!isString(risp.question) || !isString(risp.questionType) || !isString(risp.teacher)){
+    else if(!isString(risp.question) || !isString(risp.questionType)){
         error400(res); //console.log(6);
     }
     else if(db.getById('User', risp.teacher) == null || !db.getById('User', risp.teacher).isTeacher == true){
@@ -141,7 +141,7 @@ app.post('/tasks', (req, res) => {
             db.addItem('Task', newTask);
             res.status(201).json(newTask);
             
-        }catch{
+        }catch(err){
             error400(res); //console.log(8);
         }
     }
@@ -173,7 +173,7 @@ app.get('/tasks/:taskId', (req, res) => {
                 res.status(200).json(taskToSend);
             }
 
-        }catch{
+        }catch(err){
             error400(res); //console.log(5);
         }
     }
@@ -208,7 +208,7 @@ app.delete('/tasks/:taskId', (req, res) => {
                 }
             }
 
-        }catch{
+        }catch(err){
             error400(res); //console.log(5);
         }
     }
@@ -312,7 +312,7 @@ app.put('/tasks/:taskId', (req, res) => {
                 error404(res); console.log(7);
             }
         }
-        catch{
+        catch(err){
             error400(res); console.log(8);
         }
     }
