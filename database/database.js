@@ -105,21 +105,24 @@ let database = {
             taskgroup: 2, 
             startline: 24, 
             deadline: 30, 
-            classes: [1,2]
+            classes: [1,2],
+            teacher: 1
         },
         {
             id: 2, 
             taskgroup: 1, 
             startline: 1, 
             deadline: 15, 
-            classes: [3]
+            classes: [3],
+            teacher: 1
         },
         {
             id: 3, 
             taskgroup: 3, 
             startline: 5, 
             deadline: 20, 
-            classes: [4]
+            classes: [4],
+            teacher: 1
         }
     ],
     Submission: [],
@@ -387,7 +390,7 @@ const getAll = (tabella) => {
  */
 const getNewId = (tabella) => {
     if( tabella == 'User' || tabella == 'Task' ||
-        tabella == 'TaskGroup' || tabella == 'Class' || tabella == 'Exam' ||
+        tabella == 'Taskgroup' || tabella == 'Class' || tabella == 'Exam' ||
         tabella == 'Review' || tabella == 'Submission'){
 
             let vettore = database[tabella];
