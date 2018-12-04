@@ -118,7 +118,7 @@ app.post('/users', (req, res) => {
         db.addItem(tableUser, newUser);
 
         res.status(201)
-        res.json(usersList)
+        res.json(newUser)
         console.log('User created successfully')
     }
 

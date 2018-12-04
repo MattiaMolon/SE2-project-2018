@@ -95,7 +95,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
-            description: It returns an array with all the users.
+              description: It returns an array with all the users.
         400:
           description: Ops! Something went wrong.
         404:
@@ -142,8 +142,13 @@ paths:
       summary: Delete all users
       tags: [User]
       responses:
-        204:
+        200:
           description: All users have been deleted.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+              description: It returns an empty array.
         400:
           description: Ops! Something went wrong.
         404:
@@ -170,7 +175,7 @@ paths:
           description: Ops! Something went wrong.
         404:
           description: We're sorry. No user found with the given ID.
-    
+
     put: 
       summary: Update a user with the given ID
       tags: [User]
@@ -214,7 +219,7 @@ paths:
           type: integer
           minimum: 1 
       responses:
-        204:
+        200:
           description: User deleted.
         400:
           description: Ops! Something went wrong.
