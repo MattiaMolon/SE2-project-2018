@@ -328,31 +328,34 @@ const getById =  (tabella, id) => {
  * @returns true se va a buon fine false altrimenti
  */
 const deleteAll = (tabella) => {
-    switch (tabella){
-        case 'User' :
-            database.User = [];
-            return true;
-        case 'Class' :
-            database.Class = [];
-            return true;
-        case 'Task' :
-            database.Task = []; 
-            return true;
-        case 'TaskGroup' :
-            database.TaskGroup = [];
-            return true;
-        case 'Exam' :
-            database.Exam = [];
-            return true;
-        case 'Review' :
-            database.Review = [];
-            return true; 
-        case 'Submission' :
-            database.Submission = [];
-            return true;
+    let tmp = getAll(tabella);
+    if (tmp.length > 0) {
+        switch (tabella){
+            case 'User' :
+                database.User = [];
+                return true;
+            case 'Class' :
+                database.Class = [];
+                return true;
+            case 'Task' :
+                database.Task = []; 
+                return true;
+            case 'TaskGroup' :
+                database.TaskGroup = [];
+                return true;
+            case 'Exam' :
+                database.Exam = [];
+                return true;
+            case 'Review' :
+                database.Review = [];
+                return true; 
+            case 'Submission' :
+                database.Submission = [];
+                return true;
+        }
+    } else {
+        return false;
     }
-
-    return false;
 }
 
 
@@ -398,7 +401,7 @@ const getNewId = (tabella) => {
             if(vettore.length == 0){
                 return 1;
             }else {
-                return vettore[vettore.length - 1].id + 1;
+                return vettore.length + 1;
             }
     }
 

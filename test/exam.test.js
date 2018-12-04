@@ -1,63 +1,165 @@
-const app = require('./exam').app
-const url = 'http://localhost:3000'
-const fetch = require('node-fetch');
-
-// it('path /exams with GET', () => {
-//     return fetch(url) 
-//     .then(r => expect(r.status).toEqual(200))
-// });
+const fetch = require ('node-fetch');
+const db = require('../database/database');
+const PORT = process.env.SERVER_URL || 3000;
+const root = 'http://localhost:' + PORT + '/exams';
+const app = require('../v1/user');
 
 
-test('app module should be defined', () => {
-  expect(app).toBeDefined();
-});
+//per testare fai npm test nomefiledaTestare.js
+//se non voglio testare tutti quelli nella cartella
+
+
+function setGet(id=''){
+  return fetch(root + '/' + id, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+}
+
+
+function setPost(item, id=''){ //se passo id prende quello altrimenti prende ' ' 
+  return fetch(root + '/' + id, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(item)
+  });
+}
+
+
+function setPut(item, id=''){
+  return fetch(root + '/' + id, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(item)
+  });
+}
+
+
+function setDelete(id=''){
+  return fetch(root + '/' + id, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+}
+
+
+
+//divide in paragrafi
+
+
+
+  test('post su exam', () => {
+    return setPost({
+      
+                  //id:1, 
+                  taskgroup: 2, 
+                  startline: 24, 
+                  deadline: 30, 
+                  classes: [1,2],
+                  teacher: 1
+              
+                  })
+      .then(resp => {expect(resp.status).toBe(200)});
+  });
 
 
 /*
-test('GET / should return 200', async () => {
-  const response = await request(app).get('/');
-  expect(response.statusCode).toBe(200);
+test('test POST user with uniNumber equal to null', () => {
+	return setPost({
+                  // id: 1, 
+                  name: 'Piero', 
+                  surname: 'Grasso', 
+                  uniNumber: null, 
+                  isTeacher: true, 
+                  email: 'piero@grasso.it',
+                  password: 'abc123',
+                  examsList: [1,2]
+                })
+		.then(resp => {expect(resp.status).toBe(400)});
 });
 
 
+test('test POST user with password equal to null', () => {
+	return setPost({
+                  // id: 1, 
+                  name: 'Piero', 
+                  surname: 'Grasso', 
+                  uniNumber: 182930, 
+                  isTeacher: true, 
+                  email: 'piero@grasso.it',
+                  password: null,
+                  examsList: [1,2]
+                })
+		.then(resp => {expect(resp.status).toBe(400)});
+});
 
-test('Testing method=GET url=www.localhost expectedStatus=200', async () => {
-    const response = await request(app)
-      .post('/proxy')
-      .send({
-        url: 'https://www.localhost:3000',
-        httpMethod: 'get',
-        expectedResultStatus: 200
-      })
-      .set('Accept', 'application/json');
-    expect(response.body.success).toBeDefined();
-    expect(response.body.success).toBe(true);
-  });
+test('test POST user with name equal to null', () => {
+	return setPost({
+                  // id: 1, 
+                  name: null, 
+                  surname: 'Grasso', 
+                  uniNumber: 12345, 
+                  isTeacher: true, 
+                  email: 'piero@grasso.it',
+                  password: 'abc123',
+                  examsList: [1,2]
+                })
+		.then(resp => {expect(resp.status).toBe(400)});
+});
+
+
+test('test POST user with surname equal to null', () => {
+	return setPost({
+                  // id: 1, 
+                  name: 'Mario', 
+                  surname: null, 
+                  uniNumber: 12345, 
+                  isTeacher: true, 
+                  email: 'piero@grasso.it',
+                  password: 'abc123',
+                  examsList: [1,2]
+                })
+		.then(resp => {expect(resp.status).toBe(400)});
+});
+
+test('test POST user with isTeacher equal to null', () => {
+	return setPost({
+                  // id: 1, 
+                  name: 'Mario', 
+                  surname: 'Grasso', 
+                  uniNumber: 12345, 
+                  isTeacher: null, 
+                  email: 'piero@grasso.it',
+                  password: 'abc123',
+                  examsList: [1,2]
+                })
+		.then(resp => {expect(resp.status).toBe(400)});
+});
+
+
+test('test POST user with name and surname equal to null', () => {
+	return setPost({
+                  // id: 1, 
+                  name: null, 
+                  surname: null, 
+                  uniNumber: 12345, 
+                  isTeacher: false, 
+                  email: 'piero@grasso.it',
+                  password: 'abc123',
+                  examsList: [1,2]
+                })
+		.then(resp => {expect(resp.status).toBe(400)});
+});
 */
-
-test('Get exams response status if correct', () =>{
-
-  return fetch('http:localhost:3000/exam', {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          }
-        })
-        .then(getResponse => { exept(getResponse.status).toBe(200)});
-
-})
-
-test('Post exam, with a given valid exam', () =>{
-  const valid_exam = {
-      taskgroup : 1,
-      startline : 30,
-      deadline : 37,
-      class : 3
-  }
-
-
-
-})
-
 
 

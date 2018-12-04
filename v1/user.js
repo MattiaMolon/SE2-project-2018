@@ -56,8 +56,8 @@ app.get('/users', (req, res) => {
 })
 
 app.get('/users/:userId', (req, res) => {
-    let user = db.getById(tableUser, parseInt(req.params.userId));
 
+    let user = db.getById(tableUser, parseInt(req.params.userId));
     if (user == null) {
         res.status(404).json('We are sorry, user not found - error 404');
         console.log('We are sorry, user not found - error 404')
@@ -142,36 +142,63 @@ app.put('/users/:userId', (req, res) => {
 
             // e se mi passa dei valori che sbagliati? 
 
+
+//CODICE MODIFICATO per coprire alcuni bugs trovati durante il testing di user.js
             // qui cambio effettivamente le cose da cambiare
-            if (update.email != null) {
-                userCurrent.email = update.email;
+            if (update.email == null) {
+                //userCurrent.email = update.email;
+                res.status(400).json(userCurrent)
+                return;
             }
 
-            if (update.uniNumber != null) {
-                if (!isNaN(update.uniNumber)) {
-                    userCurrent.uniNumber = update.uniNumber;
-                }
+            if (update.uniNumber == null) {
+                //userCurrent.email = update.email;
+                res.status(400).json(userCurrent)
+                return;
+                // if (!isNaN(update.uniNumber)) {
+                //     userCurrent.uniNumber = update.uniNumber;
+                // }
             }
 
-            if (update.password != null) {
-                userCurrent.password = update.password;
+            if (update.password == null) {
+                res.status(400).json(userCurrent)
+                return;
+                //userCurrent.password = update.password;
             }
 
-            if (update.name != null) {
-                userCurrent.name = update.name;
+            if (update.name == null) {
+                res.status(400).json(userCurrent)
+                return;
+                //userCurrent.name = update.name;
             }
 
-            if (update.surname != null) {
-                userCurrent.surname = update.surname;
+            if (update.surname == null) {
+                res.status(400).json(userCurrent)
+                return;
+                //userCurrent.surname = update.surname;
             }
             
             if (update.examsList != null) {
-                userCurrent.examsList = update.examsList;
+                res.status(400).json(userCurrent)
+                return;
+                //userCurrent.examsList = update.examsList;
             }
 
-            if (update.isTeacher != null) {
-                userCurrent.isTeacher = update.isTeacher;
+            if (update.isTeacher == null) {
+                res.status(400).json(userCurrent)
+                return;
+                //userCurrent.isTeacher = update.isTeacher;
             }
+
+            userCurrent.email = update.email;
+            if (!isNaN(update.uniNumber)) {
+                    userCurrent.uniNumber = update.uniNumber;
+            }
+            userCurrent.password = update.password;
+            userCurrent.name = update.name;
+            userCurrent.surname = update.surname;
+            userCurrent.examsList = update.examsList;
+            userCurrent.isTeacher = update.isTeacher;
 
             db.updateItem(tableUser, userCurrent);
 
@@ -180,20 +207,23 @@ app.put('/users/:userId', (req, res) => {
             console.log('User updated successfully')
         }
     }
-
 })
 
 app.delete('/users', (req, res) => {
 
-    db.deleteAll(tableUser);
-    res.status(204)
-    console.log('All the users have been deleted successfully');
+    if(db.deleteAll(tableUser)){
+        res.status(200).json(db.getAll('User'))
+        console.log('All the users have been deleted successfully');
+    } else {
+        res.status(400)
+    }
     
 })
 
 app.delete('/users/:userId', (req, res) => {
     
     let userId = parseInt(req.params.userId);
+
     let usersList = db.getAll(tableUser);
 
     if( isIdCorrect(userId, res)) {
@@ -208,11 +238,13 @@ app.delete('/users/:userId', (req, res) => {
             db.deleteById(tableUser, userId);
             usersList = db.getAll(tableUser);
             console.log('Utenti attualmente registrati: ', usersList)
-            res.status(204)
+            res.status(200).json(db.getAll('User'))
         }
     }
 })
 
 module.exports = {app}
 
-app.listen(PORT, () => console.log(welcomeMessagge));
+app.listen(PORT, () => console.log("listening on 3000"));
+
+//app.listen(PORT, () => console.log(welcomeMessagge));
