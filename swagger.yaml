@@ -413,7 +413,7 @@ paths:
       summary: Delete all tasks
       tags: [Task]
       responses:
-        204:
+        200:
           description: All tasks have been deleted.
         400:
           description: Ops! Something went wrong.
@@ -485,7 +485,7 @@ paths:
           type: integer
           minimum: 1
       responses:
-        204:
+        200:
           description: Task deleted.
         400:
           description: Ops! Something went wrong

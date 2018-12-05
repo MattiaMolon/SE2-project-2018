@@ -6,7 +6,6 @@ app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({ extended: true}));
 
 
-
 ///// UTILI /////
 // porta del programma
 const PORT = process.env.PORT || 3000;
@@ -149,8 +148,13 @@ app.post('/tasks', (req, res) => {
 
 // DELETE /task
 app.delete('/tasks', (req, res) => {
-    db.deleteAll('Task');
-    res.status(204);
+
+    if(db.deleteAll('Task')){
+        res.status(200).send("All tasks deleted");
+    } else {
+       error400(err);
+    }
+    
 });
 
 // GET /task/:taskId
@@ -201,7 +205,7 @@ app.delete('/tasks/:taskId', (req, res) => {
 
             if(!trovato){
                 if( db.deleteById('Task', taskId) ){
-                    res.status(204);
+                    res.status(200).send('Task delete gne gne meglio molon');
                 }
                 else{
                     error404(res);
@@ -236,7 +240,7 @@ app.put('/tasks/:taskId', (req, res) => {
                         oldItem.question = risp.question;
                     }
                     else{
-                        sendError = true; console.log(1);
+                        sendError = true; //console.log(1);
                     }
                 }
 
@@ -250,7 +254,7 @@ app.put('/tasks/:taskId', (req, res) => {
                         oldItem.teacher = risp.teacher;
                     }
                     else{
-                        sendError = true; console.log(2);
+                        sendError = true; //console.log(2);
                     }
                 }
 
@@ -259,7 +263,7 @@ app.put('/tasks/:taskId', (req, res) => {
                     if( risp.questionType == 'multipleChoice'){
                         if( risp.choices == null || risp.answers == null || 
                             !Array.isArray(risp.choices) || !Array.isArray(risp.answers)){
-                            sendError = true; console.log(3);
+                            sendError = true; //console.log(3);
                         }
                         else{
                             oldItem.questionType == 'multipleChoice';
@@ -273,7 +277,7 @@ app.put('/tasks/:taskId', (req, res) => {
                         oldItem.answers = undefined;
                     }
                     else{
-                        sendError = true; console.log(4);
+                        sendError = true; //console.log(4);
                     }
                 }
 
@@ -284,7 +288,7 @@ app.put('/tasks/:taskId', (req, res) => {
                             oldItem.choices = risp.choices;
                     }
                     else{
-                        sendError = true; console.log(5);
+                        sendError = true; //console.log(5);
                     }
                 }
 
@@ -295,7 +299,7 @@ app.put('/tasks/:taskId', (req, res) => {
                             oldItem.answers = risp.answers;
                     }
                     else{
-                        sendError = true; console.log(6);
+                        sendError = true; //console.log(6);
                     }
                 }
 
@@ -309,11 +313,11 @@ app.put('/tasks/:taskId', (req, res) => {
 
             }
             else{
-                error404(res); console.log(7);
+                error404(res); //console.log(7);
             }
         }
         catch(err){
-            error400(res); console.log(8);
+            error400(res); //console.log(8);
         }
     }
 });

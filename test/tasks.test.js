@@ -4,7 +4,7 @@ const app = require('../v1/tasks');
 const PORT = process.env.SERVER_URL || 3000;
 const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
 
-function setGet(id="") {
+  function setGet(id="") {
     return fetch(SERVER_URL+"/"+id,{
       method: 'GET',
       headers: {
@@ -46,6 +46,8 @@ function setGet(id="") {
 
   describe('testing GET /tasks', () => {
 
+    //RIGHT ONE
+
     test('the GET should return an array with json elements', () => {
 
         return setGet()
@@ -59,6 +61,8 @@ function setGet(id="") {
             })
 
     })
+
+    //WRONG ONE
 
     test('the GET with empty database table should return 404', () => {
 
@@ -87,7 +91,7 @@ function setGet(id="") {
     test('the POST with multipleChoice as questionType and defined choices should return status 201 with the new task created', () => {
 
         let body = {
-            question: 'domanda1',
+            question: 'domanda4',
             questionType: 'multipleChoice',
             choices: ['ris1', 'ris2', 'ris3', 'ris4'],
             answers: ['ris1', 'ris2'],
@@ -679,4 +683,208 @@ function setGet(id="") {
     })
 
   })
+
+  describe('testing DELETE /tasks ', () => { 
+
+    test('the DELETE should return STATUS 200', () => {
+
+        let tmp = db.getAll('Task');
+
+        return setDelete()
+            .then((response) => {
+                expect(response.status).toBe(200);
+            })
+            .then(() => {
+                for(let i = 0; i < tmp.length ; i++){
+                    db.addItem('Task', tmp[i]);
+                }
+            })
+
+    })
+
+    // test('the DELETE with empty database table should return 400', () => {
+
+    //     let tmp = db.getAll('Task'); 
+    //     db.deleteAll('Task');
+
+    //     return setDelete()
+    //         .then((response) => {
+    //             expect(response.status).toBe(400);
+    //         })
+    //         .then(() => {
+    //             for(let i = 0; i < tmp.length ; i++){
+    //                 db.addItem('Task', tmp[i]);
+    //             }
+    //         })
+
+    // })
+
+  })
+
+  describe('testing GET /tasks/:taskID', () => {
+    
+    //RIGHT ONE
+
+    test('the GET should return the request task', () => {
+
+        return setGet(1)
+            .then((response) => {
+                expect(response.status).toBe(200);
+                return response.json();
+            })
+            .then((json) => {
+                expect(json.id).toEqual(1);
+            })
+
+    })
+
+    //UNDEFINED FIELDS
+
+    test('the GET with undefined ID should return status 400', () => {
+
+        return setGet(undefined)
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+
+    })
+
+    //ILLOGICAL OPTION
+
+    test('the GET with ID as a string should return status 400', () => {
+
+        return setGet('1')
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+
+    })
+
+    test('the GET with ID as a vector should return status 400', () => {
+
+        return setGet([1, 2])
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+
+    })
+
+    test('the GET with ID as an object should return status 400', () => {
+
+        return setGet({name : '1'})
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+
+    })
+
+    test('the GET with an ID that doesn\'t exist should return status 404', () => {
+
+        return setGet(10)
+            .then((response) => {
+                expect(response.status).toBe(404);
+            })
+
+    })
+
+
+  })
+
+  describe('testing PUT /tasks/:tasksID', () => {
+
+    test('the PUT with updated question should return 200', () => {
+
+        let tmp = db.getById('Task', 3)
+
+        let body = {
+            question: 'update question',
+            questionType: undefined,
+            choices: undefined,
+            answers: undefined,
+            teacher: undefined
+        }
+
+        return setPut(body, 3)
+            .then((response) => {
+                expect(response.status).toBe(200);
+                return response.json();
+            })
+            .then((json) => {
+                expect(json.id).toEqual(3);
+                expect(json.question).toEqual(body.question);
+                expect(json.questionType).toEqual(tmp.questionType);
+                expect(json.choices).toEqual(tmp.choices);
+                expect(json.answers).toEqual(tmp.answers);
+                expect(json.teacher).toEqual(tmp.teacher);
+            })
+
+    })
+
+  })
+
+  describe('testing DELETE /tasks/:taskID', () => {
+    
+    //RIGHT ONE
+
+    test('the DELETE should return 200 status', () => {
+
+        return setDelete(4)
+            .then((response) => {
+                expect(response.status).toBe(200);
+            })
+
+    })
+
+    //UNDEFINED FIELDS
+
+    test('the DELETE with undefined ID should return status 400', () => {
+
+        return setDelete(undefined)
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+
+    })
+
+    //ILLOGICAL OPTION
+
+    test('the DELETE with ID as a string should return status 400', () => {
+
+        return setDelete('1')
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+
+    })
+
+    test('the DELETE with ID as a vector should return status 400', () => {
+
+        return setDelete([1, 2])
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+
+    })
+
+    test('the DELETE with ID as an object should return status 400', () => {
+
+        return setDelete({name : '1'})
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+
+    })
+
+    test('the DELETE with an ID that doesn\'t exist should return status 404', () => {
+
+        return setDelete(10)
+            .then((response) => {
+                expect(response.status).toBe(404);
+            })
+
+    })
+
+  })
+
+
 
