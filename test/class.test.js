@@ -1,4 +1,3 @@
-
 //bisogna sistemare tutte le cose, perchè questa è class
 
 const app = require('../v1/class');
@@ -62,9 +61,6 @@ let classSampleUpdate = {
   };
 
 // Testing
-
-let tmp1234 = db.getAll('Class');
-console.log(tmp1234);
 
 describe('App method should be defined', () => {
   test('app module should be defined', () => {
@@ -170,7 +166,6 @@ describe('Testing DELETE methods on /classes', () => {
   test('The DELETE /classes should return 200 if the delete was successful', () => {
     
     let tmp = db.getAll(tableClass);
-
     return setDelete()
       .then((res) => {
         expect(res.status).toBe(200);
@@ -198,6 +193,25 @@ describe('Testing DELETE methods on /classes', () => {
         }
       });
   });
+  
+  // STATUS 404
+  test('The DELETE /classes should return error 404 if there are no classes in the database', () => {
+    let tmp = db.getAll(tableClass);
+    db.deleteAll(tableClass);
+    db.deleteAll(tableClass);
+
+    return setDelete() 
+      .then((res) => {
+        expect(res.status).toBe(404);
+      })
+      .then(() => {
+        for (let i=0; i<tmp.length; i++) {
+          db.addItem(tableClass, tmp[i]);
+        }
+      });
+  });
+
+  //come faccio a testare bad request 400?
 
   //come faccio a testare bad request 400?
 
