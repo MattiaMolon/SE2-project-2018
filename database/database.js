@@ -5,7 +5,7 @@ let database = {
             name: 'Piero', 
             surname: 'Grasso', 
             uniNumber: 182930, 
-            isTeacher: true, 
+            isTeacher: false, 
             email: 'piero@grasso.it', 
             password: 'abc123',
             examsList: [1,2]
