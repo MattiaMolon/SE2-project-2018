@@ -1,5 +1,3 @@
-console.log("hello");
-
 let database = {
     User: [
         {
@@ -31,28 +29,48 @@ let database = {
             email: 'aurora.gelmini@unitn.it', 
             password: '098qwe',
             examsList: [3]
+        },
+        {
+            id: 4, 
+            name: 'Chiara', 
+            surname: 'Romano', 
+            uniNumber: 567810, 
+            isTeacher: false, 
+            email: 'chiara.romano@yahoo.it', 
+            password: 'tyop09',
+            examsList: [1,2,3]
+        },
+        {
+            id: 5, 
+            name: 'Britney', 
+            surname: 'Spears', 
+            uniNumber: 182930, 
+            isTeacher: true, 
+            email: 'britney.spears@america.it', 
+            password: 'zxfgui',
+            examsList: [3]
         }
     ],
     Class: [
         {   
             id: 1, 
             name: 'Siamo Veramente Euforici', 
-            participants: ['Tommaso', 'Sebastiano', 'Marta', 'Mattia', 'Leonardo']
+            participants: [1, 2, 3, 4, 5]
         }, 
         {
             id: 2, 
             name: 'Povolesi', 
-            participants: ['user1', 'user1', 'user1', 'user1']
+            participants: [1, 2, 4, 5]
         },
         {
             id: 3, 
             name: 'Heroku Siffredi', 
-            participants:['user2', 'user2', 'user2', 'user2']
+            participants:[2, 3, 4, 5]
         },
         {
             id: 4, 
             name: 'JSONnambuli', 
-            participants:['user3', 'user3', 'user3', 'user3']
+            participants:[1, 3, 4, 5]
         }
     ],
     Task:[
@@ -127,26 +145,51 @@ let database = {
             teacher: 1
         }
     ],
-    Submission: [],
+    Submission: [
+        {
+            id: 1, 
+            class: 1, 
+            teacher: 3, 
+            student: 1,
+            exam: 1, 
+            data: "05/12/2018 09:00"
+        },
+        {
+            id: 2, 
+            class: 3, 
+            teacher: 5, 
+            student: 2,
+            exam: 1, 
+            data: "06/12/2018 10:00"
+        },
+        {
+            id: 3, 
+            class: 4, 
+            teacher: 3, 
+            student: 3,
+            exam: 1, 
+            data: "07/12/2018 11:00"
+        }
+    ],
     Review: [
         {
-            id: 0,
+            id: 1,
             submission: 1,
-            uniNumber: 185431,
+            uniNumber: 182930,
             feedback: 'Good exam',
             mark: 24
         },
         {
-            id: 1,
-            submission: 4,
-            uniNumber: 123456,
+            id: 2,
+            submission: 3,
+            uniNumber: 156789,
             feedback: 'Bad exam',
             mark: 18
         },
         {
-            id: 2,
-            submission: 7,
-            uniNumber: 987234,
+            id: 3,
+            submission: 2,
+            uniNumber: 567810,
             feedback: 'Quite perfect exam',
             mark: 28
         }
@@ -406,7 +449,7 @@ const getAll = (tabella) => {
  */
 const getNewId = (tabella) => {
     if( tabella == 'User' || tabella == 'Task' ||
-        tabella == 'Taskgroup' || tabella == 'Class' || tabella == 'Exam' ||
+        tabella == 'TaskGroup' || tabella == 'Class' || tabella == 'Exam' ||
         tabella == 'Review' || tabella == 'Submission'){
 
             let vettore = database[tabella];
@@ -414,7 +457,7 @@ const getNewId = (tabella) => {
             if(vettore.length == 0){
                 return 1;
             }else {
-                return vettore.length + 1;
+                return vettore[vettore.length -1].id +1;
             }
     }
 

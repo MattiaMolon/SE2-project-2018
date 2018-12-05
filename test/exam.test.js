@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const PORT = process.env.SERVER_URL || 3000;
 const SERVER_URL = 'http://localhost:' + PORT + '/exams';
 const db = require('../database/database')
+const table = 'Exam';
 
 const examSample = {
   taskgroup: 1,
@@ -62,7 +63,17 @@ function setPut(item, id=""){
 
 // TESTS
 
+
 describe('testing GET on /exams', () => {
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+  
   test('the GET should return an array with json elements', () => {
     return setGet()
       .then((response) => {
@@ -75,23 +86,32 @@ describe('testing GET on /exams', () => {
       });
   });
 
-  test('the GET with an empty database should return 404', () => {
+  test('the GET with an empty database should return 404', async () => {
     let tmp = db.getAll('Exam');
-    db.deleteAll('Exam');
+    await setDelete();
 
     return setGet()
       .then((response) => {
         expect(response.status).toBe(404);
       })
-      .then(() => {
+      .then(async () => {
         for(let i = 0; i < tmp.length; i++) {
-          db.addItem('Exam', tmp[i]);
+          await setPost(tmp[i]);
         }
       });
   });
 });
 
 describe('testing POST on /exam', () => {
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+  
 
     test('the POST with a correct exam should return 201 and the json of the created exam', () => {
       return setPost(examSample)
@@ -151,6 +171,15 @@ describe('testing POST on /exam', () => {
 });
 
 describe('testing DELETE on /exam', () => {
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+
   test('the DELETE should return 200', () => {
     let tmp = db.getAll('Exam');
     
@@ -158,31 +187,39 @@ describe('testing DELETE on /exam', () => {
       .then((response) => {
         expect(response.status).toBe(200);
       })
-      .then((response) => {
+      .then(async () => {
         for(let i = 0; i < tmp.length; i++) {
-          db.addItem('Exam', tmp[i]);
+          await setPost(tmp[i]);
         }
       });
   });
 
-  test('the DELETE with an empty database set should return 404', () => {
+  test('the DELETE with an empty database set should return 404', async () => {
     let tmp = db.getAll('Exam');
-    db.deleteAll('Exam');
-    db.deleteAll('Exam');
+    await setDelete();
 
     return setDelete()
       .then((response) => {
         expect(response.status).toBe(404);
       })
-      .then((response) => {
+      .then(async () => {
         for(let i = 0; i < tmp.length; i++) {
-          db.addItem('Exam', tmp[i]);
+          await setPost(tmp[i]);
         }
       });
   });
 });
 
 describe('testing GET on /exam/:examId', () => {
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+
   test('the GET with a valid examId should return 200 and the correct exam', () => {
     return setGet(1)
       .then((response) => {
@@ -241,6 +278,15 @@ describe('testing GET on /exam/:examId', () => {
 });
 
 describe('testing PUT on /exams/:examId', () => {
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+
   test('the PUT with a Nan ID should return 400', () => {
     return setPut(examUpdate, 'ciao')
       .then((response) => {
@@ -279,7 +325,6 @@ describe('testing PUT on /exams/:examId', () => {
 
   test('the PUT with a not existing ID should return 404', () => {
     let tmp = db.getNewId('Exam');
-    console.log(tmp);
     return setPut(examUpdate, tmp)
       .then((response) => {
         expect(response.status).toBe(404);
@@ -431,6 +476,15 @@ describe('testing PUT on /exams/:examId', () => {
 });
 
 describe('testing DELETE on /exams/:examId', () => {
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+
   test('the correct DELETE should return 200', () => {
     let tmp = db.getById('Exam', 1);
 
@@ -438,8 +492,8 @@ describe('testing DELETE on /exams/:examId', () => {
       .then((response) => {
         expect(response.status).toBe(200);
       })
-      .then(() => {
-        db.addItem('Exam', tmp);
+      .then(async () => {
+        await setPost(tmp);
       });
   });
 
