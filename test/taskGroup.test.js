@@ -2,7 +2,6 @@ const fetch = require ('node-fetch');
 const db = require('../database/database')
 const PORT = process.env.SERVER_URL || 3000;
 const SERVER_URL = 'http://localhost:' + PORT + '/taskGroups';
-const app = require('../v1/taskGroup');
 
 
 // UTILS

@@ -1,16 +1,3 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-const PORT = process.env.PORT || 3000;
-
-const SOME_NUM = process.env.def || 40;
-
-// importo il database
-const db = require('../database/database');
-
 /**
  * funzione per gestire l'errore da restituire con il rispettivo json
  * @param {*} res la response della chiamata effettuata
@@ -67,142 +54,136 @@ function isString(toCheck) {
 
 // v1/classes
 
-// GET /classes (READY)
-app.get('/classes', (req, res) => {
-    try {
-        let classes = db.getAll('Class');
-        if(classes.length == 0) {
-            errore(res, 404);
-        } else {
-            res.status(200).json(classes);
-        }
-    } catch (error) {
-        console.log(error);
-        errore(res, 400);
-    }
-});
-
-// POST /classes (READY)
-app.post('/classes', (req, res) => {
-    try {
-        const class_id = db.getNewId('Class');
-        if (class_id == -1) {
-            errore(res, 400);
-        } else {
-            const class_name = req.body.name;
-            const class_participants = req.body.participants;
-            if(class_name == null || class_participants == null) {
-                errore(res, 400);
-            } else {
-                const new_class = {id: class_id, name: class_name, participants: class_participants};
-                db.addItem('Class', new_class);
-                res.status(201);
-                res.json(new_class);
-            }
-        }
-    } catch (error) {
-        console.log(error);
-        errore(res, 400);
-    }
-});
-
-// DELETE /classes (READY)
-app.delete('/classes', (req, res) => {
-    try {
-        if (db.deleteAll('Class')) {
-            res.status(200).json('All classes have been correctly deleted');
-            console.log('All classes have been correctly deleted');
-        } else {
-            res.status(404).json('No classes found - error 404');
-            console.log('No classes found - error 404');
-        }
+exports.registerClasses = (app, db) => {
+    // GET /classes (READY)
+    app.get('/classes', (req, res) => {
         
-    } catch(error) {
-        console.log(error);
-        errore(res, 400);
-    }
-});
-
-// v1/classes/{classId}
-
-// GET /classes/{classId} (READY)
-app.get('/classes/:classId', (req, res) => {
-    try {
-        const id = req.params.classId;
-        if(rightId(id)) {
-            const temp = db.getById('Class', id);
-            if(temp == null) {
+        try {
+            let classes = db.getAll('Class');
+            if(classes.length == 0) {
                 errore(res, 404);
             } else {
-                res.status(200);
-                res.json(temp);
+                res.status(200).json(classes);
             }
-        } else {
+        } catch (error) {
+            //console.log(error);
             errore(res, 400);
         }
-    } catch (error) {
-        console.log(error);
-        errore(res, 400);
-    }
-});
+    });
 
-// PUT /classes/{classId} (READY)
-app.put('/classes/:classId', (req, res) => {
-    try {
-        const id = req.params.classId;
-        if(rightId(id)) {
-            let temp = db.getById('Class', id);
-            if(temp == null) {
-                errore(res, 404);
+    // POST /classes (READY)
+    app.post('/classes', (req, res) => {
+        try {
+            const class_id = db.getNewId('Class');
+            if (class_id == -1) {
+                errore(res, 400);
             } else {
                 const class_name = req.body.name;
                 const class_participants = req.body.participants;
-                if(class_name != null && (isString(class_name))) {
-                    temp.name = class_name;
+                if(class_name == null || class_participants == null) {
+                    errore(res, 400);
+                } else {
+                    const new_class = {id: class_id, name: class_name, participants: class_participants};
+                    db.addItem('Class', new_class);
+                    res.status(201);
+                    res.json(new_class);
                 }
-                if(class_participants != null && (isString(class_name))) {
-                    temp.participants = class_participants;
-                }
-                //console.log(temp);
-                db.updateItem('Class', temp);
-                res.status(200);
-                res.json(temp);
             }
-        } else {
+        } catch (error) {
+            //console.log(error);
             errore(res, 400);
         }
-    } catch (error) {
-        console.log(error);
-        errore(res, 400);
-    }
-});
+    });
 
-// DELETE /classes/{classId} (READY)
-app.delete('/classes/:classId', (req, res) => {
-    try {
-        const id = req.params.classId;
-        if(rightId(id)) {
-            const temp = db.getById('Class', id);
-            if(temp == null) {
-                errore(res, 404);
+    // DELETE /classes (READY)
+    app.delete('/classes', (req, res) => {
+        try {
+            if (db.deleteAll('Class')) {
+                res.status(200).json('All classes have been correctly deleted');
+                //console.log('All classes have been correctly deleted');
             } else {
-                db.deleteById('Class', temp);
-                res.status(200).json('Delete successful');
+                res.status(404).json('No classes found - error 404');
+                //console.log('No classes found - error 404');
             }
-        } else {
+            
+        } catch(error) {
+            //console.log(error);
             errore(res, 400);
         }
-    } catch (error) {
-        console.log(error);
-        errore(res, 400);
-    }
-});
+    });
 
-module.exports = {
-    app: app,
-    errore: errore,
-    rightId: rightId,
-    isString: isString
+    // v1/classes/{classId}
+
+    // GET /classes/{classId} (READY)
+    app.get('/classes/:classId', (req, res) => {
+        try {
+            const id = req.params.classId;
+            if(rightId(id)) {
+                const temp = db.getById('Class', id);
+                if(temp == null) {
+                    errore(res, 404);
+                } else {
+                    res.status(200);
+                    res.json(temp);
+                }
+            } else {
+                errore(res, 400);
+            }
+        } catch (error) {
+            //console.log(error);
+            errore(res, 400);
+        }
+    });
+
+    // PUT /classes/{classId} (READY)
+    app.put('/classes/:classId', (req, res) => {
+        try {
+            const id = req.params.classId;
+            if(rightId(id)) {
+                let temp = db.getById('Class', id);
+                if(temp == null) {
+                    errore(res, 404);
+                } else {
+                    const class_name = req.body.name;
+                    const class_participants = req.body.participants;
+                    if(class_name != null && (isString(class_name))) {
+                        temp.name = class_name;
+                    }
+                    if(class_participants != null && (isString(class_name))) {
+                        temp.participants = class_participants;
+                    }
+                    ////console.log(temp);
+                    db.updateItem('Class', temp);
+                    res.status(200);
+                    res.json(temp);
+                }
+            } else {
+                errore(res, 400);
+            }
+        } catch (error) {
+            //console.log(error);
+            errore(res, 400);
+        }
+    });
+
+    // DELETE /classes/{classId} (READY)
+    app.delete('/classes/:classId', (req, res) => {
+        try {
+            const id = req.params.classId;
+            if(rightId(id)) {
+                const temp = db.getById('Class', id);
+                if(temp == null) {
+                    errore(res, 404);
+                } else {
+                    db.deleteById('Class', temp);
+                    res.status(200).json('Delete successful');
+                }
+            } else {
+                errore(res, 400);
+            }
+        } catch (error) {
+            //console.log(error);
+            errore(res, 400);
+        }
+    });
 }
-
-app.listen(PORT, () => console.log('Example app listening on port'+ PORT));

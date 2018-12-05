@@ -2,7 +2,6 @@ const fetch = require('node-fetch');
 const PORT = process.env.SERVER_URL || 3000;
 const SERVER_URL = 'http://localhost:' + PORT + '/exams';
 const db = require('../database/database')
-const app = require('../v1/exam');
 
 const examSample = {
   taskgroup: 1,

@@ -2,7 +2,6 @@ const fetch = require ('node-fetch');
 const db = require('../database/database');
 const PORT = process.env.SERVER_URL || 3000;
 const root = 'http://localhost:' + PORT + '/users';
-const app = require('../v1/user');
 
 function setGet(id=''){
   return fetch(root + '/' + id, {

@@ -1,14 +1,3 @@
-const express = require('express');
-const db = require('../database/database');
-var bodyParser = require('body-parser');
-
-const app = express();
-app.use( bodyParser.json() );
-app.use(bodyParser.urlencoded({ extended: true }));
-
-const PORT = process.env.PORT || 3000
-const SOME_NUM = process.env.PORT || 40;
-
 /**
  * funzione per gestire l'errore da restituire con il rispettivo json
  * @param {*} res la response della chiamata effettuata
@@ -43,7 +32,7 @@ function errore(res, errorType) {
  * @param {*} res 
  * @returns true se l'id è corretto, false altrimenti
  */
-function rightId(id, res) {
+function rightId(id) {
     let corretto = true;
 
     if(isNaN(id)) {
@@ -59,133 +48,126 @@ function rightId(id, res) {
     return corretto;
 }
 
-//root
-app.get('/', (req, res) => res.send('Hi! This is the root page. Here you can find only Exams'))
+exports.registerExams = (app, db) =>{
+    // paths: /collection
+    app.get('/exams', (req, res) => {
+        var exam = db.getAll('Exam');
+        if(exam.length == 0) {
+            errore(res, 404);
+        } else {
+            res.status(200).json(exam);
+        }
+    });
 
-// paths: /collection
-app.get('/exams', (req, res) => {
-    var exam = db.getAll('Exam');
-    if(exam.length == 0) {
-        errore(res, 404);
-    } else {
-        res.status(200).json(exam);
-    }
-});
-
-app.post('/exams', (req, res) => {
-    try {
-        const exam_id = db.getNewId('Exam');
-        const exam_taskgroup = req.body.taskgroup;
-        const exam_startline = req.body.startline;
-        const exam_deadline = req.body.deadline;
-        const exam_classes = req.body.classes;
-        const exam_teacher = req.body.teacher;
-        if(exam_id == -1) {
+    app.post('/exams', (req, res) => {
+        try {
+            const exam_id = db.getNewId('Exam');
+            const exam_taskgroup = req.body.taskgroup;
+            const exam_startline = req.body.startline;
+            const exam_deadline = req.body.deadline;
+            const exam_classes = req.body.classes;
+            const exam_teacher = req.body.teacher;
+            if(exam_id == -1) {
+                errore(res, 400);
+            } else if(exam_taskgroup == null || exam_deadline == null || exam_classes == null || exam_teacher == null) {
+                //console.log('entrato');
+                errore(res, 400);
+            } else {
+                const new_exam = {id: exam_id, taskgroup: exam_taskgroup, startline: exam_startline, deadline: exam_deadline, classes: exam_classes, teacher: exam_teacher};
+                db.addItem('Exam', new_exam);
+                res.status(201);
+                res.json(new_exam);
+            }
+        } catch(error) {
+            //console.log(error);
             errore(res, 400);
-        } else if(exam_taskgroup == null || exam_deadline == null || exam_classes == null || exam_teacher == null) {
-            console.log('entrato');
+        }
+    });
+
+    app.delete('/exams', (req, res) => {
+        if(db.deleteAll('Exam')) {
+            res.status(200).send('Correttamente cancellato');
+        } else {
+            errore(res, 404);
+        }
+    });
+
+    // paths: /collection/:item
+    app.get('/exams/:examId', (req, res) => {
+        const id = req.params.examId;
+        if(rightId(id)) {
+            let exam = db.getById('Exam', id);
+            if(exam == null) {
+                errore(res, 404);
+            } else {
+                res.status(200);
+                res.json(exam);
+            }
+        } else {
             errore(res, 400);
-        } else {
-            const new_exam = {id: exam_id, taskgroup: exam_taskgroup, startline: exam_startline, deadline: exam_deadline, classes: exam_classes, teacher: exam_teacher};
-            db.addItem('Exam', new_exam);
-            res.status(201);
-            res.json(new_exam);
         }
-    } catch(error) {
-        console.log(error);
-        errore(res, 400);
-    }
-});
+    });
 
-app.delete('/exams', (req, res) => {
-    if(db.deleteAll('Exam')) {
-        res.status(200).send('Correttamente cancellato');
-    } else {
-        errore(res, 404);
-    }
-});
+    app.put('/exams/:examId', (req, res) => {
+        const id = req.params.examId;
+        if(rightId(id)) {
+            let exam = db.getById('Exam', id);
+            if(exam == null) {
+                errore(res, 404);
+            } else {
+                const task_group = req.body.taskgroup
+                const start_line = req.body.startline
+                const dead_line = req.body.deadline
+                const classe = req.body.classes
+                const teach = req.body.teacher
 
-// paths: /collection/:item
-app.get('/exams/:examId', (req, res) => {
-    const id = req.params.examId;
-    if(rightId(id)) {
-        let exam = db.getById('Exam', id);
-        if(exam == null) {
-            errore(res, 404);
+                //params required
+                if(task_group!=null){
+                    exam.taskgroup = task_group;
+                }
+                if(classe!=null){
+                    exam.classes=classe;
+                }
+                if(dead_line!=null){
+                    exam.deadline = dead_line;
+                }
+
+                if(start_line!=null){
+                    exam.startline = start_line;
+                }
+                if(teach!=null){
+                    exam.teacher = teach;
+                }
+
+                db.updateItem('Exam', exam);
+
+                //manca controllo. NON DEVE ESSERE POSSIBILE MODIFICARE L'ID
+                
+                let exams = db.getAll('Exam');
+
+                //console.log('Exam Updated');
+                res.status(200);
+                res.json(exam);
+            }
         } else {
-            res.status(200);
-            res.json(exam);
+            errore(res, 400);
         }
-    } else {
-        errore(res, 400);
-    }
-});
+    })
 
-app.put('/exams/:examId', (req, res) => {
-    const id = req.params.examId;
-    if(rightId(id)) {
-        let exam = db.getById('Exam', id);
-        if(exam == null) {
-            errore(res, 404);
+    app.delete('/exams/:examId', (req, res) => {
+        const id = req.params.examId;
+        if(rightId(id)) {
+            let exam = db.getById('Exam', id);
+            if(exam == null) {
+                //console.log('Exam not found')
+                errore(res, 404);
+            } else {
+                db.deleteById('Exam', id);
+                res.status(200);
+                res.json(db.getAll('Exam'));
+            }
         } else {
-            const task_group = req.body.taskgroup
-            const start_line = req.body.startline
-            const dead_line = req.body.deadline
-            const classe = req.body.classes
-            const teach = req.body.teacher
-
-            //params required
-            if(task_group!=null){
-                exam.taskgroup = task_group;
-            }
-            if(classe!=null){
-                exam.classes=classe;
-            }
-            if(dead_line!=null){
-                exam.deadline = dead_line;
-            }
-
-            if(start_line!=null){
-                exam.startline = start_line;
-            }
-            if(teach!=null){
-                exam.teacher = teach;
-            }
-
-            db.updateItem('Exam', exam);
-
-            //manca controllo. NON DEVE ESSERE POSSIBILE MODIFICARE L'ID
-            
-            let exams = db.getAll('Exam');
-
-            console.log('Exam Updated');
-            res.status(200);
-            res.json(exam);
+            errore(res, 400);
         }
-    } else {
-        errore(res, 400);
-    }
-})
-
-app.delete('/exams/:examId', (req, res) => {
-    const id = req.params.examId;
-    if(rightId(id)) {
-        let exam = db.getById('Exam', id);
-        if(exam == null) {
-            console.log('Exam not found')
-            errore(res, 404);
-        } else {
-            db.deleteById('Exam', id);
-            res.status(200);
-            res.json(db.getAll('Exam'));
-        }
-    } else {
-        errore(res, 400);
-    }
-})
-
-module.exports = {
-    app: app
+    });
 }
-
-app.listen(PORT, () => console.log('Example app listening on port'+ PORT));

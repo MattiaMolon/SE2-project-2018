@@ -1,3 +1,5 @@
+console.log("hello");
+
 let database = {
     User: [
         {
@@ -346,7 +348,7 @@ const deleteAll = (tabella) => {
                 database.User = [];
                 return true;
             case 'Class' :
-                database.Class = [];
+                database.Class.splice(0);
                 return true;
             case 'Task' :
                 database.Task = []; 

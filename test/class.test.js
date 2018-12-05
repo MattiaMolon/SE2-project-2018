@@ -1,11 +1,8 @@
-//bisogna sistemare tutte le cose, perchè questa è class
-
-const app = require('../v1/class');
-const db = require('../database/database');
 const PORT = process.env.SERVER_URL || 3000;
 const urlClass = "http://localhost:"+PORT+"/classes";
 const fetch = require('node-fetch');
 const tableClass = 'Class';
+const db = require('../database/database');
 
 // Utilities
 function setGet(id="") {
@@ -62,11 +59,6 @@ let classSampleUpdate = {
 
 // Testing
 
-describe('App method should be defined', () => {
-  test('app module should be defined', () => {
-    expect(app).toBeDefined();
-  });
-})
 
 describe('Testing GET methods on /classes', () => {
 
@@ -85,17 +77,18 @@ describe('Testing GET methods on /classes', () => {
     });
     
     // STATUS 404
-    test('The GET /class should return error 404 with an empty database.', () => {
+    test('The GET /class should return error 404 with an empty database.', async () => {
     let tmp = db.getAll(tableClass);
-    db.deleteAll(tableClass);
+    await setDelete();
 
     return setGet()
       .then((res) => {
         expect(res.status).toBe(404);
+        return res;
       })
-      .then(() => {
+      .then(async () => {
         for (let i = 0; i<tmp.length; i++){
-          db.addItem(tableClass, tmp[i]);
+          await setPost(tmp[i]);
         }
       });
     });
@@ -104,6 +97,7 @@ describe('Testing GET methods on /classes', () => {
     // come posso testare questa cosa?
 
 });
+
 
 describe('Testing POST methods on /classes', () => {
 
@@ -163,55 +157,36 @@ describe('Testing POST methods on /classes', () => {
 describe('Testing DELETE methods on /classes', () => {
 
   // STATUS 200
-  test('The DELETE /classes should return 200 if the delete was successful', () => {
+  test('The DELETE /classes should return 200 if the delete was successful', async () => {
     
     let tmp = db.getAll(tableClass);
+
     return setDelete()
       .then((res) => {
         expect(res.status).toBe(200);
       })
-      .then(() => {
+      .then(async () => {
         for(let i=0; i<tmp.length; i++) {
-          db.addItem(tableClass, tmp[i]);
+          await setPost(tmp[i]);
         }
       });
   });
   
   // STATUS 404
-  test('The DELETE /classes should return error 404 if there are no classes in the database', () => {
+  test('The DELETE /classes should return error 404 if there are no classes in the database', async () => {
     let tmp = db.getAll(tableClass);
-    db.deleteAll(tableClass);
-    db.deleteAll(tableClass);
+    await setDelete();
 
     return setDelete() 
       .then((res) => {
         expect(res.status).toBe(404);
       })
-      .then(() => {
+      .then(async () => {
         for (let i=0; i<tmp.length; i++) {
-          db.addItem(tableClass, tmp[i]);
+          await setPost(tmp[i]);
         }
       });
   });
-  
-  // STATUS 404
-  test('The DELETE /classes should return error 404 if there are no classes in the database', () => {
-    let tmp = db.getAll(tableClass);
-    db.deleteAll(tableClass);
-    db.deleteAll(tableClass);
-
-    return setDelete() 
-      .then((res) => {
-        expect(res.status).toBe(404);
-      })
-      .then(() => {
-        for (let i=0; i<tmp.length; i++) {
-          db.addItem(tableClass, tmp[i]);
-        }
-      });
-  });
-
-  //come faccio a testare bad request 400?
 
   //come faccio a testare bad request 400?
 
@@ -222,17 +197,14 @@ describe('Testing GET methods on /classes/:classId', () => {
   // STATUS 200
   test('The GET /classes/:classId should return 200 & the class with the same ID', () => {
 
-    let tmpId = db.getNewId(tableClass)-1;
-
-    return setGet(tmpId)
+    return setGet(1)
       .then((res) => {
         expect(res.status).toBe(200);
         return res.json();
       })
       .then((json) => {
         expect(json).toBeDefined();
-        expect(json.id).toEqual(tmpId);
-        console.log(db.getById(tableClass ,tmpId));
+        expect(json.id).toEqual(1);
       });
   });
 
@@ -301,41 +273,33 @@ describe('Testing PUT methods on /classes/:classId', () => {
   // STATUS 200
   test('The PUT /classes/:classId with all the fields should return 200 & the class updated', () => {
 
-    // non posso sapere se questo ID c'è nel database
-    let tmpId = db.getNewId(tableClass)-1;
-
-    return setPut(classSampleUpdate, tmpId)
+    return setPut(classSampleUpdate, 1)
       .then((res) => {
         expect(res.status).toBe(200);
         return res.json()
       })
       .then((json) => {
-        expect(json.id).toEqual(tmpId);
+        expect(json.id).toEqual(1);
         expect(json.name).toEqual(classSampleUpdate.name);
         expect(json.participants).toEqual(classSampleUpdate.participants);
       })
   });
 
   test('The PUT /classes/:classId with only the field name should return 200 & the class\'s name updated', () => {
-    let tmpId = db.getNewId(tableClass)-1;
     let tmpName = {
       name: "Yeeeeeee"
     };
 
-    return setPut(classSampleUpdate, tmpId)
+    return setPut(tmpName, 1)
       .then((res) => {
         expect(res.status).toBe(200);
         return res.json();
       })
       .then((json) => {
-        expect(json.id).toEqual(tmpId);
-        expect(json.name).toEqual(classSampleUpdate.name);
+        expect(json.id).toEqual(1);
+        expect(json.name).toEqual(tmpName.name);
         expect(json.participants).toEqual(classSampleUpdate.participants);
-      })
-      .then(() => {
-        classSampleUpdate.name = tmpName.name;
-        console.log(db.getById(tableClass ,tmpId));
-      })
+      });
   })
 
   // // e se volessi cambiare solo un partecipante?
@@ -428,24 +392,21 @@ describe('Testing DELETE methods on /classes/:classId', () => {
   // STATUS 200
   test('The DELETE /classes/:classId should return 200 if the delete of the class with the matching ID was successful', () => {
     
-    let tmpId = db.getNewId(tableClass)-1;
     let tmp = db.getById(tableClass, 1);
 
     return setDelete(1)
       .then((res) => {
         expect(res.status).toBe(200);
       })
-      .then(() => {
-        db.addItem(tableClass, tmp);
+      .then(async () => {
+        await setPost(tmp);
       });
   });
   
   // STATUS 404
   test('The DELETE /classes/:classId should return error 404 if there are no classes in the database matching the ID', () => {
-    
-    let tmpId = db.getNewId(tableClass);
 
-    return setDelete(tmpId) 
+    return setDelete(55) 
       .then((res) => {
         expect(res.status).toBe(404);
       })
