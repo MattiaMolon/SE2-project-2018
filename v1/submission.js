@@ -1,52 +1,71 @@
-var db_submission = [
-    {id: 1, class: "Siamo Veramente Euforici", teacher: "Fabio Casati", student: "Mattia Molon", exam: "Ingegneria del Software 2", data: "05/12/2018 09:00"},
-    {id: 2, class: "Siamo Veramente Euforici", teacher: "Fabio Casati", student: "Sebastiano Chiari", exam: "Ingegneria del Software 2", data: "05/12/2018 09:00"},
-    {id: 3, class: "Siamo Veramente Euforici", teacher: "Fabio Casati", student: "Leonardo Remondini", exam: "Ingegneria del Software 2", data: "05/12/2018 09:00"},
-    {id: 4, class: "Siamo Veramente Euforici", teacher: "Fabio Casati", student: "Marta Toniolli", exam: "Ingegneria del Software 2", data: "05/12/2018 09:00"},
-    {id: 5, class: "Siamo Veramente Euforici", teacher: "Fabio Casati", student: "Tommaso Bosetti", exam: "Ingegneria del Software 2", data: "05/12/2018 09:00"},
-    {id: 6, class: "Siamo Veramente Euforici", teacher: "Renato Lo Cigno", student: "Marta Toniolli", exam: "Reti", data: "11/01/2019 10:00"},
-    {id: 7, class: "Siamo Veramente Euforici", teacher: "Renato Lo Cigno", student: "Leonardo Remondini", exam: "Reti", data: "11/01/2019 10:00"}
-];
-
 // v1/submissions
 exports.registerSubmission = (app, db) =>{
     app.get('/submissions', (req, res) => {
+
+        let db_submission = db.getAll(tableSubmission);
+    
         if(db_submission.length == 0) {
             res.status(404).send('http status code: 404 - We are sorry. No submissions found.');
         } else {
+    
+            //let result = convertSubmission(db_submission);
+    
+            for (let i=1; i<db_submission.length; i++) {
+                var submissionId = db_submission[i];
+                var submissionCurrent = db.getById(tableSubmission, submissionId);
+                console.log(submissionCurrent);
+                var submissionClass = db.getById('Class', submissionCurrent.class);
+                var submissionTeacher = db.getById('User', submissionCurrent.teacher);
+                var submissionStudent = db.getById('User', submissionCurrent.student);
+                var submissionExam = db.getById('Exam', submissionCurrent.exam);
+                var submissionData = submissionCurrent.data;
+            }
+    
+            let result = [
+                {
+                    id: submissionId, 
+                    class: submissionClass, 
+                    teacher: submissionTeacher, 
+                    student: submissionStudent,
+                    exam: submissionExam, 
+                    data: submissionData
+                }
+            ]
+            
             res.status(200);
-            res.json(db_submission);
+            res.json(result);
         }
     });
 
     app.post('/submissions', (req, res) => {
-        const submission_id = db_submission.length + 1;
-        const submission_classID = req.body.classID;
-        const submission_teacherID = req.body.teacherID;
-        const submission_studentID = req.body.studentID;
-        const submission_examID = req.body.examID;
-        const submission_data = req.body.data;
-
+        const submission_id = db.getNewId(tableSubmission);
+    
+        let submission_classID = req.body.classID;
+        let submission_teacherID = req.body.teacherID;
+        let submission_studentUniNumber = req.body.studentUniNumber;
+        let submission_examID = req.body.examID;
+        let submission_data = req.body.data;
+    
         if(submission_id == null){
             res.status(400) //Bad Request
-            //console.log('Database Error! Please try later');
+            console.log('Database Error! Please try later');
         } else if(submission_studentID == null || isNaN(submission_studentID)){
             res.status(400) //Bad Request
-            //console.log('Error! You must insert a valid uniNumber');
+            console.log('Error! You must insert a valid uniNumber');
         } else if(submission_examID == null || isNaN(submission_examID)){
             res.status(400) //Bad Request
-            //console.log('Error! You must insert a valid examID'); 
+            console.log('Error! You must insert a valid examID'); 
         } else if(submission_classID != null && isNaN(submission_classID)){
             res.status(400) //Bad Request
-            //console.log('Error! You have to insert a valid classID'); 
+            console.log('Error! You have to insert a valid classID'); 
         } else{
-
+    
             const new_submission = {id: submission_id, class: submission_classID, teacher: submission_teacherID, student: submission_studentID, exam: submission_examID, data: submission_data}
             db_submission.push(new_submission);
             res.status(201);
             res.json(new_submission);
-            //console.log(db_submission);
-
+            console.log(db_submission);
+    
         }
     });
 
@@ -59,7 +78,7 @@ exports.registerSubmission = (app, db) =>{
 
             res.status(204);
             res.json(db_submission);
-            //console.log('All the submissions have been deleted successfully');
+            console.log('All the submissions have been deleted successfully');
         }
 
     })
