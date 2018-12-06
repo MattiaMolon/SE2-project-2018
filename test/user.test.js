@@ -2,6 +2,7 @@ const fetch = require ('node-fetch');
 const db = require('../database/database');
 const PORT = process.env.SERVER_URL || 3000;
 const root = 'http://localhost:' + PORT + '/users';
+const table = 'User';
 
 function setGet(id=''){
   return fetch(root + '/' + id, {
@@ -50,25 +51,35 @@ function setDelete(id=''){
 // -------------------------------GET-------------------------------
 describe('test GET on /users', () => {
 
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+
+  // STATUS 200
   test('GET all users. Should return an array with all users', () => {
     return setGet()
-      .then((resp) =>{
+      .then((resp) => {
         expect(resp.status).toBe(200);
         return resp.json();
       })
       .then((json) => {
-        //expect(json).toBeDefined(); //??
-        //expect(json).toBeInstanceOf(Array);
+        expect(json).toBeDefined();
+        expect(json).toBeInstanceOf(Array);
       })
   });
 
   test('test GET on /users with id found', () => {
     return setGet(1)
-      .then(resp => {expect(resp.status).toBe(200)});
+      .then(resp => {
+        expect(resp.status).toBe(200)
+      });
   });
 
-
-  test('test GET on /users with id not found (-1) should return 404', () => {
+  test('test GET on /users with id not found (123) should return 404', () => {
     return setGet(123)
       .then(resp => {expect(resp.status).toBe(404)});
   });
@@ -78,35 +89,33 @@ describe('test GET on /users', () => {
       .then(resp => {expect(resp.status).toBe(400)});
   });
 
-  test('test GET on /users with id equal to a string should return 404', () => {
+  test('test GET on /users with id equal to a string should return 400', () => {
     return setGet('aa')
-      .then(resp => {expect(resp.status).toBe(404)});
+      .then(resp => {expect(resp.status).toBe(400)});
   });
 
-
   test('test GET on /users with id not found', () => {
-    return setGet(-1)
+    return setGet(99)
       .then(resp => { expect(resp.status).toBe(404)});
   })
-
 
   test('test GET on /users with id not found equal to zero', () => {
     return setGet(0)
       .then(resp => { expect(resp.status).toBe(404)});
   })
 
-  test('test GET on /users and database empty should return 404', ()=>{
+  test('test GET on /users and database empty should return 404', async ()=>{
     let usr = db.getAll('User');
-    db.deleteAll('User');
+    await setDelete();
 
     return setGet()
       .then((resp) => {
         expect(resp.status).toBe(404);
         return resp.json();
       })
-      .then(() => {
+      .then( async () => {
         for(let i =0; i< usr.length; i++){
-          db.addItem('User', usr[i]);
+          await setPost(usr[i]);
         }
       })
   })
@@ -114,6 +123,15 @@ describe('test GET on /users', () => {
 
 // -------------------------------POST-------------------------------
 describe('test POST on /users', () => {
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+
   test('test POST user with everything OK', () => {
     let body = {
                     // id: 1, 
@@ -275,6 +293,14 @@ test('test POST user with name and surname equal to null', () => {
 // -------------------------------PUT-------------------------------
 describe('test PUT on /users', () => {
 
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+
   test('test PUT user with id found', () => {
     return setPut({
                     //id: 1, 
@@ -286,7 +312,9 @@ describe('test PUT on /users', () => {
                     password: 'abc123',
                     examsList: [1,2]
                   }, 1)
-      .then(resp => {expect(resp.status).toBe(200)});
+      .then(resp => {
+        expect(resp.status).toBe(200);
+      });
   });
   
   
@@ -316,7 +344,7 @@ describe('test PUT on /users', () => {
                     password: 'abc123',
                     examsList: [1,2]
                   }, -1)
-      .then((resp) => {expect(resp.status).toBe(404)});
+      .then((resp) => {expect(resp.status).toBe(400)});
   });
   
   test('test PUT user with id not found', () => {
@@ -450,14 +478,22 @@ describe('test PUT on /users', () => {
 // -------------------------------DELETE-------------------------------
 describe('test DELETE on /users', () => {
 
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+
   test('test DELETE all users should return 200', () => {
       let usr = db.getAll('User');
       return setDelete() 
         .then((response)=>{ expect(response.status).toBe(200);
           })
-        .then(() => {
+        .then(async () => {
           for(let i =0; i< usr.length; i++){
-            db.addItem('User', usr[i]);
+            await setPost(usr[i]);
           }
         })
   });
@@ -466,8 +502,8 @@ describe('test DELETE on /users', () => {
     let usr = db.getById('User', 1); 
     return setDelete(1)
       .then((response)=>{ expect(response.status).toBe(200);})
-      .then(() => {
-        db.addItem('User', usr);
+      .then(async () => {
+        await setPost(usr);
       });
   });
 
@@ -475,19 +511,18 @@ describe('test DELETE on /users', () => {
   test('test DELETE user with id equal to null', () => {
     let usr = db.getById('User', null);
     return setDelete(usr)
-      .then((response)=>{expect(response.status).toBe(400);})
-      .then(() => {
-        db.addItem('User', usr);
+      .then((response)=>{
+        expect(response.status).toBe(400);
       });
   });
 
   test('test DELETE user with id equal to a string', () => {
     let usr = db.getById('User', null);
     return setDelete(usr)
-      .then((response)=>{expect(response.status).toBe(400);})
-      .then(() => {
-        db.addItem('User', usr);
+      .then((response)=>{
+        expect(response.status).toBe(400);
       });
+
   });
 
 })

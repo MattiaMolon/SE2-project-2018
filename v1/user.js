@@ -44,19 +44,24 @@ exports.registerUser = (app, db) =>{
     })
 
     app.get('/users/:userId', (req, res) => {
-
-        let user = db.getById(tableUser, parseInt(req.params.userId));
-        if (user == null) {
-            res.status(404).json('We are sorry, user not found - error 404');
-            //console.log('We are sorry, user not found - error 404')
-        } else if (user.error) {
+        if (isIdCorrect(+req.params.userId, res)){
+            let user = db.getById(tableUser, +req.params.userId);
+            if (user == null) {
+                res.status(404).json('We are sorry, user not found - error 404');
+                //console.log('We are sorry, user not found - error 404')
+            } else if (user.error) {
+                res.status(400).json('We are sorry, there was a general error - bad request 400')
+                //console.log('We are sorry, there was a general error - bad request 400');
+            } else {
+                res.status(200)
+                res.json(user)
+                //console.log('Print of the user successfully executed')
+            }
+        } else {
             res.status(400).json('We are sorry, there was a general error - bad request 400')
             //console.log('We are sorry, there was a general error - bad request 400');
-        } else {
-            res.status(200)
-            res.json(user)
-            //console.log('Print of the user successfully executed')
         }
+        
     })
 
     // quando creo un nuovo user ovviamente non ha esami registrati, però dovrei dire se è un insegnante oppure no?
@@ -73,7 +78,7 @@ exports.registerUser = (app, db) =>{
         let newSurname = req.body.surname
         let newExamsList = req.body.examsList
         
-        if (newEmail == null) {
+        if (newEmail == null || (!isNaN(newEmail))) {
             res.status(400).json('Ops, there was an error with the email. Please try again - bad request 400');
             //console.log('Ops, there was an error with the email. Please try again - bad request 400')
         } else if (newUniNumber == null) {
@@ -114,7 +119,7 @@ exports.registerUser = (app, db) =>{
 
     app.put('/users/:userId', (req, res) => {
 
-        let userId = parseInt(req.params.userId);
+        let userId = +req.params.userId;
 
         if( isIdCorrect(userId, res)) {
 
@@ -136,45 +141,23 @@ exports.registerUser = (app, db) =>{
                 if (update.email == null) {
                     //userCurrent.email = update.email;
                     res.status(400).json(userCurrent)
-                    return;
-                }
-
-                if (update.uniNumber == null) {
+                } else if (update.uniNumber == null) {
                     //userCurrent.email = update.email;
                     res.status(400).json(userCurrent)
-                    return;
-                    // if (!isNaN(update.uniNumber)) {
-                    //     userCurrent.uniNumber = update.uniNumber;
-                    // }
-                }
-
-                if (update.password == null) {
+                } else if (update.password == null) {
                     res.status(400).json(userCurrent)
-                    return;
                     //userCurrent.password = update.password;
-                }
-
-                if (update.name == null) {
+                } else if (update.name == null) {
                     res.status(400).json(userCurrent)
-                    return;
                     //userCurrent.name = update.name;
-                }
-
-                if (update.surname == null) {
+                } else if (update.surname == null) {
                     res.status(400).json(userCurrent)
-                    return;
                     //userCurrent.surname = update.surname;
-                }
-                
-                if (update.examsList != null) {
+                } else if (update.examsList == null) {
                     res.status(400).json(userCurrent)
-                    return;
                     //userCurrent.examsList = update.examsList;
-                }
-
-                if (update.isTeacher == null) {
+                } else if (update.isTeacher == null) {
                     res.status(400).json(userCurrent)
-                    return;
                     //userCurrent.isTeacher = update.isTeacher;
                 }
 
