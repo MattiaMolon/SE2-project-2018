@@ -1,12 +1,20 @@
 # SE2-project-2018
 Software Engineering II Project 2018/2019
 
+# WARNING
+Ultima versione "corretta" con swagger "up to date" su develop
+
+Stiamo ancora lavorando sull'implementazione di due API con i relativi casi di test e risolvendo problemi per quanto riguarda casi di test e gestione fake database
+
+Commit su master quando avremo la versione definitiva
+
 Group members:
-Bosetti Tommaso        185286
-Chiari Sebastiano      185858 
-Molon Mattia           187916
-Remondini Leonardo     184563
-Toniolli Marta         187839
+
+* [Tommaso Bosetti](https://github.com/tommasobosetti) 1855286
+* [Sebastiano Chiari](https://github.com/sebastianochiari) 185858
+* [Mattia Molon](https://github.com/MattiaMolon) 187916
+* [Leonardo Remondini](https://github.com/leonardoremondini) 184563
+* [Marta Toniolli](https://github.com/toniollimarta) 187839
 
 Apiary Link: https://se2project2018.docs.apiary.io/#
 
