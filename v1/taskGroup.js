@@ -35,7 +35,7 @@ exports.registerTaskGroup = (app, db) =>{
                     controllo1 = false;
                 }
 
-                const controllo_task = db.getById('TaskGroup', taskGroup_tasks[i])
+                const controllo_task = db.getById('Task', taskGroup_tasks[i])
                 if(controllo_task == null){
                     controllo2 = false;
                 }
@@ -108,7 +108,7 @@ exports.registerTaskGroup = (app, db) =>{
                             controllo1 = false;
                         }
             
-                        const controllo_task = db.getById('TaskGroup', update_tasks[i])
+                        const controllo_task = db.getById('Task', update_tasks[i])
                         if(controllo_task == null){
                             controllo2 = false;
                         }

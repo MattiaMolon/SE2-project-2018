@@ -2,6 +2,7 @@ const fetch = require ('node-fetch');
 const db = require('../database/database')
 const PORT = process.env.SERVER_URL || 3000;
 const SERVER_URL = 'http://localhost:' + PORT + '/taskGroups';
+const table = 'TaskGroup';
 
 
 // UTILS
@@ -60,6 +61,15 @@ let taskGroupUpdateSample = {
 
 // TESTS
 describe('testing GET on /taskGroups', () => {
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
+
 	test('the GET should return an array with json elements', ()=>{
 
 		return setGet()
@@ -73,25 +83,32 @@ describe('testing GET on /taskGroups', () => {
 			});
   });
   
-  test('the GET with an empty database should return 404', () =>{
+  test('the GET with an empty database should return 404', async () =>{
     let tmp = db.getAll('TaskGroup');
-    db.deleteAll('TaskGroup');
+    await setDelete();
 
     return setGet()
       .then((response) =>{
         expect(response.status).toBe(404);
       })
-      .then(() =>{
+      .then(async () =>{
         for(let i = 0; i<tmp.length; i++){
-          db.addItem('TaskGroup', tmp[i]);
+          await setPost(tmp[i]);
         }
       });
   })
   
 });
 
-
 describe('testing POST on /taskGroups', () =>{
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
 
     test('the POST with a correct taskGroup should return 201 with the same taskGroup sent',() =>{
       return setPost(taskGroupSample)
@@ -168,9 +185,15 @@ describe('testing POST on /taskGroups', () =>{
     });
 });
 
-
-//FUNZIONE CON 204 VA MA NON RESTITUISCE NULLA, COME LA TESTO?
 describe('testing DELETE on /taskGroups', () =>{
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
 
   test('the DELETE should return 200', () => {
 
@@ -180,17 +203,24 @@ describe('testing DELETE on /taskGroups', () =>{
       .then((response)=>{
         expect(response.status).toBe(200);
       })
-      .then(() => {
+      .then(async () => {
         for(let i =0; i<tmp.length; i++){
-          db.addItem('TaskGroup', tmp[i]);
+          await setPost(tmp[i]);
         }
       });
   });
 
 });
 
-
 describe('testing GET on /taskGroups/:taskGroupID', () =>{
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
 
   test('the GET with a valid taskGroupId should return the taskGroup with the same ID', () =>{
 
@@ -205,18 +235,18 @@ describe('testing GET on /taskGroups/:taskGroupID', () =>{
       })
   });
 
-  test('the GET with an empty database should return 404', () =>{
+  test('the GET with an empty database should return 404', async () =>{
 
     let tmp = db.getAll('TaskGroup');
-    db.deleteAll('TaskGroup');
+    await setDelete();
 
     return setGet(1)
       .then((response) =>{
         expect(response.status).toBe(404);
       })
-      .then(() =>{
+      .then(async () =>{
         for(let i = 0; i<tmp.length; i++){
-          db.addItem('TaskGroup', tmp[i]);
+          await setPost(tmp[i]);
         }
       });
   });
@@ -247,8 +277,15 @@ describe('testing GET on /taskGroups/:taskGroupID', () =>{
 
 });
 
-
 describe('testing PUT on /taskGroups/:taskGroupID', () =>{
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
 
   test('the PUT with a negative ID should return 404', () =>{
 
@@ -301,17 +338,14 @@ describe('testing PUT on /taskGroups/:taskGroupID', () =>{
       .then((json) => {
         expect(json.id).toEqual(1);
         expect(json.name).toEqual(tmp.name);
-        expect(json.numberTasks).toEqual(taskGroupUpdateSample.numberTasks);
-        expect(json.tasks).toEqual(taskGroupUpdateSample.tasks);
-      })
-      .then(() =>{
-        taskGroupUpdateSample.name = tmp.name;
+        expect(json.numberTasks).toEqual(db.getById(table, 1).numberTasks);
+        expect(json.tasks).toEqual(db.getById(table, 1).tasks);
       });
   });
 
   test('the PUT with only the numberTasks field (equal to the old one) should return 200 with the taskGroup item updated with the new name',() =>{
     let tmp = {
-      numerTasks: taskGroupUpdateSample.numberTasks
+      numberTasks: taskGroupUpdateSample.numberTasks
     };
     
     return setPut(tmp, 1)
@@ -321,9 +355,9 @@ describe('testing PUT on /taskGroups/:taskGroupID', () =>{
       })
       .then((json) => {
         expect(json.id).toEqual(1);
-        expect(json.name).toEqual(taskGroupUpdateSample.name);
-        expect(json.numberTasks).toEqual(taskGroupUpdateSample.numberTasks);
-        expect(json.tasks).toEqual(taskGroupUpdateSample.tasks);
+        expect(json.name).toEqual(db.getById(table, 1).name);
+        expect(json.numberTasks).toEqual(tmp.numberTasks);
+        expect(json.tasks).toEqual(db.getById(table, 1).tasks);
       });
   });
 
@@ -339,12 +373,9 @@ describe('testing PUT on /taskGroups/:taskGroupID', () =>{
       })
       .then((json) => {
         expect(json.id).toEqual(1);
-        expect(json.name).toEqual(taskGroupUpdateSample.name);
-        expect(json.numberTasks).toEqual(taskGroupUpdateSample.numberTasks);
+        expect(json.name).toEqual(db.getById(table, 1).name);
+        expect(json.numberTasks).toEqual(db.getById(table, 1).numberTasks);
         expect(json.tasks).toEqual(tmp.tasks);
-      })
-      .then(() =>{
-        taskGroupUpdateSample.tasks = tmp.tasks;
       });
   });
 
@@ -372,7 +403,7 @@ describe('testing PUT on /taskGroups/:taskGroupID', () =>{
 
   test('the PUT with the tasks field with tasks that don\'t exist should return 409', ()=>{
     let tmp ={
-      tasks: [1,4]
+      tasks: [1,5]
     };
 
     return setPut(tmp, 1)
@@ -383,7 +414,7 @@ describe('testing PUT on /taskGroups/:taskGroupID', () =>{
 
   test('the PUT with the tasks field with tasks written as strings should return 409', ()=>{
     let tmp ={
-      tasks: [1,"4"]
+      tasks: [1,"errore"]
     };
 
     return setPut(tmp, 1)
@@ -426,9 +457,15 @@ describe('testing PUT on /taskGroups/:taskGroupID', () =>{
   });
 });
 
-
-//FUNZIONE VA MA NON RESTITUISCE NULLA, COME LA TESTO?
 describe('testing DELETE on /taskGroups/:taskGroupID', () =>{
+
+  afterEach(async ()=>{
+    let tmp = db.getAll(table);
+    await setDelete();
+    for(let i = 0; i<tmp.length; i++){
+      await setPost(tmp[i]);
+    }
+  });
 
   test('the DELETE should return 200', () => {
 
@@ -438,8 +475,8 @@ describe('testing DELETE on /taskGroups/:taskGroupID', () =>{
       .then((response)=>{
         expect(response.status).toBe(200);
       })
-      .then(() => {
-        db.addItem('TaskGroup', tmp);
+      .then(async () => {
+        await setPost(tmp);
       });
   });
 
@@ -466,6 +503,5 @@ describe('testing DELETE on /taskGroups/:taskGroupID', () =>{
         expect(response.status).toBe(404);
       });
   });
- 
 
 });

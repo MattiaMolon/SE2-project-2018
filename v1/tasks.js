@@ -42,7 +42,7 @@ function isIdCorrect(taskId, res){
         error400(res); 
         corretto = false; //console.log(1); 
     }
-    else if( taskId == null){
+    else if( taskId == null || taskId === undefined){
         error400(res);
         corretto = false; //console.log(2);
     }
@@ -145,7 +145,7 @@ exports.registerTask = (app, db) =>{
         if(db.deleteAll('Task')){
             res.status(200).send("All tasks deleted");
         } else {
-        error400(err);
+            error400(res);
         }
         
     });

@@ -2,50 +2,59 @@ const fetch = require ('node-fetch');
 const db = require('../database/database');
 const PORT = process.env.SERVER_URL || 3000;
 const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
+const table = 'Task';
 
-  function setGet(id="") {
-    return fetch(SERVER_URL+"/"+id,{
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
-  }
-  
-  function setPost(item, id=""){
-    return fetch(SERVER_URL+"/"+id,{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(item)
-    });
-  }
+function setGet(id="") {
+return fetch(SERVER_URL+"/"+id,{
+    method: 'GET',
+    headers: {
+    'Accept': 'application/json'
+    }
+});
+}
 
-  function setPut(item, id=""){
-    return fetch(SERVER_URL+"/"+id,{
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
+function setPost(item, id=""){
+return fetch(SERVER_URL+"/"+id,{
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+    },
+    body: JSON.stringify(item)
+});
+}
+
+function setPut(item, id=""){
+return fetch(SERVER_URL+"/"+id,{
+    method: 'PUT',
+    headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+    },
+    body: JSON.stringify(item)
+});
+}
+
+function setDelete(id=""){
+return fetch(SERVER_URL+"/"+id, {
+    method: 'DELETE',
+    headers:{
         'Accept': 'application/json'
-      },
-      body: JSON.stringify(item)
-    });
-  }
-  
-  function setDelete(id=""){
-    return fetch(SERVER_URL+"/"+id, {
-        method: 'DELETE',
-        headers:{
-          'Accept': 'application/json'
+    }
+});
+}
+
+describe('testing GET /tasks', () => {
+
+    afterEach(async ()=>{
+        let tmp = db.getAll(table);
+        await setDelete();
+        for(let i = 0; i<tmp.length; i++){
+          await setPost(tmp[i]);
         }
-    });
-  }
+      });
 
-  describe('testing GET /tasks', () => {
-
-    //RIGHT ONE
+//RIGHT ONE
 
     test('the GET should return an array with json elements', () => {
 
@@ -57,33 +66,41 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
             .then((json) => {
                 expect(json).toBeDefined();
                 expect(json).toBeInstanceOf(Array);
-            })
+            });
 
     })
 
     //WRONG ONE
 
-    test('the GET with empty database table should return 404', () => {
+    test('the GET with empty database table should return 404', async () => {
 
         let tmp = db.getAll('Task'); 
-        db.deleteAll('Task');
+        await setDelete();
 
         return setGet()
             .then((response) => {
                 expect(response.status).toBe(404);
                 return response.json();
             })
-            .then(() => {
+            .then(async () => {
                 for(let i = 0; i < tmp.length ; i++){
-                    db.addItem('Task', tmp[i]);
+                    await setPost(tmp[i]);
                 }
             })
 
     })
 
-  })
+ })
 
-  describe('testing POST /tasks ', () => {
+describe('testing POST /tasks ', () => {
+
+    afterEach(async ()=>{
+        let tmp = db.getAll(table);
+        await setDelete();
+        for(let i = 0; i<tmp.length; i++){
+          await setPost(tmp[i]);
+        }
+      });
 
     //RIGHT ONES
 
@@ -220,17 +237,8 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
 
         return setPost(body)
             .then((response) => {
-                expect(response.status).toBe(201);
-                return response.json();
-            })
-            .then((json) => {
-                expect(json.id).toBeGreaterThan(0);
-                expect(json.question).toEqual(body.question);
-                expect(json.questionType).toEqual(body.questionType);
-                expect(json.answers).toEqual(body.answers);
-                expect(json.teacher).toEqual(body.teacher);
-            })
-
+                expect(response.status).toBe(400);
+            });
     })
 
     test('the POST with multipleChoices as questionType, defined choices AND undefined answers should return status 400', () => {
@@ -562,7 +570,7 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
 
     })
 
-    test('the POST with an object as answer should return status 400', () => {
+    test('the POST with an object as one of the answers should return status 400', () => {
 
         let body = {
             question: 'question1',
@@ -654,7 +662,7 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
             questionType: 'multipleChoice',
             choices: ['ris1', 'ris2', 'ris3', 'ris4'],
             answers: ['ris1', ['ris2']],
-            teacher: [1]
+            teacher: [1,2]
         }
 
         return setPost(body)
@@ -681,9 +689,17 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
 
     })
 
-  })
+})
 
-  describe('testing DELETE /tasks ', () => { 
+describe('testing DELETE /tasks ', () => { 
+
+    afterEach(async ()=>{
+        let tmp = db.getAll(table);
+        await setDelete();
+        for(let i = 0; i<tmp.length; i++){
+          await setPost(tmp[i]);
+        }
+      });
 
     test('the DELETE should return STATUS 200', () => {
 
@@ -693,34 +709,42 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
             .then((response) => {
                 expect(response.status).toBe(200);
             })
-            .then(() => {
+            .then( async () => {
                 for(let i = 0; i < tmp.length ; i++){
-                    db.addItem('Task', tmp[i]);
+                    await setPost(tmp[i]);
                 }
             })
 
     })
 
-    // test('the DELETE with empty database table should return 400', () => {
+    test('the DELETE with empty database table should return 400', async () => {
 
-    //     let tmp = db.getAll('Task'); 
-    //     db.deleteAll('Task');
+        let tmp = db.getAll('Task'); 
+        await setDelete();
 
-    //     return setDelete()
-    //         .then((response) => {
-    //             expect(response.status).toBe(400);
-    //         })
-    //         .then(() => {
-    //             for(let i = 0; i < tmp.length ; i++){
-    //                 db.addItem('Task', tmp[i]);
-    //             }
-    //         })
+        return setDelete()
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+            .then(async () => {
+                for(let i = 0; i < tmp.length ; i++){
+                    await setPost(tmp[i]);
+                }
+            })
 
-    // })
+    })
 
-  })
+})
 
-  describe('testing GET /tasks/:taskID', () => {
+describe('testing GET /tasks/:taskID', () => {
+
+    afterEach(async ()=>{
+        let tmp = db.getAll(table);
+        await setDelete();
+        for(let i = 0; i<tmp.length; i++){
+          await setPost(tmp[i]);
+        }
+      });
     
     //RIGHT ONE
 
@@ -752,7 +776,7 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
 
     test('the GET with ID as a string should return status 400', () => {
 
-        return setGet('1')
+        return setGet('ciao')
             .then((response) => {
                 expect(response.status).toBe(400);
             })
@@ -787,9 +811,17 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
     })
 
 
-  })
+})
 
-  describe('testing PUT /tasks/:tasksID', () => {
+describe('testing PUT /tasks/:tasksID', () => {
+
+    afterEach(async ()=>{
+        let tmp = db.getAll(table);
+        await setDelete();
+        for(let i = 0; i<tmp.length; i++){
+          await setPost(tmp[i]);
+        }
+      });
 
     test('the PUT with updated question should return 200', () => {
 
@@ -819,9 +851,17 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
 
     })
 
-  })
+})
 
-  describe('testing DELETE /tasks/:taskID', () => {
+describe('testing DELETE /tasks/:taskID', () => {
+
+    afterEach(async ()=>{
+        let tmp = db.getAll(table);
+        await setDelete();
+        for(let i = 0; i<tmp.length; i++){
+          await setPost(tmp[i]);
+        }
+      });
     
     //RIGHT ONE
 
@@ -849,7 +889,7 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
 
     test('the DELETE with ID as a string should return status 400', () => {
 
-        return setDelete('1')
+        return setDelete('ciao')
             .then((response) => {
                 expect(response.status).toBe(400);
             })
@@ -883,7 +923,7 @@ const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
 
     })
 
-  })
+})
 
 
 

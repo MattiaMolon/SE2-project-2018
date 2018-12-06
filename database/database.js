@@ -97,6 +97,14 @@ let database = {
             choices: undefined,
             answers: undefined,
             teacher: 3
+        },
+        {
+            id : 4,
+            question: 'domanda3',
+            questionType: 'openAnswer',
+            choices: undefined,
+            answers: undefined,
+            teacher: 3
         }
     ],
     TaskGroup: [
