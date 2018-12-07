@@ -1,31 +1,67 @@
 const tableUser = 'User';
 
 // Funzione per controlllare che un id sia scritto giusto
-function isIdCorrect(taskId, res){
+function isNum(num, res) {
     let corretto = true;
 
-    if( isNaN(taskId) ){
-        res.status(400).json('We are sorry, but the ID passed is not a number - bad request 400');
+    if(isNaN(num) ) {
+        //res.status(400).json(
         corretto = false; ////console.log(1); 
         //console.log('We are sorry, but the ID passed is not a number - bad request 400');
     }
-    else if( taskId == null){
-        res.status(400).json('We are sorry, but you did\'t pass any ID - bad request 400');
+    else if(num == null) {
+        //res.status(400).json('We are sorry, but you did\'t pass any ID - bad request 400');
         corretto = false; ////console.log(2);
         //console.log('We are sorry, but you did\'t pass any ID - bad request 400');
     }
-    else if( taskId < 0  ){
-        res.status(400).json('We are sorry, but the ID passed is lower than 0 - bad request 400');
+    else if(num <= 0  ) {
+        //res.status(400).json('We are sorry, but the ID passed is lower than 0 - bad request 400');
         corretto = false; ////console.log(3);
         //console.log('We are sorry, but the ID passed is lower than 0 - bad request 400');
     }
-    else if ( taskId % 1 != 0 ){
-        res.status(400).json('We are sorry, but the ID passed is not an integer - bad request 400');
+    else if((num % 1) != 0) {
+        //res.status(400).json('We are sorry, but the ID passed is not an integer - bad request 400');
         corretto = false; ////console.log(4);
-        //console.log('We are sorry, but the ID passed is not an integer - bad request 400');
+        //console.log(text);
     }
 
+    // console.log('------'+num+'--------'+corretto+'------');
     return corretto;
+}
+
+function errore(res, errorType, text="") {
+    let message = {
+        statusCode: undefined,
+        description: undefined
+    }
+    
+    if (text != null) {
+        message.description = text;
+    } else {
+        switch (errorType) {
+            case 400:
+                message.description = 'Ops! Something went wrong - Bad request 400';
+                break;
+            case 404:
+                message.description = 'We are sorry! No class found - Error 404';
+                break;
+            case 409:
+                message.description = 'Ops! There are some conflicts - Conflict 409';
+                break;
+        }
+    }
+
+    if(errorType == 400) {
+        message.statusCode = errorType;
+    }
+    if(errorType == 404) {
+        message.statusCode = errorType;
+    }
+    if(errorType == 409) {
+        message.statusCode = errorType;
+    }
+
+    res.status(errorType).json(message);
 }
 
 exports.registerUser = (app, db) =>{
@@ -34,38 +70,44 @@ exports.registerUser = (app, db) =>{
         let usersList = db.getAll(tableUser);
 
         if (usersList.length == 0) {
-            res.status(404).json('We are sorry, user not found - error 404');
+            let text = 'We are sorry, user not found - error 404';
+            errore(res, 404, text);
+            //res.status(404).json('We are sorry, user not found - error 404');
             //console.log('Sorry, no user found - error 404');
         } else {
-            res.status(200)
-            res.json(usersList)
+            res.status(200).json(usersList);
             //console.log('Print of all the users successfully executed')
         }
     })
 
     app.get('/users/:userId', (req, res) => {
-        if (isIdCorrect(+req.params.userId, res)){
+        if (isNum(+req.params.userId, res)){
+            // console.log(tmpId);
             let user = db.getById(tableUser, +req.params.userId);
+            // console.log(user);
             if (user == null) {
-                res.status(404).json('We are sorry, user not found - error 404');
+                // console.log('-------------sono dentro a user == null------------------');
+                let text = 'We are sorry, user not found - error 404';
+                errore(res, 404, text);
+                //res.status(404).json('We are sorry, user not found - error 404');
                 //console.log('We are sorry, user not found - error 404')
             } else if (user.error) {
-                res.status(400).json('We are sorry, there was a general error - bad request 400')
+                let text = 'We are sorry, there was a general error - bad request 400';
+                errore(res, 400, text);
+                //res.status(400).json('We are sorry, there was a general error - bad request 400')
                 //console.log('We are sorry, there was a general error - bad request 400');
             } else {
-                res.status(200)
-                res.json(user)
+                res.status(200).json(user);
                 //console.log('Print of the user successfully executed')
             }
         } else {
-            res.status(400).json('We are sorry, there was a general error - bad request 400')
-            //console.log('We are sorry, there was a general error - bad request 400');
+            //console.log('------------------------------è fallita isNum----------------');
+            let text = 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400';
+            errore(res, 400, text);
         }
         
     })
 
-    // quando creo un nuovo user ovviamente non ha esami registrati, però dovrei dire se è un insegnante oppure no?
-    // aggiungere il controllo sui parametri required
     app.post('/users', (req, res) => {
         
         const newId = db.getNewId(tableUser);
@@ -79,22 +121,34 @@ exports.registerUser = (app, db) =>{
         let newExamsList = req.body.examsList
         
         if (newEmail == null || (!isNaN(newEmail))) {
-            res.status(400).json('Ops, there was an error with the email. Please try again - bad request 400');
+            let text = 'Ops, there was an error with the email. Please try again - bad request 400';
+            errore(res, 400, text);
+            //res.status(400).json('Ops, there was an error with the email. Please try again - bad request 400');
             //console.log('Ops, there was an error with the email. Please try again - bad request 400')
-        } else if (newUniNumber == null) {
-            res.status(400).json('Ops, there was an error with the uniNumber. Please try again - bad request 400')
+        } else if (newUniNumber == null || isNaN(newUniNumber) || newUniNumber <= 0 || (newUniNumber % 1) != 0) {
+            let text = 'Ops, there was an error with the uniNumber. Please try again - bad request 400';
+            errore(res, 400, text);
+            //res.status(400).json('Ops, there was an error with the uniNumber. Please try again - bad request 400')
             //console.log('Ops, there was an error with the uniNumber. Please try again - bad request 400')
         } else if (newPassword == null) {
-            res.status(400).json('Ops, there was an error with the password. Please try again - bad request 400')
+            let text = 'Ops, there was an error with the password. Please try again - bad request 400';
+            errore(res, 400, text);
+            //res.status(400).json('Ops, there was an error with the password. Please try again - bad request 400')
             //console.log('Ops, there was an error with the password. Please try again - bad request 400')
         } else if (newName == null) {
-            res.status(400).json('Ops, there was an error with the name. Please try again - bad request 400')
+            let text = 'Ops, there was an error with the name. Please try again - bad request 400';
+            errore(res, 400, text);
+            //res.status(400).json('Ops, there was an error with the name. Please try again - bad request 400')
             //console.log('Ops, there was an error with the name. Please try again - bad request 400')
         } else if (newSurname == null) {
-            res.status(400).json('Ops, there was an error with the surname. Please try again - bad request 400')
+            let text = 'Ops, there was an error with the surname. Please try again - bad request 400';
+            errore(res, 400, text);
+            //res.status(400).json('Ops, there was an error with the surname. Please try again - bad request 400')
             //console.log('Ops, there was an error with the surname. Please try again - bad request 400')
         } else if (newIsTeacher == null) {
-            res.status(400).json('Ops, there was an error with the role of the user. Please try again - bad request 400')
+            let text = 'Ops, there was an error with the role of the user. Please try again - bad request 400';
+            errore(res, 400, text);
+            //res.status(400).json('Ops, there was an error with the role of the user. Please try again - bad request 400')
             //console.log('Ops, there was an error with the role of the user. Please try again - bad request 400')
         } else {
             let newUser = {
@@ -110,8 +164,7 @@ exports.registerUser = (app, db) =>{
 
             db.addItem(tableUser, newUser);
 
-            res.status(201)
-            res.json(newUser)
+            res.status(201).json(newUser);
             //console.log('User created successfully')
         }
 
@@ -120,73 +173,110 @@ exports.registerUser = (app, db) =>{
     app.put('/users/:userId', (req, res) => {
 
         let userId = +req.params.userId;
+        //console.log(userId+' prima di isNum')
 
-        if( isIdCorrect(userId, res)) {
+        if(isNum(+req.params.userId, res)) {
 
-            let userCurrent = db.getById(tableUser ,parseInt(req.params.userId));
+            let userCurrent = db.getById(tableUser, +req.params.userId);
+            console.log(userCurrent);
             
             if (userCurrent == null) {
-                res.status(404).json('We are sorry, user not found - error 404');
+                //console.log('----sono dentro a userCurrent==null-------');
+                let text = 'We are sorry, user not found - error 404';
+                errore(res, 404, text);
+                //res.status(404).json('We are sorry, user not found - error 404');
                 //console.log('We are sorry, user not found - error 404');
             } else {
 
                 // assegno i parametri a prescindere
                 let update = req.body;
 
-                // e se mi passa dei valori che sbagliati? 
+                // qui controllo che i parametri required non siano null. 
+                // se sono null mi tengo i parametri vecchi
+                if (update.email != null) {
+                    userCurrent.email = update.email;
+                } else if (update.uniNumber != null) {
+                    userCurrent.uniNumber = update.uniNumber;
+                } else if (update.password != null) {
+                    userCurrent.password = update.password;
+                } else if (update.name != null) {
+                    userCurrent.name = update.name;
+                    // console.log(update.name+' copiando parametri');
+                } else if (update.surname != null) {
+                    userCurrent.surname = update.surname;
+                } else if (update.examsList != null) {
+                    userCurrent.examsList = update.examsList;
+                } else if (update.isTeacher != null) {
+                    userCurrent.isTeacher = update.isTeacher;
+                    if (Boolean(userCurrent.isTeacher === true)) {
+                        userCurrent.isTeacher = true;
+                    }
+                    if (Boolean(userCurrent.isTeacher === false)) {
+                        userCurrent.isTeacher = false;
+                    }
+                }
 
+                // DEBUG
 
-    //CODICE MODIFICATO per coprire alcuni bugs trovati durante il testing di user.js
+                if (typeof(userCurrent.surname) === typeof(3)){
+                    console.log('è un numero')
+                } else if (typeof(userCurrent.surname) === typeof('3')) {
+                    console.log('è una stringa')
+                }
+                console.log(!isNaN(+userCurrent.surname+1));
+
+                // if (userCurrent.isTeacher) {
+                //     console.log('-coversione riuscita --------> isteacher = true')
+                //     console.log(1+2)
+                // } else if (!userCurrent.isTeacher) {
+                //     console.log('-coversione riuscita --------> isteacher = false')
+                //     console.log(3+4)
+                // }
+                
+
                 // qui cambio effettivamente le cose da cambiare
-                if (update.email == null) {
-                    //userCurrent.email = update.email;
-                    res.status(400).json(userCurrent)
-                } else if (update.uniNumber == null) {
-                    //userCurrent.email = update.email;
-                    res.status(400).json(userCurrent)
-                } else if (update.password == null) {
-                    res.status(400).json(userCurrent)
-                    //userCurrent.password = update.password;
-                } else if (update.name == null) {
-                    res.status(400).json(userCurrent)
-                    //userCurrent.name = update.name;
-                } else if (update.surname == null) {
-                    res.status(400).json(userCurrent)
-                    //userCurrent.surname = update.surname;
-                } else if (update.examsList == null) {
-                    res.status(400).json(userCurrent)
-                    //userCurrent.examsList = update.examsList;
-                } else if (update.isTeacher == null) {
-                    res.status(400).json(userCurrent)
-                    //userCurrent.isTeacher = update.isTeacher;
+                if ((typeof(userCurrent.email) !== 'string')) {
+                    let text = 'We are sorry, you didn\'t enter a valid email - bad request 400';
+                    errore(res, 400, text);
+                    //console.log(text);
+                } else if (userCurrent.uniNumber == null || isNaN(userCurrent.uniNumber) || userCurrent.uniNumber <= 0 || (userCurrent.uniNumber % 1) != 0) {
+                    let text = 'We are sorry, you didn\'t enter a valid uniNumber - bad request 400';
+                    errore(res, 400, text);
+                    //console.log(text);
+                } else if (typeof(userCurrent.name) !== 'string' || !isNaN(+userCurrent.name+1)) {
+                    let text = 'We are sorry, you didn\'t enter a valid name - bad request 400';
+                    errore(res, 400, text);
+                    //console.log(text);
+                } else if (typeof(userCurrent.surname) !== 'string' || (!isNaN(+userCurrent.surname+1) == true)) {
+                    let text = 'We are sorry, you didn\'t enter a valid surname - bad request 400';
+                    errore(res, 400, text);
+                    //console.log(text);
+                } else if ((typeof(userCurrent.isTeacher) !== 'boolean') || ((userCurrent.isTeacher != false) && (userCurrent.isTeacher != true))) {
+                    let text = 'We are sorry, but we need to know if '+userCurrent.uniNumber+' is are a teacher or a student - bad request 400';
+                    errore(res, 400, text);
+                    //console.log(text+'\n-----'+(typeof(userCurrent.isTeacher) !== 'boolean'));
+                } else {
+                    db.updateItem(tableUser, userCurrent);
+
+                    res.status(200).json(userCurrent);
+                    //console.log('User updated successfully')
                 }
-
-                userCurrent.email = update.email;
-                if (!isNaN(update.uniNumber)) {
-                        userCurrent.uniNumber = update.uniNumber;
-                }
-                userCurrent.password = update.password;
-                userCurrent.name = update.name;
-                userCurrent.surname = update.surname;
-                userCurrent.examsList = update.examsList;
-                userCurrent.isTeacher = update.isTeacher;
-
-                db.updateItem(tableUser, userCurrent);
-
-                res.status(200)
-                res.json(userCurrent);
-                //console.log('User updated successfully')
             }
+        } else {
+            //console.log('------------------------------è fallita isNum----------------');
+            let text = 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400';
+            errore(res, 400, text);
         }
     })
 
     app.delete('/users', (req, res) => {
 
         if(db.deleteAll(tableUser)){
-            res.status(200).json(db.getAll('User'))
+            res.status(200).json('Deleted successful')
             //console.log('All the users have been deleted successfully');
         } else {
-            res.status(400)
+            errore(res, 400);
+            //res.status(400)
         }
         
     })
@@ -197,12 +287,14 @@ exports.registerUser = (app, db) =>{
 
         let usersList = db.getAll(tableUser);
 
-        if( isIdCorrect(userId, res)) {
+        if(isNum(userId, res)) {
 
             let userCurrent = db.getById(tableUser ,parseInt(req.params.userId));
 
             if (userCurrent == null) {
-                res.status(404)
+                let text = 'We are sorry, user not found - error 404';
+                errore(res, 404, text);
+                //res.status(404)
                 //console.log('We are sorry, user not found')
             } else { 
                 //console.log('Eliminando', userCurrent.name, userCurrent.surname);

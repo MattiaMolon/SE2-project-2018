@@ -188,7 +188,6 @@ describe('test POST on /users', () => {
       .then(resp => {expect(resp.status).toBe(400)});
   });
 
-
   test('test POST user with not all parameter required passed', () => {
     return setPost({
                     // id: 1, 
@@ -200,95 +199,91 @@ describe('test POST on /users', () => {
       .then(resp => {expect(resp.status).toBe(400)});
   });
 
-test('test POST user with uniNumber equal to null', () => {
-	return setPost({
-                  // id: 1, 
-                  name: 'Piero', 
-                  surname: 'Grasso', 
-                  uniNumber: null, 
-                  isTeacher: true, 
-                  email: 'piero@grasso.it',
-                  password: 'abc123',
-                  examsList: [1,2]
-                })
-		.then(resp => {expect(resp.status).toBe(400)});
-});
+  test('test POST user with uniNumber equal to null', () => {
+    return setPost({
+                    // id: 1, 
+                    name: 'Piero', 
+                    surname: 'Grasso', 
+                    uniNumber: null, 
+                    isTeacher: true, 
+                    email: 'piero@grasso.it',
+                    password: 'abc123',
+                    examsList: [1,2]
+                  })
+      .then(resp => {expect(resp.status).toBe(400)});
+  });
 
+  test('test POST user with password equal to null', () => {
+    return setPost({
+                    // id: 1, 
+                    name: 'Piero', 
+                    surname: 'Grasso', 
+                    uniNumber: 182930, 
+                    isTeacher: true, 
+                    email: 'piero@grasso.it',
+                    password: null,
+                    examsList: [1,2]
+                  })
+      .then(resp => {expect(resp.status).toBe(400)});
+  });
 
-test('test POST user with password equal to null', () => {
-	return setPost({
-                  // id: 1, 
-                  name: 'Piero', 
-                  surname: 'Grasso', 
-                  uniNumber: 182930, 
-                  isTeacher: true, 
-                  email: 'piero@grasso.it',
-                  password: null,
-                  examsList: [1,2]
-                })
-		.then(resp => {expect(resp.status).toBe(400)});
-});
+  test('test POST user with name equal to null', () => {
+    return setPost({
+                    // id: 1, 
+                    name: null, 
+                    surname: 'Grasso', 
+                    uniNumber: 12345, 
+                    isTeacher: true, 
+                    email: 'piero@grasso.it',
+                    password: 'abc123',
+                    examsList: [1,2]
+                  })
+      .then(resp => {expect(resp.status).toBe(400)});
+  });
 
-test('test POST user with name equal to null', () => {
-	return setPost({
-                  // id: 1, 
-                  name: null, 
-                  surname: 'Grasso', 
-                  uniNumber: 12345, 
-                  isTeacher: true, 
-                  email: 'piero@grasso.it',
-                  password: 'abc123',
-                  examsList: [1,2]
-                })
-		.then(resp => {expect(resp.status).toBe(400)});
-});
+  test('test POST user with surname equal to null', () => {
+    return setPost({
+                    // id: 1, 
+                    name: 'Mario', 
+                    surname: null, 
+                    uniNumber: 12345, 
+                    isTeacher: true, 
+                    email: 'piero@grasso.it',
+                    password: 'abc123',
+                    examsList: [1,2]
+                  })
+      .then(resp => {expect(resp.status).toBe(400)});
+  });
 
+  test('test POST user with isTeacher equal to null', () => {
+    return setPost({
+                    // id: 1, 
+                    name: 'Mario', 
+                    surname: 'Grasso', 
+                    uniNumber: 12345, 
+                    isTeacher: null, 
+                    email: 'piero@grasso.it',
+                    password: 'abc123',
+                    examsList: [1,2]
+                  })
+      .then(resp => {expect(resp.status).toBe(400)});
+  });
 
-test('test POST user with surname equal to null', () => {
-	return setPost({
-                  // id: 1, 
-                  name: 'Mario', 
-                  surname: null, 
-                  uniNumber: 12345, 
-                  isTeacher: true, 
-                  email: 'piero@grasso.it',
-                  password: 'abc123',
-                  examsList: [1,2]
-                })
-		.then(resp => {expect(resp.status).toBe(400)});
-});
-
-test('test POST user with isTeacher equal to null', () => {
-	return setPost({
-                  // id: 1, 
-                  name: 'Mario', 
-                  surname: 'Grasso', 
-                  uniNumber: 12345, 
-                  isTeacher: null, 
-                  email: 'piero@grasso.it',
-                  password: 'abc123',
-                  examsList: [1,2]
-                })
-		.then(resp => {expect(resp.status).toBe(400)});
-});
-
-
-test('test POST user with name and surname equal to null', () => {
-	return setPost({
-                  // id: 1, 
-                  name: null, 
-                  surname: null, 
-                  uniNumber: 12345, 
-                  isTeacher: false, 
-                  email: 'piero@grasso.it',
-                  password: 'abc123',
-                  examsList: [1,2]
-                })
-		.then(resp => {expect(resp.status).toBe(400)});
-});
+  test('test POST user with name and surname equal to null', () => {
+    return setPost({
+                    // id: 1, 
+                    name: null, 
+                    surname: null, 
+                    uniNumber: 12345, 
+                    isTeacher: false, 
+                    email: 'piero@grasso.it',
+                    password: 'abc123',
+                    examsList: [1,2]
+                  })
+      .then(resp => {expect(resp.status).toBe(400)});
+  });
 
 })
-
 
 // -------------------------------PUT-------------------------------
 describe('test PUT on /users', () => {
@@ -329,7 +324,7 @@ describe('test PUT on /users', () => {
                     password: 'abc123',
                     examsList: [1,2]
                   }, 0)
-      .then(resp => {expect(resp.status).toBe(404)});
+      .then(resp => {expect(resp.status).toBe(400)});
   });
   
   //ok accetta solo valori + 
@@ -370,7 +365,7 @@ describe('test PUT on /users', () => {
                   email: 'piero@grasso.it',
                   password: 'abc123',
                   examsList: [1,2]
-                }, 0)
+                }, 99)
         .then( (resp) => {expect(resp.status).toBe(404)});
   })
 
@@ -525,4 +520,4 @@ describe('test DELETE on /users', () => {
 
   });
 
-})
+});
