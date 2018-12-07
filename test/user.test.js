@@ -76,7 +76,12 @@ describe('test GET on /users', () => {
     return setGet(1)
       .then(resp => {
         expect(resp.status).toBe(200)
-      });
+        return resp.json();
+      })
+      .then((json) => {
+        expect(json).toBeDefined();
+        expect(json.id).toEqual(1);
+      })
   });
 
   test('test GET on /users with id not found (123) should return 404', () => {

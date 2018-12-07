@@ -46,6 +46,7 @@ exports.registerUser = (app, db) =>{
     app.get('/users/:userId', (req, res) => {
         if (isIdCorrect(+req.params.userId, res)){
             let user = db.getById(tableUser, +req.params.userId);
+            console.log(user);
             if (user == null) {
                 res.status(404).json('We are sorry, user not found - error 404');
                 //console.log('We are sorry, user not found - error 404')

@@ -122,7 +122,7 @@ exports.registerExams = (app, db) =>{
                 const teach = req.body.teacher
 
                 //params required
-                if(task_group!=null){
+                if(task_group!=null ){
                     exam.taskgroup = task_group;
                 }
                 if(classe!=null){
@@ -139,15 +139,27 @@ exports.registerExams = (app, db) =>{
                     exam.teacher = teach;
                 }
 
-                db.updateItem('Exam', exam);
-
-                //manca controllo. NON DEVE ESSERE POSSIBILE MODIFICARE L'ID
+                if( ((exam.taskgroup % 1)!=0) ) {
+                    res.status(409).json('TaskGroup should be an integer');
+                }  else if( (exam.teacher % 1) !=0) {
+                    res.status(409).json('Teacher should be an integer');
+                } else if( ! ( typeof (exam.deadline) === 'string') ){
+                    res.status(409).json('Deadline should be a string');
+                } else if( ! ( typeof (exam.startline) === 'string') ){
+                    res.status(409).json('Startline should be a string');
+                } /* else if ( ( exam.classe instanceof Array) ){
+                    res.status(409).json('Classe should be an array');
+                } */ else {
+                    db.updateItem('Exam', exam);
+                    //manca controllo. NON DEVE ESSERE POSSIBILE MODIFICARE L'ID
                 
-                let exams = db.getAll('Exam');
+                    let exams = db.getAll('Exam');
 
-                //console.log('Exam Updated');
-                res.status(200);
-                res.json(exam);
+                    //console.log('Exam Updated');
+                    res.status(200);
+                    res.json(exam); 
+                }
+                            
             }
         } else {
             errore(res, 400);
