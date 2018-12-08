@@ -59,7 +59,7 @@ let classSampleUpdate = {
 
 // Testing
 
-
+// collection
 describe('Testing GET methods on /classes', () => {
 
   afterEach(async ()=>{
@@ -106,7 +106,6 @@ describe('Testing GET methods on /classes', () => {
 
 });
 
-
 describe('Testing POST methods on /classes', () => {
 
   afterEach(async ()=>{
@@ -132,6 +131,22 @@ describe('Testing POST methods on /classes', () => {
     });
   });
 
+  test('The POST with only a number as a class participants should 201 and the class created', () => {
+    let tmp = classSample;
+    tmp.participants = 2;
+
+    return setPost(tmp)
+      .then((res) => {
+        expect(res.status).toBe(201);
+        return res.json();
+      })
+      .then((json) => {
+        expect(json.id).toBeGreaterThan(0);
+        expect(json.name).toEqual(classSample.name);
+        expect(json.participants).toEqual(classSample.participants);
+      });
+  });
+
   // STATUS 400
   test('The POST with a missing Name in the Class should return bad request 400', () => {
     let tmp = classSample;
@@ -143,9 +158,79 @@ describe('Testing POST methods on /classes', () => {
       })
   });
 
+  test('The POST with a missing participants field in the Class should return bad request 400', () => {
+    let tmp = classSample;
+    tmp.participants = undefined;
+
+    return setPost(tmp)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      })
+  });
+
+  test('The POST with a null Name in the Class should return bad request 400', () => {
+    let tmp = classSample;
+    tmp.name = null;
+
+    return setPost(tmp)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      })
+  });
+
+  test('The POST with a null participants field in the Class should return bad request 400', () => {
+    let tmp = classSample;
+    tmp.participants = null;
+
+    return setPost(tmp)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      })
+  });
+
   test('The POST with a missing Partecipants in the class should return bad request 400', () => {
     let tmp = classSample;
     tmp.participants = undefined;
+
+    return setPost(tmp)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      })
+  });
+
+  test('The POST with a number as a class name should return bad request 400', () => {
+    let tmp = classSample;
+    tmp.name = 99;
+
+    return setPost(tmp)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      })
+  });
+
+  test('The POST with an array as a class name should return bad request 400', () => {
+    let tmp = classSample;
+    tmp.name = [1,2];
+
+    return setPost(tmp)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      })
+  });
+
+  test('The POST with a boolean as a class name should return bad request 400', () => {
+    let tmp = classSample;
+    tmp.name = true;
+
+    return setPost(tmp)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      })
+  });
+
+  test('The POST with a string as a class participants should return bad request 400', () => {
+    let tmp = classSample;
+    tmp.participants = 'ciao';
 
     return setPost(tmp)
       .then((res) => {
@@ -216,6 +301,7 @@ describe('Testing DELETE methods on /classes', () => {
 
 });
 
+// Id specifico
 describe('Testing GET methods on /classes/:classId', () => {
 
   afterEach(async ()=>{
@@ -296,7 +382,16 @@ describe('Testing GET methods on /classes/:classId', () => {
       .then((res) => {
         expect(res.status).toBe(400);
       });
-  })
+  });
+
+  test('The GET /classes/:classId should return 400 if the classId is undefined', () => {
+    let tmpId = undefined;
+
+    return setGet(tmpId)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      });
+  });
 
 })
 
@@ -325,22 +420,86 @@ describe('Testing PUT methods on /classes/:classId', () => {
       })
   });
 
-  test('The PUT /classes/:classId with only the field name should return 200 & the class\'s name updated', () => {
-    let tmpName = {
+  test('The PUT /classes/:classId with only the field name should return 200 & the class with the name updated', () => {
+    let tmp = {
       name: "Yeeeeeee"
     };
 
-    return setPut(tmpName, 1)
+    let classToPut = db.getById(table, 1);
+
+    return setPut(tmp, 1)
       .then((res) => {
         expect(res.status).toBe(200);
         return res.json();
       })
       .then((json) => {
         expect(json.id).toEqual(1);
-        expect(json.name).toEqual(tmpName.name);
-        expect(json.participants).toEqual(db.getById(table, 1).participants);
+        expect(json.name).toEqual(tmp.name);
+        expect(json.participants).toEqual(classToPut.participants);
+      });
+  });
+
+  test('The PUT /classes/:classId with name=null should return 200 & the class with the old name', () => {
+    let tmp = {
+      name: null
+    };
+
+    let classToPut = db.getById(table, 1);
+
+    return setPut(tmp, 1)
+      .then((res) => {
+        expect(res.status).toBe(200);
+        return res.json();
+      })
+      .then((json) => {
+        expect(json.id).toEqual(1);
+        expect(json.name).toEqual(classToPut.name);
+        expect(json.participants).toEqual(classToPut.participants);
+      });
+  });
+
+  test('The PUT /classes/:classId with participants=null should return 200 & the class with the old participants field', () => {
+    let tmp = {
+      participants: null
+    };
+
+    let classToPut = db.getById(table, 1);
+
+    return setPut(tmp, 1)
+      .then((res) => {
+        expect(res.status).toBe(200);
+        return res.json();
+      })
+      .then((json) => {
+        expect(json.id).toEqual(1);
+        expect(json.name).toEqual(classToPut.name);
+        expect(json.participants).toEqual(classToPut.participants);
+      });
+  });
+
+  // Questo test fallisce, dice che riceve [1, 2, 4, 5] ma si aspetta [1, 2, 3, 4, 5]
+  /*
+  test('The PUT /classes/:classId with only the participants should return 200 & the class with the participants updated', () => {
+    let tmp = {
+      participants: [1, 2, 4, 5]
+    };
+
+    let classToPut = db.getById(table, 1);
+
+    return setPut(tmp, 1)
+      .then((res) => {
+        expect(res.status).toBe(200);
+        return res.json();
+      })
+      .then((json) => {
+        console.log('-----'+json.participants);
+        expect(json.id).toEqual(1);
+        expect(json.name).toEqual(classToPut.name);
+        
+        expect(json.participants).toEqual(tmp.participants);
       });
   })
+  */
 
   // // e se volessi cambiare solo un partecipante?
   // test('DA SISTEMARE --> The PUT /classes/:classId with only the field participants should return 200 & the class\'s participants updated', () => {
@@ -449,6 +608,52 @@ describe('Testing DELETE methods on /classes/:classId', () => {
       })
       .then(async () => {
         await setPost(tmp);
+      });
+  });
+
+  // STATUS 400
+  test('The DELETE /classes/:classId should return 400 if the classId is negative', () => {
+    let tmpId = -1;
+
+    return setDelete(tmpId)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      });
+  });
+
+  test('The DELETE /classes/:classId should return 400 if the classId is not integer', () => {
+    let tmpId = 2.3;
+
+    return setDelete(tmpId)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      });
+  });
+
+  test('The DELETE /classes/:classId should return 400 if the classId is 0', () => {
+    let tmpId = 0;
+
+    return setDelete(tmpId)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      });
+  });
+
+  test('The DELETE /classes/:classId should return 400 if the classId is undefined', () => {
+    let tmpId = undefined;
+
+    return setDelete(tmpId)
+      .then((res) => {
+        expect(res.status).toBe(400);
+      });
+  });
+
+  test('The DELETE /classes/:classId should return 400 if the classId is null', () => {
+    let tmpId = null;
+
+    return setDelete(tmpId)
+      .then((res) => {
+        expect(res.status).toBe(400);
       });
   });
   
