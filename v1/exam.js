@@ -147,7 +147,7 @@ exports.registerExams = (app, db) =>{
                     res.status(409).json('Deadline should be a string');
                 } else if( ! ( typeof (exam.startline) === 'string') ){
                     res.status(409).json('Startline should be a string');
-                } /* else if ( ( exam.classe instanceof Array) ){
+                } /* else if ( ( typeof (exam.classe) !== 'array') ){
                     res.status(409).json('Classe should be an array');
                 } */ else {
                     db.updateItem('Exam', exam);

@@ -452,7 +452,7 @@ describe('testing PUT on /exams/:examId', () => {
       })
   });
 
-/* 
+/*
   test('the PUT with classes not array should return 409', () => {
     let tmp = {
       classes: 'jorge'
