@@ -178,7 +178,7 @@ exports.registerUser = (app, db) =>{
         if(isNum(+req.params.userId, res)) {
 
             let userCurrent = db.getById(tableUser, +req.params.userId);
-            console.log(userCurrent);
+            // console.log(userCurrent);
             
             if (userCurrent == null) {
                 //console.log('----sono dentro a userCurrent==null-------');
@@ -195,18 +195,33 @@ exports.registerUser = (app, db) =>{
                 // se sono null mi tengo i parametri vecchi
                 if (update.email != null) {
                     userCurrent.email = update.email;
-                } else if (update.uniNumber != null) {
+                }
+                if (update.uniNumber != null) {
                     userCurrent.uniNumber = update.uniNumber;
-                } else if (update.password != null) {
+                }
+                if (update.password != null) {
                     userCurrent.password = update.password;
-                } else if (update.name != null) {
+                }
+                if (update.name != null) {
                     userCurrent.name = update.name;
                     // console.log(update.name+' copiando parametri');
-                } else if (update.surname != null) {
+                }
+                if (update.surname != null) {
+                    // console.log('*********************');
+                    // console.log('prima di assegnamento');
+                    // console.log(update.surname);
+                    // console.log(userCurrent.surname);
                     userCurrent.surname = update.surname;
-                } else if (update.examsList != null) {
+                    // console.log('§§§§§§§§§§§§§§§§§§§§§§§');
+                    // console.log('dopo assegnamento');
+                    // console.log(update.surname);
+                    // console.log(userCurrent.surname);
+                    // console.log('@@@@@@@@@@@@@@@@@@@');
+                }
+                if (update.examsList != null) {
                     userCurrent.examsList = update.examsList;
-                } else if (update.isTeacher != null) {
+                }
+                if (update.isTeacher != null) {
                     userCurrent.isTeacher = update.isTeacher;
                     if (Boolean(userCurrent.isTeacher === true)) {
                         userCurrent.isTeacher = true;
@@ -218,12 +233,15 @@ exports.registerUser = (app, db) =>{
 
                 // DEBUG
 
-                if (typeof(userCurrent.surname) === typeof(3)){
-                    console.log('è un numero')
-                } else if (typeof(userCurrent.surname) === typeof('3')) {
-                    console.log('è una stringa')
-                }
-                console.log(!isNaN(+userCurrent.surname+1));
+                // if (typeof(userCurrent.surname) === typeof(3)){
+                //     console.log('è un numero')
+                // } else if (typeof(userCurrent.surname) === typeof('3')) {
+                //     console.log('è una stringa')
+                // }
+                // console.log(update.surname); 
+                // console.log(!isNaN(+update.surname+1));
+                // console.log(userCurrent.surname);
+                // console.log(!isNaN(+userCurrent.surname+1));
 
                 // if (userCurrent.isTeacher) {
                 //     console.log('-coversione riuscita --------> isteacher = true')
@@ -239,7 +257,7 @@ exports.registerUser = (app, db) =>{
                     let text = 'We are sorry, you didn\'t enter a valid email - bad request 400';
                     errore(res, 400, text);
                     //console.log(text);
-                } else if (userCurrent.uniNumber == null || isNaN(userCurrent.uniNumber) || userCurrent.uniNumber <= 0 || (userCurrent.uniNumber % 1) != 0) {
+                } else if (isNaN(userCurrent.uniNumber) || userCurrent.uniNumber <= 0 || (userCurrent.uniNumber % 1) != 0) {
                     let text = 'We are sorry, you didn\'t enter a valid uniNumber - bad request 400';
                     errore(res, 400, text);
                     //console.log(text);
@@ -247,7 +265,7 @@ exports.registerUser = (app, db) =>{
                     let text = 'We are sorry, you didn\'t enter a valid name - bad request 400';
                     errore(res, 400, text);
                     //console.log(text);
-                } else if (typeof(userCurrent.surname) !== 'string' || (!isNaN(+userCurrent.surname+1) == true)) {
+                } else if (typeof(userCurrent.surname) !== 'string' || !isNaN(+userCurrent.surname+1)) {
                     let text = 'We are sorry, you didn\'t enter a valid surname - bad request 400';
                     errore(res, 400, text);
                     //console.log(text);
@@ -267,6 +285,7 @@ exports.registerUser = (app, db) =>{
             let text = 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400';
             errore(res, 400, text);
         }
+        // console.log('___________________________________________________________________________________')
     })
 
     app.delete('/users', (req, res) => {
@@ -284,8 +303,9 @@ exports.registerUser = (app, db) =>{
     app.delete('/users/:userId', (req, res) => {
         
         let userId = parseInt(req.params.userId);
+        // console.log(userId);
 
-        let usersList = db.getAll(tableUser);
+        //let usersList = db.getAll(tableUser);
 
         if(isNum(userId, res)) {
 
@@ -299,10 +319,14 @@ exports.registerUser = (app, db) =>{
             } else { 
                 //console.log('Eliminando', userCurrent.name, userCurrent.surname);
                 db.deleteById(tableUser, userId);
-                usersList = db.getAll(tableUser);
+                //usersList = db.getAll(tableUser);
                 //console.log('Utenti attualmente registrati: ', usersList)
                 res.status(200).json(db.getAll('User'))
             }
+        } else {
+            //console.log('------------------------------è fallita isNum----------------');
+            let text = 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400';
+            errore(res, 400, text);
         }
     })
 }
