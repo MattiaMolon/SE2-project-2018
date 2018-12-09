@@ -1,12 +1,12 @@
 # SE2-project-2018
 Software Engineering II Project 2018/2019
 
-# WARNING
-Ultima versione "corretta" con swagger "up to date" su develop
+# WARNING !!!
+Attualmente Develop e Master sono allo stesso livello.
+Le API di user, exam, class, task e review funzionano così come i loro casi di test.
+Le API di submission e taskGroup in teoria funzionano ma i casi di test ci danno qualche problema.
 
-Stiamo ancora lavorando sull'implementazione di due API con i relativi casi di test e risolvendo problemi per quanto riguarda casi di test e gestione fake database
-
-Commit su master quando avremo la versione definitiva
+Ci scusiamo se state facendo la review e trovate delle cose modificate, ma abbiamo avuto qualche problema nel gestire il database.
 
 Group members:
 
