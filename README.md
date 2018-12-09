@@ -8,6 +8,8 @@ Le API di submission e taskGroup in teoria funzionano ma i casi di test ci danno
 
 Ci scusiamo se state facendo la review e trovate delle cose modificate, ma abbiamo avuto qualche problema nel gestire il database.
 
+Per quanto riguarda travis invece purtroppo visto che alcuni test falliscono non viene fatto il deploy, quindi su heroku non trovate quasi nulla. Quindi se volete provare i nostri test dovete clonare la repository e poi installare le cose necessarie per fare i test che abbiamo visto a lezione. Non usiamo Supertest
+
 Group members:
 
 * [Tommaso Bosetti](https://github.com/tommasobosetti) 1855286
