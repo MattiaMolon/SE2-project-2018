@@ -5,7 +5,7 @@ let database = {
             name: 'Piero', 
             surname: 'Grasso', 
             uniNumber: 182930, 
-            isTeacher: false, 
+            isTeacher: true, 
             email: 'piero@grasso.it', 
             password: 'abc123',
             examsList: [1,2]
@@ -141,7 +141,7 @@ let database = {
             taskgroup: 1, 
             startline: 1, 
             deadline: 15, 
-            classes: [3],
+            classes: [1,3],
             teacher: 1
         },
         {
@@ -149,34 +149,37 @@ let database = {
             taskgroup: 3, 
             startline: 5, 
             deadline: 20, 
-            classes: [4],
-            teacher: 1
+            classes: [2,4],
+            teacher: 5
         }
     ],
     Submission: [
         {
             id: 1, 
             class: 1, 
-            teacher: 3, 
-            student: 1,
+            teacher: 1, 
+            student: 4,
             exam: 1, 
-            data: "05/12/2018 09:00"
+            data: "05/12/2018 09:00",
+            answer: ['ris1']
         },
         {
             id: 2, 
             class: 3, 
             teacher: 5, 
             student: 2,
-            exam: 1, 
-            data: "06/12/2018 10:00"
+            exam: 3, 
+            data: "06/12/2018 10:00",
+            answer: ['ris1', 'ris2']
         },
         {
             id: 3, 
             class: 4, 
-            teacher: 3, 
-            student: 3,
+            teacher: 5, 
+            student: 2,
             exam: 1, 
-            data: "07/12/2018 11:00"
+            data: "07/12/2018 11:00",
+            answer: ['ris2']
         }
     ],
     Review: [
