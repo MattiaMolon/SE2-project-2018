@@ -1,6 +1,4 @@
 ///// UTILI /////
-// porta del programma
-const PORT = process.env.PORT || 3000;
 
 // Funzione di errore 400
 function error400 (res) {
@@ -42,7 +40,7 @@ function isIdCorrect(taskId, res){
         error400(res); 
         corretto = false; //console.log(1); 
     }
-    else if( taskId == null || taskId === undefined){
+    else if(taskId == ''){
         error400(res);
         corretto = false; //console.log(2);
     }
@@ -79,7 +77,7 @@ exports.registerTask = (app, db) =>{
     // POST /task
     app.post('/tasks', (req, res) => {
 
-        let risp = req.body;
+        risp = req.body;
 
         // errori
         if(risp.question == null || risp.questionType == null || risp.teacher == null){
@@ -94,47 +92,85 @@ exports.registerTask = (app, db) =>{
         else if(risp.questionType == 'openAnswer' && (risp.choices != null || risp.answers != null)){
             error400(res); //console.log(4);
         }
-        else if(risp.questionType == 'multipleChoice' && !Array.isArray(risp.choices)){
+        else if(risp.questionType == 'multipleChoice' && (!Array.isArray(risp.choices) || !Array.isArray(risp.answers))){
             error400(res); //console.log(5);
         }
-        else if(!isString(risp.question) || !isString(risp.questionType)){
+        else if(!isString(risp.question) || isNaN(risp.teacher)){
             error400(res); //console.log(6);
         }
-        else if(db.getById('User', risp.teacher) == null || !db.getById('User', risp.teacher).isTeacher == true){
-            error400(res) //console.log(7);
+        else if(db.getById('User', risp.teacher) == null || !db.getById('User', risp.teacher).isTeacher){
+            error400(res); //console.log(7);
         }
         else{
-            // setto la newtask e la setto
-            try{
 
-                let newTask, newId;
-                newId = db.getNewId('Task');
+            var isAnswersCorrect = true, isChoicesCorrect = true;
 
-                if(risp.questionType == 'multipleChoice'){
-                    newTask = {
-                        id : newId,
-                        question : risp.question,
-                        questionType : 'multipleChoice',
-                        choices : risp.choices,
-                        answers : risp.answers,
-                        teacher : risp.teacher
-                    };
-                } else if(risp.questionType == 'openAnswer'){
-                    newTask = {
-                        id : newId,
-                        question : risp.question,
-                        questionType : 'openAnswer',
-                        choices : undefined,
-                        answers : undefined,
-                        teacher : risp.teacher
-                    };
+            //controllo correttezza interna del vettore delle risposte e delle scelte
+            if(risp.questionType == 'multipleChoice'){
+                for (let i = 0; i<risp.choices.length; i++){
+                    if(!isString(risp.choices[i])){
+                        isChoicesCorrect = false;
+                    }
                 }
 
-                db.addItem('Task', newTask);
-                res.status(201).json(newTask);
-                
-            }catch(err){
+                for (let i = 0; i<risp.answers.length; i++){
+                    if(!isString(risp.answers[i])){
+                        isAnswerCorrect = false;
+                    }
+                }
+
+                var trovato = false, domandaSbagliata = false;
+                for(let i = 0; i<risp.answers.length; i++){
+                    for(let z = 0; z<risp.choices.length && !trovato; z++){
+                        if(risp.choices[z] == risp.answers[i]){
+                            trovato = true;
+                        }
+                    }
+                    if(trovato == false){
+                        domandaSbagliata = true;
+                    }
+                    trovato = false;
+                }
+
+                if(domandaSbagliata){
+                    isAnswersCorrect = false;
+                }
+
+            }
+
+            if(!isChoicesCorrect || !isAnswersCorrect){
                 error400(res); //console.log(8);
+            }
+            else{
+                try{
+
+                    var newTask, newId;
+                    newId = db.getNewId('Task');
+    
+                    if(risp.questionType == 'multipleChoice'){
+                        newTask = {
+                            id : newId,
+                            question : risp.question,
+                            questionType : 'multipleChoice',
+                            choices : risp.choices,
+                            answers : risp.answers,
+                            teacher : risp.teacher
+                        };
+                    } else if(risp.questionType == 'openAnswer'){
+                        newTask = {
+                            id : newId,
+                            question : risp.question,
+                            questionType : 'openAnswer',
+                            teacher : risp.teacher
+                        };
+                    }
+
+                    db.addItem('Task', newTask);
+                    res.status(201).json(newTask);
+                
+                }catch(err){
+                    error400(res); //console.log(9);
+                }
             }
         }
     });
@@ -182,13 +218,13 @@ exports.registerTask = (app, db) =>{
         
         let taskId = +req.params.taskId;
 
-        if( isIdCorrect(taskId, res)){
+        if(isIdCorrect(taskId, res)){
             try{
 
                 // controllo che non appartenga a nessun taskGroup
                 let taskGroups = db.getAll('TaskGroup');
                 let trovato = false;
-                for(let i =0; i<taskGroups.length && !trovato; i++){
+                for(let i=0; i<taskGroups.length && !trovato; i++){
                     for(let z=0; z<taskGroups[i].tasks.length && !trovato; z++){
                         if(taskGroups[i].tasks[z] == taskId){
                             error409(res); trovato = true;
@@ -198,7 +234,7 @@ exports.registerTask = (app, db) =>{
 
                 if(!trovato){
                     if( db.deleteById('Task', taskId) ){
-                        res.status(200).send('Task delete gne gne meglio molon');
+                        res.status(200).send('Task deleted');
                     }
                     else{
                         error404(res);
@@ -217,15 +253,16 @@ exports.registerTask = (app, db) =>{
         
         taskId = +req.params.taskId;
 
-        if( isIdCorrect(taskId) ){
+
+        if( isIdCorrect(taskId, res) ){
             try{
                 
-                let risp = req.body;
-                let oldItem = db.getById('Task', taskId);
+                var risp = req.body;
+                var oldItem = db.getById('Task', taskId);
 
                 if( oldItem != null){
 
-                    let sendError = false;
+                    var sendError = false;
 
                     // controllo sulla domanda
                     if( risp.question != null){
