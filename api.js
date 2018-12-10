@@ -18,5 +18,6 @@ require('./v1/taskGroup').registerTaskGroup(app, db);
 require('./v1/tasks').registerTask(app, db);
 require('./v1/user').registerUser(app, db);
 
+app.get('/', (req, res) => (res.send("Hello World! This is the SE2 group project made by Siamo Veramente Euforici.")));
 
 app.listen(PORT, () => console.log('Example app listening on port'+ PORT))

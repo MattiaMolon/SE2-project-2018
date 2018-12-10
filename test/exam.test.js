@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const PORT = process.env.SERVER_URL || 3000;
-const SERVER_URL = 'http://localhost:' + PORT + '/exams';
+const SERVER_URL = 'http://se2-project-2018.herokuapp.com' + '/exams';
 const db = require('../database/database')
 const table = 'Exam';
 

@@ -1,7 +1,7 @@
 const fetch = require ('node-fetch');
 const db = require('../database/database');
 const PORT = process.env.SERVER_URL || 3000;
-const SERVER_URL = 'http://localhost:' + PORT + '/tasks';
+const SERVER_URL = 'http://se2-project-2018.herokuapp.com' + '/tasks';
 const table = 'Task';
 
 function setGet(id="") {
