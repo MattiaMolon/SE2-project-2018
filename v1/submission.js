@@ -14,21 +14,12 @@ exports.registerSubmission = (app, db) =>{
 
     app.post('/submissions', (req, res) => {
 
-<<<<<<< HEAD
-        const submission_id = db.getNewId('Submission');
-    
-        let submission_classID = req.body.classID;
-        let submission_teacherID = req.body.teacherID;
-        let submission_studentID = req.body.studentID;
-        let submission_examID = req.body.examID;
-=======
         let submission_id = db.getNewId('Submission');
     
         let submission_classID = req.body.class;
         let submission_teacherID = req.body.teacher;
         let submission_studentID = req.body.student;
         let submission_examID = req.body.exam;
->>>>>>> impl-test-remo
         let submission_data = req.body.data;
         let submission_answer = req.body.answer;
     
@@ -40,38 +31,27 @@ exports.registerSubmission = (app, db) =>{
             res.status(400).send('Error! You must insert a valid examID'); 
         } else if(submission_classID == null || isNaN(submission_classID)){
             res.status(400).send('Error! You have to insert a valid classID'); 
-<<<<<<< HEAD
-        } else{
-=======
         } else if(submission_answer == null || !Array.isArray(submission_answer)){
             res.status(400).send('Error! You have to insert a valid answer'); 
         }else{
->>>>>>> impl-test-remo
 
             if(db.getById('Class', submission_classID) == null){
                 res.status(404) //Bad Request
-                console.log('Error! No Class found with given ID');
+                // console.log('Error! No Class found with given ID');
             } else if(db.getById('User', submission_studentID) == null || db.getById('User', submission_studentID).isTeacher){
                 res.status(404) //Bad Request
-<<<<<<< HEAD
-=======
-                console.log(req.body);
->>>>>>> impl-test-remo
-                console.log('Error! No User found with given ID');
+                // console.log(req.body);
+                // console.log('Error! No User found with given ID');
             } else if(db.getById('User', submission_teacherID) == null || !db.getById('User', submission_teacherID).isTeacher){
                 res.status(404) //Bad Request
-                console.log('Error! No Teacher found with given ID');
+                // console.log('Error! No Teacher found with given ID');
             } else if(db.getById('Exam', submission_examID) == null){
                 res.status(404) //Bad Request
-                console.log('Error! No Exam found with given ID');
+                // console.log('Error! No Exam found with given ID');
             } else{
 
-<<<<<<< HEAD
-                const new_submission = {id: submission_id, class: submission_classID, teacher: submission_teacherID, student: submission_studentID, exam: submission_examID, data: submission_data}
-=======
                 const new_submission = {id: submission_id, class: submission_classID, teacher: submission_teacherID, student: submission_studentID, exam: submission_examID, data: submission_data, answer: submission_answer}
                 db.addItem('Submission', new_submission);
->>>>>>> impl-test-remo
                 res.status(201);
                 res.json(new_submission);
 
@@ -88,11 +68,7 @@ exports.registerSubmission = (app, db) =>{
             res.status(400).send("Error 400 : Something went wrong!");
         }else{
             db.deleteAll('Submission');
-<<<<<<< HEAD
-            res.status(204).send("Sumbissions eliminated successfully!");
-=======
             res.status(200).send("Sumbissions eliminated successfully!");
->>>>>>> impl-test-remo
         }
 
     })
@@ -133,31 +109,6 @@ exports.registerSubmission = (app, db) =>{
         }
         else{
 
-<<<<<<< HEAD
-            const update_classID = req.body.classID;
-            const update_teacherID = req.body.teacherID;
-            const update_studentID = req.body.studentID;
-            const update_examID = req.body.examID;
-            const update_data = req.body.data;
-
-            if(update_classID!=null || !update_classID.isNaN()){
-                res.status(400).send('Error! You must insert a valid classID')
-            } else if(update_studentID!=null || !update_studentID.isNaN()){
-                res.status(400).send('Error! You must insert a valid studentID')
-            } else if(update_teacherID!=null || !update_teacherID.isNaN()){
-                res.status(400).send('Error! You must insert a valid teacherID')
-            } else if(update_examID!=null || !update_examID.isNaN()){
-                res.status(400).send('Error! You must insert a valid examID')
-            } else{
-
-                if(update_classID!=null && db.getById('Class', update_classID) == null){
-                    res.status(404).send('Error! No Class found with given ID')
-                } else if(update_teacherID!=null && (db.getById('User', update_teacherID) == null || !db.getById('User', update_teacherID).isTeacher)){
-                    res.status(404).send('Error! No Teacher found with given ID')
-                } else if(update_studentID!=null && (db.getById('User', update_studentID) == null || db.getById('User', update_teacherID).isTeacher)){
-                    res.status(404).send('Error! No Student found with given ID')
-                } else if(update_examID!=null && db.getById('Exam', update_examID) == null){
-=======
             let update_classID = req.body.class;
             let update_teacherID = req.body.teacher;
             let update_studentID = req.body.student;
@@ -166,37 +117,36 @@ exports.registerSubmission = (app, db) =>{
             let update_anwer = req.body.answer;
 
             if(update_classID!=null && isNaN(update_classID)){
-                console.log('Error! You must insert a valid classID')
+                // console.log('Error! You must insert a valid classID')
                 res.status(400).send('Error! You must insert a valid classID')
             } else if(update_studentID!=null && isNaN(update_studentID)){
-                console.log('Error! You must insert a valid studentID')
+                // console.log('Error! You must insert a valid studentID')
                 res.status(400).send('Error! You must insert a valid studentID')
             } else if(update_teacherID!=null && isNaN(update_teacherID)){
-                console.log('Error! You must insert a valid teacherID')
+                // console.log('Error! You must insert a valid teacherID')
                 res.status(400).send('Error! You must insert a valid teacherID')
             } else if(update_examID!=null && isNaN(update_examID)){
-                console.log('Error! You must insert a valid examID')
+                // console.log('Error! You must insert a valid examID')
                 res.status(400).send('Error! You must insert a valid examID')
             } else if(update_data!=null && !isNaN(update_data)){
-                console.log('Error! You must insert a valid data')
+                // console.log('Error! You must insert a valid data')
                 res.status(400).send('Error! You must insert a valid data')
             } else if(update_anwer!= null && !Array.isArray(update_anwer)){
-                console.log('Error! You must insert a valid answer')
+                // console.log('Error! You must insert a valid answer')
                 res.status(400).send('Error! You must insert a valid answer')
             } else {
 
                 if(update_classID!=null && db.getById('Class', update_classID) == null){
-                    console.log('Error! No Class found with given ID')
+                    // console.log('Error! No Class found with given ID')
                     res.status(404).send('Error! No Class found with given ID')
                 } else if(update_teacherID!=null && (db.getById('User', update_teacherID) == null || !db.getById('User', update_teacherID).isTeacher)){
-                    console.log('Error! No teacher found with given ID')
+                    // console.log('Error! No teacher found with given ID')
                     res.status(404).send('Error! No Teacher found with given ID')
                 } else if(update_studentID!=null && (db.getById('User', update_studentID) == null || db.getById('User', update_studentID).isTeacher)){
-                    console.log('Error! No student found with given ID')
+                    // console.log('Error! No student found with given ID')
                     res.status(404).send('Error! No Student found with given ID')
                 } else if(update_examID!=null && db.getById('Exam', update_examID) == null){
-                    console.log('Error! No exam found with given ID')
->>>>>>> impl-test-remo
+                    // console.log('Error! No exam found with given ID')
                     res.status(404).send('Error! No Exam found with given ID')
                 } else{
 
@@ -214,11 +164,7 @@ exports.registerSubmission = (app, db) =>{
 
                     // -> lo studente è tra i partecipanti dell'esame
                     let checkClass = false;
-<<<<<<< HEAD
-                        for(let i=0; i<=tmpclass.participants.lenght; i++){
-=======
-                        for(let i=0; i<=tmpclass.participants.length; i++){
->>>>>>> impl-test-remo
+                    for(let i=0; i<=tmpclass.participants.length; i++){
                         if(tmpstudent.id == tmpclass.participants[i]){
                             checkClass = true;
                         }
@@ -227,10 +173,7 @@ exports.registerSubmission = (app, db) =>{
                     if(checkClass){
                         submission_searched.class = tmpclass.id;
                     } else{
-<<<<<<< HEAD
-=======
-                        console.log('Error! Something went wrong (lo studente non è iscritto alla classe data)')
->>>>>>> impl-test-remo
+                        // console.log('Error! Something went wrong (lo studente non è iscritto alla classe data)')
                         res.status(409).send('Error! Something went wrong (lo studente non è iscritto alla classe data)')
                     }
 
@@ -238,13 +181,8 @@ exports.registerSubmission = (app, db) =>{
 
                     // -> controllo se ha l'esame nell'examList
                     let checkStudent = false;
-<<<<<<< HEAD
-                    for(let i=0; i<tmpstudent.examList.length; i++){
-                        if(tmpexam.id == tmpstudent.examList[i]){
-=======
                     for(let i=0; i<tmpstudent.examsList.length; i++){
                         if(tmpexam.id == tmpstudent.examsList[i]){
->>>>>>> impl-test-remo
                             checkStudent = true;
                         }
                     }
@@ -252,10 +190,7 @@ exports.registerSubmission = (app, db) =>{
                     if(checkStudent){
                         submission_searched.student = tmpstudent.id;
                     } else{
-<<<<<<< HEAD
-=======
-                        console.log('Error! Something went wrong (lo studente non ha il esame dato in lista)')
->>>>>>> impl-test-remo
+                        // console.log('Error! Something went wrong (lo studente non ha il esame dato in lista)')
                         res.status(409).send('Error! Something went wrong (lo studente non ha il esame dato in lista)')
                     }
 
@@ -266,10 +201,7 @@ exports.registerSubmission = (app, db) =>{
                     if(tmpexam.teacher == tmpteacher.id){
                         submission_searched.teacher = tmpteacher.id;
                     } else{
-<<<<<<< HEAD
-=======
-                        console.log('Error! Something went wrong (il professore dato non è assegnato al esame)')
->>>>>>> impl-test-remo
+                        // console.log('Error! Something went wrong (il professore dato non è assegnato al esame)')
                         res.status(409).send('Error! Something went wrong (il professore dato non è assegnato al esame)')
                     }
 
@@ -286,12 +218,7 @@ exports.registerSubmission = (app, db) =>{
                     if(checkExam){
                         submission_searched.exam = tmpexam.id;
                     } else{
-<<<<<<< HEAD
-                        res.status(409).send('Error! Something went wrong (il esame non è stato assegnato alla classe)')
-                    }
-
-=======
-                        console.log('Error! Something went wrong (il esame non è stato assegnato alla classe)');
+                        // console.log('Error! Something went wrong (il esame non è stato assegnato alla classe)');
                         res.status(409).send('Error! Something went wrong (il esame non è stato assegnato alla classe)')
                     }
 
@@ -306,20 +233,14 @@ exports.registerSubmission = (app, db) =>{
 
                      //controllo answer
 
->>>>>>> impl-test-remo
                     //aggiorno l'elemento
                     if(db.updateItem('Submission', submission_searched)){
                         res.status(200);
                         res.json(submission_searched);
                     } else {
-<<<<<<< HEAD
-                        res.status(200).send("Error 400 : Update error!");
-                    }
-=======
                         res.status(400).send("Error 400 : Update error!");
                     }
 
->>>>>>> impl-test-remo
                 }
             }
         }
