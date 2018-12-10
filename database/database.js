@@ -149,7 +149,7 @@ let database = {
             taskgroup: 3, 
             startline: 5, 
             deadline: 20, 
-            classes: [4],
+            classes: [2],
             teacher: 1
         }
     ],
@@ -160,7 +160,8 @@ let database = {
             teacher: 3, 
             student: 1,
             exam: 1, 
-            data: "05/12/2018 09:00"
+            data: "05/12/2018 09:00",
+            answer: ['Fabio', 'A', 'git add', '3']
         },
         {
             id: 2, 
@@ -168,7 +169,8 @@ let database = {
             teacher: 5, 
             student: 2,
             exam: 1, 
-            data: "06/12/2018 10:00"
+            data: "06/12/2018 10:00",
+            answer: ['Fabio', 'B', 'git commit', '1']
         },
         {
             id: 3, 
@@ -176,7 +178,8 @@ let database = {
             teacher: 3, 
             student: 3,
             exam: 1, 
-            data: "07/12/2018 11:00"
+            data: "07/12/2018 11:00",
+            answer: ['Fabio', 'B', 'git push', '2']
         }
     ],
     Review: [

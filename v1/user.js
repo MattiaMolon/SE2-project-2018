@@ -70,8 +70,7 @@ exports.registerUser = (app, db) =>{
         let usersList = db.getAll(tableUser);
 
         if (usersList.length == 0) {
-            let text = 'We are sorry, user not found - error 404';
-            errore(res, 404, text);
+            errore(res, 404, 'We are sorry, user not found - error 404');
             //res.status(404).json('We are sorry, user not found - error 404');
             //console.log('Sorry, no user found - error 404');
         } else {
@@ -87,13 +86,11 @@ exports.registerUser = (app, db) =>{
             // console.log(user);
             if (user == null) {
                 // console.log('-------------sono dentro a user == null------------------');
-                let text = 'We are sorry, user not found - error 404';
-                errore(res, 404, text);
+                errore(res, 404, 'We are sorry, user not found - error 404');
                 //res.status(404).json('We are sorry, user not found - error 404');
                 //console.log('We are sorry, user not found - error 404')
             } else if (user.error) {
-                let text = 'We are sorry, there was a general error - bad request 400';
-                errore(res, 400, text);
+                errore(res, 400, 'We are sorry, there was a general error - bad request 400');
                 //res.status(400).json('We are sorry, there was a general error - bad request 400')
                 //console.log('We are sorry, there was a general error - bad request 400');
             } else {
@@ -102,11 +99,10 @@ exports.registerUser = (app, db) =>{
             }
         } else {
             //console.log('------------------------------è fallita isNum----------------');
-            let text = 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400';
-            errore(res, 400, text);
+            errore(res, 400, 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400');
         }
         
-    })
+    });
 
     app.post('/users', (req, res) => {
         
@@ -121,13 +117,11 @@ exports.registerUser = (app, db) =>{
         let newExamsList = req.body.examsList
         
         if (newEmail == null || (!isNaN(newEmail))) {
-            let text = 'Ops, there was an error with the email. Please try again - bad request 400';
-            errore(res, 400, text);
+            errore(res, 400, 'Ops, there was an error with the email. Please try again - bad request 400');
             //res.status(400).json('Ops, there was an error with the email. Please try again - bad request 400');
             //console.log('Ops, there was an error with the email. Please try again - bad request 400')
         } else if (newUniNumber == null || isNaN(newUniNumber) || newUniNumber <= 0 || (newUniNumber % 1) != 0) {
-            let text = 'Ops, there was an error with the uniNumber. Please try again - bad request 400';
-            errore(res, 400, text);
+            errore(res, 400, 'Ops, there was an error with the uniNumber. Please try again - bad request 400');
             //res.status(400).json('Ops, there was an error with the uniNumber. Please try again - bad request 400')
             //console.log('Ops, there was an error with the uniNumber. Please try again - bad request 400')
         } else if (newPassword == null) {
@@ -150,6 +144,8 @@ exports.registerUser = (app, db) =>{
             errore(res, 400, text);
             //res.status(400).json('Ops, there was an error with the role of the user. Please try again - bad request 400')
             //console.log('Ops, there was an error with the role of the user. Please try again - bad request 400')
+        } else if (!Array.isArray(newExamsList)) {
+            errore(res, 400, 'Ops, there was an error with the exams list. Please try again - bad request 400');
         } else {
             let newUser = {
                 id: newId, 
@@ -172,7 +168,7 @@ exports.registerUser = (app, db) =>{
 
     app.put('/users/:userId', (req, res) => {
 
-        let userId = +req.params.userId;
+        // let userId = +req.params.userId;
         //console.log(userId+' prima di isNum')
 
         if(isNum(+req.params.userId, res)) {
@@ -182,8 +178,7 @@ exports.registerUser = (app, db) =>{
             
             if (userCurrent == null) {
                 //console.log('----sono dentro a userCurrent==null-------');
-                let text = 'We are sorry, user not found - error 404';
-                errore(res, 404, text);
+                errore(res, 404, 'We are sorry, user not found - error 404');
                 //res.status(404).json('We are sorry, user not found - error 404');
                 //console.log('We are sorry, user not found - error 404');
             } else {
@@ -254,12 +249,10 @@ exports.registerUser = (app, db) =>{
 
                 // qui cambio effettivamente le cose da cambiare
                 if ((typeof(userCurrent.email) !== 'string')) {
-                    let text = 'We are sorry, you didn\'t enter a valid email - bad request 400';
-                    errore(res, 400, text);
+                    errore(res, 400, 'We are sorry, you didn\'t enter a valid email - bad request 400');
                     //console.log(text);
                 } else if (isNaN(userCurrent.uniNumber) || userCurrent.uniNumber <= 0 || (userCurrent.uniNumber % 1) != 0) {
-                    let text = 'We are sorry, you didn\'t enter a valid uniNumber - bad request 400';
-                    errore(res, 400, text);
+                    errore(res, 400, 'We are sorry, you didn\'t enter a valid uniNumber - bad request 400');
                     //console.log(text);
                 } else if (typeof(userCurrent.name) !== 'string' || !isNaN(+userCurrent.name+1)) {
                     let text = 'We are sorry, you didn\'t enter a valid name - bad request 400';
@@ -282,11 +275,10 @@ exports.registerUser = (app, db) =>{
             }
         } else {
             //console.log('------------------------------è fallita isNum----------------');
-            let text = 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400';
-            errore(res, 400, text);
+            errore(res, 400, 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400');
         }
         // console.log('___________________________________________________________________________________')
-    })
+    });
 
     app.delete('/users', (req, res) => {
 
@@ -302,18 +294,17 @@ exports.registerUser = (app, db) =>{
 
     app.delete('/users/:userId', (req, res) => {
         
-        let userId = parseInt(req.params.userId);
+        let userId = +req.params.userId;
         // console.log(userId);
 
         //let usersList = db.getAll(tableUser);
 
         if(isNum(userId, res)) {
 
-            let userCurrent = db.getById(tableUser ,parseInt(req.params.userId));
+            let userCurrent = db.getById(tableUser, +req.params.userId);
 
             if (userCurrent == null) {
-                let text = 'We are sorry, user not found - error 404';
-                errore(res, 404, text);
+                errore(res, 404, 'We are sorry, user not found - error 404');
                 //res.status(404)
                 //console.log('We are sorry, user not found')
             } else { 
@@ -321,12 +312,11 @@ exports.registerUser = (app, db) =>{
                 db.deleteById(tableUser, userId);
                 //usersList = db.getAll(tableUser);
                 //console.log('Utenti attualmente registrati: ', usersList)
-                res.status(200).json(db.getAll('User'))
+                res.status(200).json(db.getAll(tableUser))
             }
         } else {
             //console.log('------------------------------è fallita isNum----------------');
-            let text = 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400';
-            errore(res, 400, text);
+            errore(res, 400, 'We are sorry, but it seems there are some problems with the ID you have requested - bad request 400');
         }
     })
 }

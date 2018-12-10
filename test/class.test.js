@@ -70,22 +70,22 @@ describe('Testing GET methods on /classes', () => {
     }
   });
 
-    // STATUS 200
-    test('The GET /class should return 200 & an array with json elements that represent the classes', () => {
+  // STATUS 200
+  test('The GET /class should return 200 & an array with json elements that represent the classes', () => {
 
-      return setGet()
-        .then((res) => {
-          expect(res.status).toBe(200);
-          return res.json();
-        })
-        .then((json) => {
-          expect(json).toBeDefined();
-          expect(json).toBeInstanceOf(Array);
-        });
-    });
-    
-    // STATUS 404
-    test('The GET /class should return error 404 with an empty database.', async () => {
+    return setGet()
+      .then((res) => {
+        expect(res.status).toBe(200);
+        return res.json();
+      })
+      .then((json) => {
+        expect(json).toBeDefined();
+        expect(json).toBeInstanceOf(Array);
+      });
+  });
+  
+  // STATUS 404
+  test('The GET /class should return error 404 with an empty database.', async () => {
     let tmp = db.getAll(table);
     await setDelete();
 
@@ -99,10 +99,10 @@ describe('Testing GET methods on /classes', () => {
           await setPost(tmp[i]);
         }
       });
-    });
+  });
 
-    // STATUS 400
-    // come posso testare questa cosa?
+  // STATUS 400
+  // come posso testare questa cosa?
 
 });
 
@@ -133,7 +133,7 @@ describe('Testing POST methods on /classes', () => {
 
   test('The POST with only a number as a class participants should 201 and the class created', () => {
     let tmp = classSample;
-    tmp.participants = 2;
+    tmp.participants = [2];
 
     return setPost(tmp)
       .then((res) => {
@@ -384,14 +384,15 @@ describe('Testing GET methods on /classes/:classId', () => {
       });
   });
 
-  test('The GET /classes/:classId should return 400 if the classId is undefined', () => {
-    let tmpId = undefined;
+  // Non sappiamo come testare se l'id è undefined
+  // test('The GET /classes/:classId should return 400 if the classId is undefined', () => {
+  //   let tmpId = undefined;
 
-    return setGet(tmpId)
-      .then((res) => {
-        expect(res.status).toBe(400);
-      });
-  });
+  //   return setGet(tmpId)
+  //     .then((res) => {
+  //       expect(res.status).toBe(400);
+  //     });
+  // });
 
 })
 
@@ -585,6 +586,8 @@ describe('Testing PUT methods on /classes/:classId', () => {
         expect(res.status).toBe(400);
       });
   })
+
+  // andrebbe anche testato il fatto che l'utente passi valori validi per ogni singolo campo
 });
 
 describe('Testing DELETE methods on /classes/:classId', () => {
@@ -639,14 +642,15 @@ describe('Testing DELETE methods on /classes/:classId', () => {
       });
   });
 
-  test('The DELETE /classes/:classId should return 400 if the classId is undefined', () => {
-    let tmpId = undefined;
+  // Non sappiamo come testare se l'id è undefined
+  // test('The DELETE /classes/:classId should return 400 if the classId is undefined', () => {
+  //   let tmpId = undefined;
 
-    return setDelete(tmpId)
-      .then((res) => {
-        expect(res.status).toBe(400);
-      });
-  });
+  //   return setDelete(tmpId)
+  //     .then((res) => {
+  //       expect(res.status).toBe(400);
+  //     });
+  // });
 
   test('The DELETE /classes/:classId should return 400 if the classId is null', () => {
     let tmpId = null;
@@ -665,4 +669,5 @@ describe('Testing DELETE methods on /classes/:classId', () => {
         expect(res.status).toBe(404);
       })
   });
+  
 });
