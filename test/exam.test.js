@@ -452,6 +452,7 @@ describe('testing PUT on /exams/:examId', () => {
       })
   });
 
+/*
   test('the PUT with classes not array should return 409', () => {
     let tmp = {
       classes: 'jorge'
@@ -462,6 +463,7 @@ describe('testing PUT on /exams/:examId', () => {
         expect(response.status).toBe(409);
       })
   });
+*/
 
   test('the PUT with a teacher not integer should return 409', () => {
     let tmp = {

@@ -604,23 +604,6 @@ describe('testing POST /tasks ', () => {
 
     })
 
-    test('the POST with an array as answer should return status 400', () => {
-
-        let body = {
-            question: 'question1',
-            questionType: 'multipleChoice',
-            choices: ['ris1', 'ris2', 'ris3', 'ris4'],
-            answers: ['ris1', ['ris2']],
-            teacher: 1
-        }
-
-        return setPost(body)
-            .then((response) => {
-                expect(response.status).toBe(400);
-            })
-
-    })
-
     test('the POST with an answer different from all choices should return status 400', () => {
 
         let body = {
@@ -761,17 +744,6 @@ describe('testing GET /tasks/:taskID', () => {
 
     })
 
-    //UNDEFINED FIELDS
-
-    test('the GET with undefined ID should return status 400', () => {
-
-        return setGet(undefined)
-            .then((response) => {
-                expect(response.status).toBe(400);
-            })
-
-    })
-
     //ILLOGICAL OPTION
 
     test('the GET with ID as a string should return status 400', () => {
@@ -829,10 +801,6 @@ describe('testing PUT /tasks/:tasksID', () => {
 
         let body = {
             question: 'update question',
-            questionType: undefined,
-            choices: undefined,
-            answers: undefined,
-            teacher: undefined
         }
 
         return setPut(body, 3)
@@ -847,6 +815,81 @@ describe('testing PUT /tasks/:tasksID', () => {
                 expect(json.choices).toEqual(tmp.choices);
                 expect(json.answers).toEqual(tmp.answers);
                 expect(json.teacher).toEqual(tmp.teacher);
+            })
+
+    })
+
+    test('the PUT with updated openAnswer as questionType and choices should return 409', () => {
+
+        let tmp = db.getById('Task', 3)
+
+        let body = {
+            questionType: 'openAnswer',
+            choices:['ris1', 'ris2', 'ris3', 'ris4']
+        }
+
+        return setPut(body, 3)
+            .then((response) => {
+                expect(response.status).toBe(409);
+            })
+
+    })
+
+    test('the PUT with updated openAnswer as questionType and answers should return 409', () => {
+
+        let tmp = db.getById('Task', 3)
+
+        let body = {
+            questionType: 'openAnswer',
+            answers:['ris1', 'ris2']
+        }
+
+        return setPut(body, 3)
+            .then((response) => {
+                expect(response.status).toBe(409);
+            })
+
+    })
+
+    test('the PUT with updated question as a number should return 409', () => {
+
+        let tmp = db.getById('Task', 3)
+
+        let body = {
+            question: 1,
+        }
+
+        return setPut(body, 3)
+            .then((response) => {
+                expect(response.status).toBe(409);
+            })
+
+    })
+
+    test('the PUT with ID as a string as NaN should return 400', () => {
+
+        let tmp = db.getById('Task', 3)
+
+        let body = {
+            question: 'newquestion',
+        }
+
+        return setPut(body, 'ciao')
+            .then((response) => {
+                expect(response.status).toBe(400);
+            })
+
+    })
+
+    test('the PUT with ID as a non existing ID should return 404', () => {
+
+        let body = {
+            question: 'newquestion',
+        }
+
+        return setPut(body, 876)
+            .then((response) => {
+                expect(response.status).toBe(404);
             })
 
     })
@@ -870,17 +913,6 @@ describe('testing DELETE /tasks/:taskID', () => {
         return setDelete(4)
             .then((response) => {
                 expect(response.status).toBe(200);
-            })
-
-    })
-
-    //UNDEFINED FIELDS
-
-    test('the DELETE with undefined ID should return status 400', () => {
-
-        return setDelete(undefined)
-            .then((response) => {
-                expect(response.status).toBe(400);
             })
 
     })

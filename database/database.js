@@ -5,7 +5,7 @@ let database = {
             name: 'Piero', 
             surname: 'Grasso', 
             uniNumber: 182930, 
-            isTeacher: false, 
+            isTeacher: true, 
             email: 'piero@grasso.it', 
             password: 'abc123',
             examsList: [1,2]
@@ -131,25 +131,25 @@ let database = {
         {
             id:1, 
             taskgroup: 2, 
-            startline: 24, 
-            deadline: 30, 
+            startline: "05/12/2018 09:00", 
+            deadline: "05/12/2018 09:00", 
             classes: [1,2],
             teacher: 1
         },
         {
             id: 2, 
             taskgroup: 1, 
-            startline: 1, 
-            deadline: 15, 
-            classes: [3],
+            startline: "05/12/2018 09:00", 
+            deadline: "05/12/2018 09:00", 
+            classes: [1,3],
             teacher: 1
         },
         {
             id: 3, 
             taskgroup: 3, 
-            startline: 5, 
-            deadline: 20, 
-            classes: [4],
+            startline: "05/12/2018 09:00", 
+            deadline: "05/12/2018 09:00", 
+            classes: [2,4],
             teacher: 1
         }
     ],
@@ -157,10 +157,11 @@ let database = {
         {
             id: 1, 
             class: 1, 
-            teacher: 3, 
-            student: 1,
+            teacher: 1, 
+            student: 4,
             exam: 1, 
-            data: "05/12/2018 09:00"
+            data: "05/12/2018 09:00",
+            answer: ['Fabio', 'A', 'git add', '3']
         },
         {
             id: 2, 
@@ -168,15 +169,17 @@ let database = {
             teacher: 5, 
             student: 2,
             exam: 1, 
-            data: "06/12/2018 10:00"
+            data: "06/12/2018 10:00",
+            answer: ['Fabio', 'B', 'git commit', '1']
         },
         {
             id: 3, 
             class: 4, 
-            teacher: 3, 
-            student: 3,
+            teacher: 5, 
+            student: 2,
             exam: 1, 
-            data: "07/12/2018 11:00"
+            data: "07/12/2018 11:00",
+            answer: ['Fabio', 'B', 'git push', '2']
         }
     ],
     Review: [
