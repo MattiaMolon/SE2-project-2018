@@ -82,6 +82,8 @@ exports.registerClasses = (app, db) => {
                 const class_participants = req.body.participants;
                 if(class_name == null || class_participants == null) {
                     errore(res, 400);
+                } else if (!(isString(class_name)) || !(Array.isArray(class_participants))) {
+                    errore(res, 400);
                 } else {
                     const new_class = {id: class_id, name: class_name, participants: class_participants};
                     db.addItem('Class', new_class);
