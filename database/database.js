@@ -131,25 +131,25 @@ let database = {
         {
             id:1, 
             taskgroup: 2, 
-            startline: 24, 
-            deadline: 30, 
+            startline: "05/12/2018 09:00", 
+            deadline: "05/12/2018 09:00", 
             classes: [1,2],
             teacher: 1
         },
         {
             id: 2, 
             taskgroup: 1, 
-            startline: 1, 
-            deadline: 15, 
+            startline: "05/12/2018 09:00", 
+            deadline: "05/12/2018 09:00", 
             classes: [3],
             teacher: 1
         },
         {
             id: 3, 
             taskgroup: 3, 
-            startline: 5, 
-            deadline: 20, 
-            classes: [2],
+            startline: "05/12/2018 09:00", 
+            deadline: "05/12/2018 09:00", 
+            classes: [4],
             teacher: 1
         }
     ],
