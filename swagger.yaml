@@ -7,7 +7,6 @@ info:
 
 #server
 host: se2-project-2018.herokuapp.com
-basePath: /v1
 schemes:
 - http
 
