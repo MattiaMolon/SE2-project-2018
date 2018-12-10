@@ -1,13 +1,13 @@
 
 const PORT = process.env.SERVER_URL || 3000;
-const url = "http://localhost:"+PORT+"/submissions";
+const SERVER_URL = "http://se2-project-2018.herokuapp.com" + "/submissions";
 const fetch = require('node-fetch');
 const table = 'Submission';
 const db = require('../database/database');
 
 // Utilities
 function setGet(id="") {
-  return fetch(url+"/"+id,{
+  return fetch(SERVER_URL+"/"+id,{
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -17,7 +17,7 @@ function setGet(id="") {
 };
 
 function setPost(item, id=""){
-  return fetch(url+"/"+id,{
+  return fetch(SERVER_URL+"/"+id,{
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ function setPost(item, id=""){
 };
 
 function setPut(item, id=""){
-  return fetch(url+"/"+id,{
+  return fetch(SERVER_URL+"/"+id,{
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ function setPut(item, id=""){
 };
 
 function setDelete(id=""){
-  return fetch(url+"/"+id, {
+  return fetch(SERVER_URL+"/"+id, {
       method: 'DELETE',
       headers:{
         'Content-Type': 'application/json',

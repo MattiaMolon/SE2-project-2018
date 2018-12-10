@@ -1,14 +1,7 @@
 # SE2-project-2018
 Software Engineering II Project 2018/2019
 
-# WARNING !!!
-Attualmente Develop e Master sono allo stesso livello.
-Le API di user, exam, class, task e review funzionano così come i loro casi di test.
-Le API di submission e taskGroup in teoria funzionano ma i casi di test ci danno qualche problema.
-
-Ci scusiamo se state facendo la review e trovate delle cose modificate, ma abbiamo avuto qualche problema nel gestire il database.
-
-Per quanto riguarda travis invece purtroppo visto che alcuni test falliscono non viene fatto il deploy, quindi su heroku non trovate quasi nulla. Quindi se volete provare i nostri test dovete clonare la repository e poi installare le cose necessarie per fare i test che abbiamo visto a lezione. Non usiamo Supertest
+![Build Status](https://travis-ci.com/sebastianochiari/SE2-project-2018.svg?branch=develop)
 
 Group members:
 
