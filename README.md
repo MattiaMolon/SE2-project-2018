@@ -1,7 +1,7 @@
 # SE2-project-2018
 Software Engineering II Project 2018/2019
 
-![Build Status](https://travis-ci.com/sebastianochiari/SE2-project-2018.svg?branch=develop)
+![Build Status](https://travis-ci.com/sebastianochiari/SE2-project-2018.svg?branch=master)
 
 Group members:
 
