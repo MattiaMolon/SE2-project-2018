@@ -9,6 +9,7 @@ The aim was to develop and deploy a simple web service built in node.js that cou
 
 * [Tommaso Bosetti](https://github.com/tommasobosetti) 185286
 * [Sebastiano Chiari](https://github.com/sebastianochiari) 185858
+* [Mattia Molon](https://github.com/mattiamolon) 187916
 * [Leonardo Remondini](https://github.com/leonardoremondini) 184563
 * [Marta Toniolli](https://github.com/toniollimarta) 187839
 
